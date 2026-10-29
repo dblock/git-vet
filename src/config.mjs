@@ -1,7 +1,7 @@
 import { lstat, readFile, stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { GitVetError, invariant } from "./errors.mjs";
+import { Error, invariant } from "./errors.mjs";
 import { isRecord } from "./contracts.mjs";
 
 const filenames = ["git-vet.config.mjs", "git-vet.config.json"];
@@ -86,13 +86,9 @@ async function exists(path) {
     if (error.code === "ENOENT") {
       return false;
     }
-    throw new GitVetError(
-      "CONFIG_DISCOVERY_FAILED",
-      `Cannot inspect ${path}.`,
-      {
-        cause: error,
-      },
-    );
+    throw new Error("CONFIG_DISCOVERY_FAILED", `Cannot inspect ${path}.`, {
+      cause: error,
+    });
   }
 }
 
@@ -104,10 +100,10 @@ async function directory(path) {
       `Not a directory: ${path}.`,
     );
   } catch (error) {
-    if (error instanceof GitVetError) {
+    if (error instanceof Error) {
       throw error;
     }
-    throw new GitVetError("INVALID_ROOT", `Cannot access directory ${path}.`, {
+    throw new Error("INVALID_ROOT", `Cannot access directory ${path}.`, {
       cause: error,
     });
   }
@@ -151,10 +147,10 @@ async function readConfig(path) {
     );
     return (await import(pathToFileURL(path).href)).default;
   } catch (error) {
-    if (error instanceof GitVetError) {
+    if (error instanceof Error) {
       throw error;
     }
-    throw new GitVetError("CONFIG_LOAD_FAILED", `Cannot load ${path}.`, {
+    throw new Error("CONFIG_LOAD_FAILED", `Cannot load ${path}.`, {
       cause: error,
     });
   }

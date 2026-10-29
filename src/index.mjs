@@ -1,5 +1,6 @@
-export { GitVetError } from "./errors.mjs";
+export { Error } from "./errors.mjs";
 export { loadConfig, resolveConfig } from "./config.mjs";
+export { run } from "./run.mjs";
 export {
   PLUGIN_API_VERSION,
   validatePlugin,
