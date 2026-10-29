@@ -1,6 +1,11 @@
 # GitVet
 
-Pluggable, read-only validation for files and repositories.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="artwork/logo-dark.svg">
+  <img src="artwork/logo.svg" alt="GitVet, with its crocodile mascot" width="450">
+</picture>
+
+Git and filesystem linter.
 
 ## Status
 
@@ -27,6 +32,10 @@ npm test
 The initial scaffold has no implementation tests yet. Tests will be introduced with the corresponding features.
 
 See [AGENTS.md](AGENTS.md) for contributor instructions.
+
+## Mascot
+
+[Mascot, logos, icons, and artwork guidelines](artwork/README.md).
 
 ## License
 
