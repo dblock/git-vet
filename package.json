@@ -4,6 +4,14 @@
   "private": true,
   "description": "Git and filesystem linter.",
   "type": "module",
+  "exports": "./src/index.mjs",
+  "files": [
+    "src",
+    "docs",
+    "artwork",
+    "README.md",
+    "LICENSE"
+  ],
   "license": "MIT",
   "author": "Daniel Doubrovkine",
   "repository": {

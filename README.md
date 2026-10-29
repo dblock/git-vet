@@ -9,7 +9,7 @@ Git and filesystem linter.
 
 ## Status
 
-This repository currently contains project scaffolding. The validation engine, public plugin API, providers, and checks are planned in the [project issues](https://github.com/dblock/git-vet/issues).
+This repository contains an experimental [public plugin contract](docs/plugin-api.md) and [replacement-only configuration loader](docs/configuration.md). The validation runner, shipped defaults, concrete providers/checks, and CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No checking command is available yet.
 
 ## Design
 
@@ -28,8 +28,6 @@ npm ci
 npm run lint
 npm test
 ```
-
-The initial scaffold has no implementation tests yet. Tests will be introduced with the corresponding features.
 
 See [AGENTS.md](AGENTS.md) for contributor instructions.
 
