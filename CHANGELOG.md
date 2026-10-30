@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- [#28](https://github.com/dblock/svet/pull/28): Add opt-in `@svet/check-path-case` with shared casing defaults, file/directory specializations, and path exceptions - [@dblock](https://github.com/dblock).
+- [#28](https://github.com/dblock/svet/pull/28): Add opt-in `@svet/check-path-case-collision` for NFC/Unicode-case-folded file and directory collisions across full provider inventories - [@dblock](https://github.com/dblock).
 - [#27](https://github.com/dblock/svet/pull/27): Add explicit working-tree autofix for file EOL/trailing whitespace and a global `--dry-run` preview for checking and fixing - [@dblock](https://github.com/dblock).
 - [#26](https://github.com/dblock/svet/pull/26): Add opt-in `@svet/check-file-trailing-whitespace` with configurable spaces, tabs, and literal single-character policies for captured contents - [@dblock](https://github.com/dblock).
 - [#25](https://github.com/dblock/svet/pull/25): Support configurable LF, CR, and CRLF endings in `@svet/check-file-eol` and `@svet/check-git-index-eol`, with LF as the default - [@dblock](https://github.com/dblock).

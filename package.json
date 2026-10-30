@@ -26,6 +26,8 @@
     "plugins/checks/git-index-eol/README.md",
     "plugins/checks/file-eol/README.md",
     "plugins/checks/file-trailing-whitespace/README.md",
+    "plugins/checks/path-case/README.md",
+    "plugins/checks/path-case-collision/README.md",
     "artwork",
     "CHANGELOG.md",
     "CONTRIBUTING.md",

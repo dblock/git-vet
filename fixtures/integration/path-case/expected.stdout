@@ -1,0 +1,9 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: files/glob (selected)
+Checks: path/case (completed)
+excluded Src: Only regular files provide glob content snapshots.
+Src: error [path/case/case]: Directory name must be lowercase.
+Binary.BIN: error [path/case/case]: Filename must be lowercase.
+Src/README.md: error [path/case/case]: Filename must be lowercase.
+Selected 4; checked 0; findings 3; skipped 0; failed 0; unavailable 0.

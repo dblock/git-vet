@@ -1,0 +1,13 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: path/case-collision (completed)
+filtered Image.png: Binary content: NUL byte in the first 8000 bytes.
+filtered image.png: Binary content: NUL byte in the first 8000 bytes.
+Image.png, image.png: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+STRASSE.TXT, Straße.txt, strasse.txt: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+café.txt, café.txt: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+Σ.txt, ς.txt, σ.txt: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+fix unavailable (project): This check does not provide fixes.
+Fixes: applied 0; proposed 0; unavailable 1; failed 0.
+Selected 9; checked 0; findings 4; skipped 0; failed 0; unavailable 0.
