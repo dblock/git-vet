@@ -1,0 +1,4 @@
+{
+  "command": ["git-vet", "--profile", "empty", "--format", "json"],
+  "withoutGit": true
+}

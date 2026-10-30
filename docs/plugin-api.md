@@ -2,7 +2,7 @@
 
 The public library exports `loadConfig`, `resolveConfig`, `run`, `Error`, `PLUGIN_API_VERSION`, and contract validators from `git-vet`. The exported `Error(code, message, options?)` extends `globalThis.Error`, adding a diagnostic `code` while preserving native cause support. Plugins are ordinary ESM modules default-exporting an object; they do not need to import the driver or any private modules. A package name and a plugin's stable `id` are independent, so moving a plugin does not change diagnostic identities.
 
-This is a foundation, not a released CLI. The [programmatic runner](running.md) supports explicit configurations, including the optional [Git selector](../plugins/files/git/README.md) and [indexed LF check](../plugins/checks/index-lf/README.md); shipped Git/text defaults, additional checks, and the distribution entry point remain separate implementation steps. The package remains private.
+The experimental [CLI and programmatic runner](running.md) support explicit configurations, including the optional [Git selector](../plugins/files/git/README.md) and [indexed LF check](../plugins/checks/index-lf/README.md). Shipped Git/text defaults and additional checks remain separate implementation steps. Packages remain private and unpublished.
 
 ## Metadata and Compatibility
 

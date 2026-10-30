@@ -9,7 +9,11 @@
   "description": "Git and filesystem linter.",
   "type": "module",
   "exports": "./src/index.mjs",
+  "bin": {
+    "git-vet": "./bin/git-vet.mjs"
+  },
   "files": [
+    "bin",
     "src",
     "docs",
     "plugins/files/git/README.md",
@@ -36,6 +40,7 @@
   "scripts": {
     "artwork": "node scripts/render-artwork.mjs",
     "lint": "eslint . && prettier --check .",
+    "check": "node bin/git-vet.mjs",
     "format": "prettier --write .",
     "test": "node --test"
   },

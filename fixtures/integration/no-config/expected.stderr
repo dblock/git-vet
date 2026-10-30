@@ -1,0 +1,1 @@
+error [DEFAULT_CONFIG_UNAVAILABLE]: No configuration found. Create git-vet.config.mjs or git-vet.config.json, or pass --config. Shipped defaults are not available yet.

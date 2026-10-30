@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "status": "empty",
+  "exitCode": 0,
+  "emptyReason": "no-checks",
+  "configuration": {
+    "source": {
+      "kind": "file",
+      "path": "<project>/git-vet.config.json"
+    },
+    "root": "<project>",
+    "profile": "empty"
+  },
+  "selection": {
+    "status": "not-configured",
+    "candidates": [],
+    "capabilities": [],
+    "stages": []
+  },
+  "checks": [],
+  "findings": [],
+  "errors": [],
+  "summary": {
+    "selected": 0,
+    "checkedFiles": 0,
+    "checkedInvocations": 0,
+    "skippedInvocations": 0,
+    "failedInvocations": 0,
+    "unavailableChecks": 0,
+    "findings": 0
+  }
+}

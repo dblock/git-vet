@@ -1,0 +1,6 @@
+Configuration: git-vet.config.json
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: git/index-lf (completed)
+bad.txt:1: error [git/index-lf/lf]: Indexed text contains CRLF or CR line endings. Convert to LF and stage the intended changes manually.
+Selected 3; checked 3; findings 1; skipped 0; failed 0; unavailable 0.

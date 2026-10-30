@@ -1,0 +1,5 @@
+Configuration: git-vet.config.json
+Profile: (base)
+Files: (none)
+Checks: git/index-lf (unavailable)
+Selected 0; checked 0; findings 0; skipped 0; failed 0; unavailable 1.

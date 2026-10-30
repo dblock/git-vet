@@ -1,0 +1,6 @@
+Configuration: git-vet.config.json
+Profile: (base)
+Files: files/glob (selected)
+Checks: fixture/word (completed)
+bad.txt: error [fixture/word/forbidden-word]: Forbidden word.
+Selected 2; checked 2; findings 1; skipped 0; failed 0; unavailable 0.

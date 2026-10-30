@@ -1,0 +1,5 @@
+{
+  "files": { "plugin": "./inactive.mjs" },
+  "checks": [{ "plugin": "@git-vet/check-index-lf" }],
+  "profiles": { "empty": {} }
+}

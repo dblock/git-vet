@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "error",
+  "exitCode": 2,
+  "errors": [
+    {
+      "phase": "configuration",
+      "code": "INVALID_CONFIG",
+      "message": "checks must be an array."
+    }
+  ]
+}

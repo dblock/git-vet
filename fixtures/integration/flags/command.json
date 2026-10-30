@@ -1,0 +1,12 @@
+{
+  "command": [
+    "git-vet",
+    "--config",
+    "configuration/check.json",
+    "--root",
+    ".",
+    "--profile",
+    "words"
+  ],
+  "withoutGit": true
+}
