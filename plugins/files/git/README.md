@@ -6,14 +6,12 @@ The package is currently private and unpublished. It is an npm workspace in this
 
 ```js
 export default {
-  files: [{ plugin: "@git-vet/files-git", options: { mode: "staged" } }],
-  checks: [
-    // Explicitly select checking plugins here; this provider does not run checks.
-  ],
+  files: "@git-vet/files-git",
+  checks: [{ plugin: "@git-vet/check-index-lf" }],
 };
 ```
 
-In another installation, restore the provider package alongside GitVet through the package manager before execution. The driver never discovers or installs it automatically.
+In another installation, restore the provider and [indexed LF check](../../checks/index-lf/README.md) packages alongside GitVet through the package manager before execution. The driver never discovers or installs them automatically. This provider only selects files; it does not implicitly activate the example's check.
 
 ## Selection and Snapshots
 
@@ -29,6 +27,17 @@ In another installation, restore the provider package alongside GitVet through t
 Revision mode requires both `base` and `target`; there is no remote/default-branch assumption. By default compare those commits directly. Explicit `mergeBase: true` compares their locally available merge base to the target. Missing references or merge bases (including unavailable shallow history) are errors; nothing is fetched. Unborn repositories use a `null` local baseline and support staged additions.
 
 The provider discovers the working-tree repository root from the supplied project root, including invocation in subdirectories and linked worktrees. It selects repository-wide paths, reported relative to that Git root with `/` separators. Root discovery belongs to this provider, not generic core.
+
+## Advanced Configuration
+
+Use an explicit plugin object when selecting a scope or other options:
+
+```js
+export default {
+  files: [{ plugin: "@git-vet/files-git", options: { mode: "staged" } }],
+  checks: [{ plugin: "@git-vet/check-index-lf" }],
+};
+```
 
 ## Text, Exclusions, and Unavailable Paths
 

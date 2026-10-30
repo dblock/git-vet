@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "workspaces": [
-    "plugins/*",
-    "plugins/files/*"
+    "plugins/files/*",
+    "plugins/checks/*"
   ],
   "description": "Git and filesystem linter.",
   "type": "module",
@@ -14,6 +14,7 @@
     "docs",
     "plugins/files/git/README.md",
     "plugins/files/glob/README.md",
+    "plugins/checks/index-lf/README.md",
     "artwork",
     "CHANGELOG.md",
     "README.md",

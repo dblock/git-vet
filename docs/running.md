@@ -1,6 +1,6 @@
 # Programmatic Runner (Foundation)
 
-The experimental library can run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/files/git/README.md). It does not yet ship a CLI, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
+The experimental library can run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/files/git/README.md), [glob selector](../plugins/files/glob/README.md), and [indexed LF check](../plugins/checks/index-lf/README.md). It does not yet ship a CLI, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
 
 ```js
 import { loadConfig, run } from "git-vet";
@@ -48,4 +48,4 @@ File outcomes identify `candidateId` and `path`; project outcomes do not invent 
 
 Only id/path/snapshot summaries, capability names, whitelisted finding/error fields, and explicitly reportable selector context/decisions enter reports. Readers, capability values (including full inventories), arbitrary candidate metadata, plugin options, environment, and source bytes are not automatically serialized. Plugins are trusted and remain responsible for keeping their messages/context free of sensitive data and terminal control sequences.
 
-There are no progress prints or process exits in core. Terminal formatting, CLI error handling/overrides, packaged `git vet` invocation, production checking plugins, and shipped default-run acceptance remain separate work. The optional Git provider owns its index/revision semantics without adding Git queries to core.
+There are no progress prints or process exits in core. Terminal formatting, CLI error handling/overrides, packaged `git vet` invocation, additional checking plugins, and shipped default-run acceptance remain separate work. The optional Git provider owns its index/revision semantics without adding Git queries to core.

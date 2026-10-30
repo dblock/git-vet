@@ -9,7 +9,7 @@ Git and filesystem linter.
 
 ## Status
 
-This repository contains an experimental [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), [programmatic runner](docs/running.md), optional [Git file provider](plugins/files/git/README.md), and [glob file selector](plugins/files/glob/README.md). Shipped defaults, production checking plugins, and the CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No checking command is available yet.
+This repository contains an experimental [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), [programmatic runner](docs/running.md), optional [Git file provider](plugins/files/git/README.md), [glob file selector](plugins/files/glob/README.md), and [indexed LF check](plugins/checks/index-lf/README.md). Shipped defaults, additional checking plugins, and the CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No CLI checking command is available yet.
 
 See the [changelog](CHANGELOG.md) for implemented features.
 

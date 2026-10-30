@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-test("packed driver runs independent timestamp, glob, and Git plugins offline without source-checkout imports", async (t) => {
+test("packed driver runs independent timestamp, glob, Git, and indexed LF plugins offline without source-checkout imports", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "git-vet packaged \u03bb "));
   t.after(() => rm(root, { recursive: true, force: true }));
   const packed = join(root, "packed");
@@ -74,6 +74,9 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
   const globArchive = pack(
     fileURLToPath(new URL("../plugins/files/glob/", import.meta.url)),
   );
+  const indexLfArchive = pack(
+    fileURLToPath(new URL("../plugins/checks/index-lf/", import.meta.url)),
+  );
   const picomatchArchive = pack(
     fileURLToPath(new URL(".", import.meta.resolve("picomatch"))),
   );
@@ -93,6 +96,7 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
       resolverArchive,
       gitArchive,
       globArchive,
+      indexLfArchive,
       picomatchArchive,
     ],
     consumer,
@@ -108,6 +112,18 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
   await writeFile(
     globModule,
     'throw new Error("An unselected glob plugin was imported.");',
+  );
+  const indexLfModule = join(
+    consumer,
+    "node_modules",
+    "@git-vet",
+    "check-index-lf",
+    "index.mjs",
+  );
+  const indexLfSource = await readFile(indexLfModule);
+  await writeFile(
+    indexLfModule,
+    'throw new Error("An unselected indexed LF plugin was imported.");',
   );
 
   const old = join(project, "old.txt");
@@ -143,7 +159,14 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
     const {loadConfig,run} = await import("git-vet");
     const config = await loadConfig({
       cwd:${JSON.stringify(project)},root:${JSON.stringify(project)},
-      configFile:${JSON.stringify(configFile)}
+      configFile:${JSON.stringify(configFile)},
+      defaults:{
+        directory:${JSON.stringify(configRoot)},
+        config:{
+          files:[{plugin:"@git-vet/files-git"}],
+          checks:[{plugin:"@git-vet/check-index-lf"}]
+        }
+      }
     });
     process.stdout.write(JSON.stringify(await run(config)));
   `,
@@ -180,6 +203,7 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
     ),
     before.map((entry) => entry.mtimeMs),
   );
+  await writeFile(indexLfModule, indexLfSource);
 
   await writeFile(globModule, globSource);
   for (const files of [
@@ -223,7 +247,7 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
     });
   git("init", "--initial-branch=main", "--template=");
   git("config", "core.autocrlf", "false");
-  await writeFile(join(gitProject, "tracked.txt"), "bad staged\n");
+  await writeFile(join(gitProject, "tracked.txt"), "bad staged\r\n");
   await writeFile(join(gitProject, "binary.dat"), Buffer.from([0, 1, 2]));
   git("add", "--all");
   await writeFile(join(gitProject, "tracked.txt"), "clean unstaged content\n");
@@ -238,6 +262,7 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
       checks: [
         { plugin: "git-vet-fixture-timestamps/check" },
         { plugin: "git-vet-fixture-timestamps/inventory" },
+        { plugin: "@git-vet/check-index-lf" },
       ],
     }),
   );
@@ -266,6 +291,13 @@ test("packed driver runs independent timestamp, glob, and Git plugins offline wi
   assert.equal(gitReport.findings[0].path, "tracked.txt");
   assert.equal(gitReport.selection.candidates[0].snapshot.kind, "git-index");
   assert.equal(gitReport.checks[1].status, "completed");
+  assert.equal(gitReport.checks[2].status, "completed");
+  const lfFinding = gitReport.findings.find(
+    (finding) => finding.pluginId === "git/index-lf",
+  );
+  assert.equal(lfFinding.ruleId, "lf");
+  assert.equal(lfFinding.path, "tracked.txt");
+  assert.deepEqual(lfFinding.location, { line: 1 });
   assert.deepEqual(await readFile(join(gitProject, ".git", "index")), index);
   assert.equal(
     await readFile(join(gitProject, "tracked.txt"), "utf8"),
