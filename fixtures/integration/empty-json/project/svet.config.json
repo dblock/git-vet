@@ -1,5 +1,5 @@
 {
   "files": { "plugin": "./inactive.mjs" },
-  "checks": ["@svet/check-git-index-lf"],
+  "checks": ["@svet/check-git-index-eol"],
   "profiles": { "empty": {} }
 }

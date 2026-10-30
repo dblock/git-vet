@@ -1,0 +1,8 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: files/glob (selected)
+Checks: file/eol (completed)
+skipped binary.png [file/eol]: The selected content snapshot is binary.
+lone-cr.txt:1: error [file/eol/eol]: Selected text contains CR line endings; expected LF. Convert the intended source to LF and run the check again.
+bad.txt:1: error [file/eol/eol]: Selected text contains CRLF line endings; expected LF. Convert the intended source to LF and run the check again.
+Selected 6; checked 5; findings 2; skipped 1; failed 0; unavailable 0.

@@ -1,2 +1,2 @@
 error [PLUGIN_EXECUTION_FAILED/GIT_NOT_FOUND] selection git/tracked-text: Git is required by the Git selector.
-error [CAPABILITY_UNAVAILABLE] check file/lf: Required capabilities unavailable: content.snapshot, content.text.
+error [CAPABILITY_UNAVAILABLE] check file/eol: Required capabilities unavailable: content.snapshot, content.text.

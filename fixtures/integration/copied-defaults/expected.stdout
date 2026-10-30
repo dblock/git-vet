@@ -1,5 +1,5 @@
 Configuration: svet.config.mjs
 Profile: (base)
 Files: git/tracked-text (selected)
-Checks: file/lf (completed)
+Checks: file/eol (completed)
 Selected 2; checked 2; findings 0; skipped 0; failed 0; unavailable 0.

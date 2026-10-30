@@ -1,8 +1,0 @@
-Configuration: svet.config.mjs
-Profile: (base)
-Files: files/glob (selected)
-Checks: file/lf (completed)
-skipped binary.png [file/lf]: The selected content snapshot is binary.
-bad.txt:1: error [file/lf/lf]: Selected text contains CRLF or CR line endings. Convert the intended source to LF and run the check again.
-lone-cr.txt:1: error [file/lf/lf]: Selected text contains CRLF or CR line endings. Convert the intended source to LF and run the check again.
-Selected 6; checked 5; findings 2; skipped 1; failed 0; unavailable 0.

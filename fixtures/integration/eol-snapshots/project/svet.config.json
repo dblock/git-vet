@@ -1,0 +1,7 @@
+{
+  "files": "@svet/files-git",
+  "checks": [
+    "@svet/check-git-index-eol",
+    "@svet/check-file-eol"
+  ]
+}

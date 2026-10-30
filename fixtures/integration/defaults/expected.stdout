@@ -1,6 +1,6 @@
 Configuration: (defaults)
 Profile: (base)
 Files: git/tracked-text (selected)
-Checks: file/lf (completed)
-bad.txt:1: error [file/lf/lf]: Selected text contains CRLF or CR line endings. Convert the intended source to LF and run the check again.
+Checks: file/eol (completed)
+bad.txt:1: error [file/eol/eol]: Selected text contains CRLF line endings; expected LF. Convert the intended source to LF and run the check again.
 Selected 2; checked 2; findings 1; skipped 0; failed 0; unavailable 0.

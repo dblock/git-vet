@@ -1,8 +1,8 @@
 # Configuration
 
-Without a user configuration, the CLI and `loadConfig()` use the ordinary, inspectable [shipped configuration](../defaults.mjs): select Git-tracked text with `@svet/files-git` and run `@svet/check-file-lf`. These plugins are declared runtime dependencies of Svet. No other checking plugins, profiles, or exclusions are enabled implicitly.
+Without a user configuration, the CLI and `loadConfig()` use the ordinary, inspectable [shipped configuration](../defaults.mjs): select Git-tracked text with `@svet/files-git` and run `@svet/check-file-eol`. These plugins are declared runtime dependencies of Svet. No other checking plugins, profiles, or exclusions are enabled implicitly.
 
-The default LF check reads captured working-tree contents, including unstaged edits, not Git index blobs. Git 2.31+ and a Git working tree are required by the default provider. A custom non-Git configuration replaces that provider and does not require Git.
+The default EOL check requires LF and reads captured working-tree contents, including unstaged edits, not Git index blobs. Git 2.31+ and a Git working tree are required by the default provider. A custom non-Git configuration replaces that provider and does not require Git.
 
 ## Discovery and Roots
 
@@ -20,7 +20,7 @@ The returned object contains `source: { kind: "file", path }` or `{ kind: "defau
 // svet.config.mjs
 export default {
   files: "@svet/files-git",
-  checks: ["@svet/check-file-lf"],
+  checks: ["@svet/check-file-eol"],
 };
 ```
 
@@ -30,16 +30,16 @@ For example, `svet.config.json` containing `{}` intentionally runs no plugins, e
 
 ## Files
 
-For LF checks on filesystem contents without Git, install `@svet/check-file-lf` beside your configuration and replace the default plan:
+For line-ending checks on filesystem contents without Git, install `@svet/check-file-eol` beside your configuration and replace the default plan:
 
 ```js
 export default {
   files: "**/*.txt",
-  checks: ["@svet/check-file-lf"],
+  checks: ["@svet/check-file-eol"],
 };
 ```
 
-The file check reads the selected provider snapshot, not live disk after selection. Filesystem and Git working-tree sources capture actual file contents; staged/index and revision providers retain their indexed or committed snapshots. The opt-in `@svet/check-git-index-lf` instead reads captured Git index blobs even when selection uses working-tree content.
+The file check reads the selected provider snapshot, not live disk after selection. Filesystem and Git working-tree sources capture actual file contents; staged/index and revision providers retain their indexed or committed snapshots. The opt-in `@svet/check-git-index-eol` instead reads captured Git index blobs even when selection uses working-tree content.
 
 `files` replaces the former `selectors` field; the old name is an error, not an alias. It accepts a single scoped plugin name, a glob string, a `{ plugin, options? }` object, or an ordered array of these:
 
@@ -66,7 +66,7 @@ Plugin objects name a `plugin` module and optional `options` object. Git scope, 
 export default {
   files: "**/*.txt",
   checks: [
-    "@svet/check-file-lf",
+    "@svet/check-file-eol",
     { plugin: "./tools/check.mjs", severity: "warning" },
   ],
 };
@@ -75,6 +75,19 @@ export default {
 Each string is equivalent to `{ plugin: string }`. Scoped and unscoped package names, local module paths, and file URLs all use the same module resolution; check strings are never interpreted as globs. Objects can override `severity` with `error` or `warning` and provide an `options` object. The array itself is required even for one check; omitted `checks` or `checks: []` activates none.
 
 The same shorthand works in ESM and JSON configuration, replacement profiles, embedded defaults, and programmatic plans. Unknown fields, empty module names, and malformed entries are errors rather than ignored options. Validating configuration shapes does not import referenced plugins or validate inactive plugins' own options.
+
+### Line Endings
+
+Both [`@svet/check-file-eol`](../plugins/checks/file-eol/README.md) and [`@svet/check-git-index-eol`](../plugins/checks/git-index-eol/README.md) require LF by default. Set `options.eol` to `"lf"`, `"cr"`, or `"crlf"` (`"cr-lf"` is an alias for `"crlf"`):
+
+```js
+export default {
+  files: "**/*.txt",
+  checks: [{ plugin: "@svet/check-file-eol", options: { eol: "crlf" } }],
+};
+```
+
+Each check requires every encountered ending to match that style. A CRLF pair is one ending, not a CR followed by an LF. Empty files and files without a final ending are allowed; trailing whitespace is not checked. Options are case-sensitive and invalid values are explicit plugin-option errors.
 
 ## Profiles and Overrides
 

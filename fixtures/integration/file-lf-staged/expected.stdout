@@ -1,6 +1,0 @@
-Configuration: svet.config.json
-Profile: (base)
-Files: git/tracked-text (selected)
-Checks: file/lf (completed)
-file.txt:1: error [file/lf/lf]: Selected text contains CRLF or CR line endings. Convert the intended source to LF and run the check again.
-Selected 2; checked 2; findings 1; skipped 0; failed 0; unavailable 0.

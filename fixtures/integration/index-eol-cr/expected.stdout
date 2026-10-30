@@ -1,0 +1,6 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: git/index-eol (completed)
+bad.txt:1: error [git/index-eol/eol]: Indexed text contains CRLF line endings; expected CR. Convert to CR and stage the intended changes manually.
+Selected 3; checked 3; findings 1; skipped 0; failed 0; unavailable 0.
