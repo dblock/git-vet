@@ -25,6 +25,7 @@
     "plugins/files/glob/README.md",
     "plugins/checks/git-index-eol/README.md",
     "plugins/checks/file-eol/README.md",
+    "plugins/checks/file-trailing-whitespace/README.md",
     "artwork",
     "CHANGELOG.md",
     "CONTRIBUTING.md",

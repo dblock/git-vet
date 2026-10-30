@@ -2,7 +2,7 @@
 
 The public library exports `loadConfig`, `resolveConfig`, `run`, `Error`, `PLUGIN_API_VERSION`, and contract validators from `svet`. The exported `Error(code, message, options?)` extends `globalThis.Error`, adding a diagnostic `code` while preserving native cause support. Plugins are ordinary ESM modules default-exporting an object; they do not need to import the driver or any private modules. A package name and a plugin's stable `id` are independent, so moving a plugin does not change diagnostic identities.
 
-The experimental [CLI and programmatic runner](running.md) use the ordinary [default plan](../defaults.mjs) when no user configuration exists, selecting the [Git selector](../plugins/files/git/README.md) and [file EOL check](../plugins/checks/file-eol/README.md). Custom configurations replace that plan completely. Additional checks remain separate implementation steps. Packages remain private and unpublished.
+The experimental [CLI and programmatic runner](running.md) use the ordinary [default plan](../defaults.mjs) when no user configuration exists, selecting the [Git selector](../plugins/files/git/README.md) and [file EOL check](../plugins/checks/file-eol/README.md). Custom configurations replace that plan completely. Additional checks remain separate implementation steps.
 
 ## Metadata and Compatibility
 

@@ -1,0 +1,6 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: file/trailing-whitespace (completed)
+file.txt:2: error [file/trailing-whitespace/trailing-whitespace]: Selected text contains trailing whitespace. Remove it from the intended source and run the check again.
+Selected 2; checked 2; findings 1; skipped 0; failed 0; unavailable 0.

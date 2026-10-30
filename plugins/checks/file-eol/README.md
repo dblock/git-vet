@@ -2,9 +2,9 @@
 
 `@svet/check-file-eol` is an independently packageable version-1 checking plugin with id `file/eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing `content.snapshot: true`, captured `candidate.read()` readers, and `content.text.isText(bytes)`. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
 
-The package is private and unpublished. Svet declares it as a runtime dependency and selects it in the ordinary shipped default plan. For custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
+Svet declares this package as a runtime dependency and selects it in the ordinary shipped default plan. For custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
 
-For the planned 0.1.0 release:
+Install it beside your configuration:
 
 ```sh
 npm install --save-dev @svet/check-file-eol@0.1.0
@@ -37,8 +37,6 @@ export default {
 | `"crlf"` or `"cr-lf"` | CRLF (`\r\n`), treated as one ending. |
 
 Values are case-sensitive. Unknown options and invalid values, including `null`, are errors. There is no automatic style detection or mixed-ending allowance.
-
-The package was renamed from `@svet/check-file-lf`; update dependencies and configuration references. Diagnostics now use `file/eol` and rule `eol` instead of `file/lf` and rule `lf`.
 
 ## What Is Checked
 

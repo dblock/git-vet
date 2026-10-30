@@ -1,6 +1,6 @@
 # Running Svet
 
-The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the file EOL check on captured working-tree contents, requiring LF by default. User configurations completely replace that plan and can select Git-independent local or installed plugins. Packages remain private and unpublished; see the [README usage example](../README.md#usage) for the intended 0.1.0 installation flow.
+The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the file EOL check on captured working-tree contents, requiring LF by default. User configurations completely replace that plan and can select Git-independent local or installed plugins. See the [README usage example](../README.md#usage) for installation.
 
 The default checking package is [`@svet/check-file-eol`](../plugins/checks/file-eol/README.md), with diagnostic id `file/eol`. It can run without Git when used with filesystem globs. The opt-in [`@svet/check-git-index-eol`](../plugins/checks/git-index-eol/README.md) checks captured indexed bytes, with diagnostic id `git/index-eol`.
 

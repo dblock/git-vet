@@ -2,7 +2,7 @@
 
 `@svet/files-glob` is an independently packageable version-1 selector with stable plugin id `files/glob`. It uses Node.js 22.18+ and the declared JavaScript dependency `picomatch`; it has no private driver imports, Git requirement, subprocesses, downloads, or runtime networking.
 
-The package is private and unpublished. It is a dependency of the driver so glob shorthand works after ordinary dependency restoration. Neither installing it nor mentioning it in an inactive profile activates it.
+The package is a dependency of the driver so glob shorthand works after ordinary dependency restoration. Neither installing it nor mentioning it in an inactive profile activates it.
 
 ```js
 export default {

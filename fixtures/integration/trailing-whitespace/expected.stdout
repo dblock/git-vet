@@ -1,0 +1,8 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: files/glob (selected)
+Checks: file/trailing-whitespace (completed)
+skipped binary.png [file/trailing-whitespace]: The selected content snapshot is binary.
+bad.txt:2: error [file/trailing-whitespace/trailing-whitespace]: Selected text contains trailing whitespace. Remove it from the intended source and run the check again.
+eof.txt:1: error [file/trailing-whitespace/trailing-whitespace]: Selected text contains trailing whitespace. Remove it from the intended source and run the check again.
+Selected 6; checked 5; findings 2; skipped 1; failed 0; unavailable 0.
