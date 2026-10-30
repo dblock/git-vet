@@ -15,7 +15,7 @@ import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
-import selector from "@git-vet/files-git";
+import selector from "@svet/files-git";
 import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
 
 const execute = promisify(execFile);
@@ -31,7 +31,7 @@ async function write(root, path, content) {
 
 async function repository(t) {
   const container = await realpath(
-    await mkdtemp(join(tmpdir(), "git-vet Git \u03bb ")),
+    await mkdtemp(join(tmpdir(), "svet Git \u03bb ")),
   );
   t.after(() => rm(container, { recursive: true, force: true }));
   const root = join(container, "repository");
@@ -40,8 +40,8 @@ async function repository(t) {
   await mkdir(hooks);
   await git(root, "init", "--initial-branch=main", "--template=");
   for (const [key, value] of Object.entries({
-    "user.name": "GitVet Test",
-    "user.email": "git-vet@example.invalid",
+    "user.name": "Svet Test",
+    "user.email": "svet@example.invalid",
     "commit.gpgsign": "false",
     "core.autocrlf": "false",
     "core.hooksPath": hooks,
@@ -252,9 +252,9 @@ test("staged selection preserves trusted Git environment settings and an alterna
     ...process.env,
     GIT_INDEX_FILE: alternate,
     GIT_CONFIG_GLOBAL: globalConfig,
-    GIT_EDITOR: "git-vet-editor-must-not-run",
-    GIT_PAGER: "git-vet-pager-must-not-run",
-    GIT_SSH_COMMAND: "git-vet-ssh-must-not-run",
+    GIT_EDITOR: "svet-editor-must-not-run",
+    GIT_PAGER: "svet-pager-must-not-run",
+    GIT_SSH_COMMAND: "svet-ssh-must-not-run",
   };
   await write(root, "file.txt", "alternate staged\n");
   await execute("git", ["-C", root, "add", "--", "file.txt"], {
@@ -290,7 +290,7 @@ test("staged selection preserves trusted Git environment settings and an alterna
 test("Git command failures without stderr are not mistaken for success", async (t) => {
   const root = await repository(t);
   const { git: command } = await import("../../../plugins/files/git/git.mjs");
-  const args = ["config", "--get", "git-vet.missing"];
+  const args = ["config", "--get", "svet.missing"];
   await assert.rejects(command(root, args), { code: "GIT_COMMAND_FAILED" });
   const result = await command(root, args, [0, 1]);
   assert.equal(result.code, 1);
@@ -534,7 +534,7 @@ test("missing Git, invalid options, incompatible input, and outside-repository i
   );
   const outside = dirname(root);
   await assert.rejects(select(outside), { code: "GIT_NOT_REPOSITORY" });
-  const configFile = join(outside, "git-vet.config.json");
+  const configFile = join(outside, "svet.config.json");
   await writeFile(
     configFile,
     JSON.stringify({
@@ -606,7 +606,7 @@ test("scoped Git shorthand composes with glob shortcuts while retaining full inv
     defaults: {
       directory: fileURLToPath(new URL("../../../", import.meta.url)),
       config: {
-        files: ["@git-vet/files-git", "*.txt"],
+        files: ["@svet/files-git", "*.txt"],
         checks: [
           {
             plugin: new URL(

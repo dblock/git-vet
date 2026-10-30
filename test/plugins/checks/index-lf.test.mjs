@@ -13,8 +13,8 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import check from "@git-vet/check-index-lf";
-import selector from "@git-vet/files-git";
+import check from "@svet/check-index-lf";
+import selector from "@svet/files-git";
 import { loadConfig, run } from "../../../src/index.mjs";
 
 const execute = promisify(execFile);
@@ -27,14 +27,14 @@ async function git(root, ...args) {
 
 async function repository(t) {
   const root = await realpath(
-    await mkdtemp(join(tmpdir(), "git-vet indexed LF \u03bb ")),
+    await mkdtemp(join(tmpdir(), "svet indexed LF \u03bb ")),
   );
   t.after(() => rm(root, { recursive: true, force: true }));
   await git(root, "init", "--initial-branch=main", "--template=");
   await mkdir(join(root, ".git", "empty-hooks"));
   for (const [key, value] of Object.entries({
-    "user.name": "GitVet Test",
-    "user.email": "git-vet@example.invalid",
+    "user.name": "Svet Test",
+    "user.email": "svet@example.invalid",
     "commit.gpgsign": "false",
     "core.autocrlf": "false",
     "core.hooksPath": join(root, ".git", "empty-hooks"),
@@ -52,8 +52,8 @@ async function inspect(root, options = {}) {
       defaults: {
         directory: moduleRoot,
         config: {
-          files: [{ plugin: "@git-vet/files-git", options }],
-          checks: [{ plugin: "@git-vet/check-index-lf" }],
+          files: [{ plugin: "@svet/files-git", options }],
+          checks: [{ plugin: "@svet/check-index-lf" }],
         },
       },
     }),
@@ -217,7 +217,7 @@ test("missing and revision-only index capabilities are unavailable rather than f
       root,
       defaults: {
         directory: moduleRoot,
-        config: { checks: [{ plugin: "@git-vet/check-index-lf" }] },
+        config: { checks: [{ plugin: "@svet/check-index-lf" }] },
       },
     }),
   );

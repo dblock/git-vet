@@ -6,7 +6,7 @@
   "configuration": {
     "source": {
       "kind": "file",
-      "path": "<project>/git-vet.config.json"
+      "path": "<project>/svet.config.json"
     },
     "root": "<project>",
     "profile": "empty"

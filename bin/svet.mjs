@@ -2,11 +2,11 @@
 import { readFile } from "node:fs/promises";
 import { relative, sep } from "node:path";
 import { parseArgs, stripVTControlCharacters } from "node:util";
-import { Error as GitVetError, loadConfig, run } from "../src/index.mjs";
+import { Error as SvetError, loadConfig, run } from "../src/index.mjs";
 
-const help = `Usage: git-vet [options]
+const help = `Usage: svet [options]
 
-Run the checks selected by git-vet.config.mjs or git-vet.config.json.
+Run the checks selected by svet.config.mjs or svet.config.json.
 
 Options:
   --config <file>       Use an explicit configuration file
@@ -103,7 +103,7 @@ try {
   });
   format = values.format;
   if (!["text", "json"].includes(format)) {
-    throw new GitVetError("INVALID_ARGUMENT", "--format must be text or json.");
+    throw new SvetError("INVALID_ARGUMENT", "--format must be text or json.");
   }
   if (values.help) {
     process.stdout.write(help);
@@ -137,7 +137,7 @@ try {
       : "CLI_FAILED";
   const message =
     code === "DEFAULT_CONFIG_UNAVAILABLE"
-      ? "No configuration found. Create git-vet.config.mjs or git-vet.config.json, or pass --config. Shipped defaults are not available yet."
+      ? "No configuration found. Create svet.config.mjs or svet.config.json, or pass --config. Shipped defaults are not available yet."
       : error instanceof globalThis.Error
         ? error.message
         : "Unexpected non-Error failure.";

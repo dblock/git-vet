@@ -1,12 +1,12 @@
 {
-  "files": "@git-vet/files-git",
-  "checks": [{ "plugin": "@git-vet/check-index-lf" }],
+  "files": "@svet/files-git",
+  "checks": [{ "plugin": "@svet/check-index-lf" }],
   "profiles": {
     "words": {
       "files": "*.txt",
       "checks": [
         {
-          "plugin": "git-vet-fixture-timestamps/check",
+          "plugin": "svet-fixture-timestamps/check",
           "severity": "warning"
         }
       ]

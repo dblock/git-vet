@@ -1,6 +1,6 @@
-Usage: git-vet [options]
+Usage: svet [options]
 
-Run the checks selected by git-vet.config.mjs or git-vet.config.json.
+Run the checks selected by svet.config.mjs or svet.config.json.
 
 Options:
   --config <file>       Use an explicit configuration file

@@ -1,9 +1,9 @@
 export default {
   files: {
-    plugin: "@git-vet/files-git",
+    plugin: "@svet/files-git",
     options: {
       exclude: ["fixtures/integration/**", "test/integration.test.mjs"],
     },
   },
-  checks: [{ plugin: "@git-vet/check-index-lf" }],
+  checks: [{ plugin: "@svet/check-index-lf" }],
 };

@@ -1,4 +1,4 @@
-Configuration: git-vet.config.json
+Configuration: svet.config.json
 Profile: (base)
 Files: files/glob (selected)
 Checks: fixture/word (completed)

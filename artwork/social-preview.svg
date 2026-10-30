@@ -6,8 +6,83 @@
   role="img"
   aria-labelledby="title"
 >
-  <title id="title">GitVet - Git and filesystem linter.</title>
+  <title id="title">Svet - Git and filesystem linter.</title>
   <defs>
+    <style>
+      @keyframes svet-toggle {
+        0%,
+        42%,
+        100% {
+          transform: translateY(0);
+        }
+        50%,
+        92% {
+          transform: translateY(12px);
+        }
+      }
+      @keyframes svet-light {
+        0%,
+        42%,
+        100% {
+          opacity: 1;
+        }
+        50%,
+        92% {
+          opacity: 0;
+        }
+      }
+      @keyframes svet-bulb {
+        0%,
+        42%,
+        100% {
+          fill: #ffe79b;
+        }
+        50%,
+        92% {
+          fill: #dde5dd;
+        }
+      }
+      .svet-toggle {
+        animation: svet-toggle 4s ease-in-out infinite;
+      }
+      .svet-light {
+        animation: svet-light 4s ease-in-out infinite;
+      }
+      .svet-bulb {
+        animation: svet-bulb 4s ease-in-out infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .svet-toggle,
+        .svet-light,
+        .svet-bulb {
+          animation: none;
+        }
+      }
+    </style>
+    <g
+      id="light-bulb"
+      stroke="#173D32"
+      stroke-width="4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <g class="svet-light">
+        <circle r="43" fill="#FFE79B" opacity=".25" stroke="none" />
+        <path
+          d="M0-48V-40M-33-34L-27-28M-46-3H-38M33-34L27-28M46-3H38"
+          fill="none"
+          stroke="#D3AC3B"
+        />
+      </g>
+      <path
+        class="svet-bulb"
+        d="M-21-9A21 21 0 1 1 21-9Q21 3 12 13L10 22H-10L-12 13Q-21 3-21-9Z"
+        fill="#FFE79B"
+      />
+      <path d="M-9 22H9V32H-9ZM-5 37H5" fill="#8ABB7B" />
+      <path d="M-6 15L-9-3L0 2L9-3L6 15" fill="none" stroke-width="3" />
+      <path d="M-12-17Q-9-23-3-24" fill="none" stroke="#FFF" stroke-width="3" />
+    </g>
     <g
       id="croc-head"
       stroke="#173D32"
@@ -76,6 +151,10 @@
         stroke-width="5"
       />
     </g>
+    <g id="croc-icon">
+      <use href="#croc-head" />
+      <use href="#light-bulb" transform="translate(184 -131) scale(.65)" />
+    </g>
     <g
       id="crocodile"
       stroke="#173D32"
@@ -127,43 +206,54 @@
         stroke-width="5"
       />
       <path d="M15 39L39 66L30 35Z" fill="#27824B" stroke-width="5" />
-      <rect x="-136" y="78" width="86" height="109" rx="10" fill="#F6FFE9" />
-      <rect
-        x="-112"
-        y="69"
-        width="39"
-        height="17"
-        rx="5"
-        fill="#27824B"
-        stroke-width="5"
-      />
-      <path
-        d="M-118 107H-68M-118 125H-83M-116 152L-105 163L-78 140"
-        fill="none"
-        stroke="#27824B"
-        stroke-width="5"
-      />
       <path d="M-67 58Q-105 69-100 116Q-88 132-71 116L-49 90" fill="#57BF72" />
-      <path d="M74 58Q117 66 117 106L92 123L61 91" fill="#57BF72" />
-      <path
-        d="M140 123L172 156"
-        fill="none"
-        stroke="#27824B"
-        stroke-width="16"
-      />
-      <circle cx="118" cy="99" r="37" fill="#D6F8DC" fill-opacity=".92" />
-      <path
-        d="M101 99L112 110L137 84"
-        fill="none"
-        stroke="#27824B"
-        stroke-width="7"
-      />
-      <path
-        d="M101 76Q113 68 125 73"
-        fill="none"
-        stroke="#FFF"
+      <path d="M-88 103L-76 108M-90 112L-79 116" fill="none" stroke-width="3" />
+      <path d="M203 27V-76" fill="none" stroke="#27824B" stroke-width="4" />
+      <use href="#light-bulb" transform="translate(203 -115)" />
+      <rect
+        x="169"
+        y="27"
+        width="68"
+        height="112"
+        rx="10"
+        fill="#F6FFE9"
         stroke-width="5"
       />
+      <circle cx="203" cy="38" r="2" fill="#173D32" stroke="none" />
+      <circle cx="203" cy="128" r="2" fill="#173D32" stroke="none" />
+      <rect
+        x="187"
+        y="55"
+        width="32"
+        height="60"
+        rx="6"
+        fill="#C5E6AE"
+        stroke-width="3"
+      />
+      <g class="svet-toggle">
+        <rect
+          x="192"
+          y="60"
+          width="22"
+          height="36"
+          rx="4"
+          fill="#FFF"
+          stroke-width="3"
+        />
+        <path d="M198 69H208" fill="none" stroke="#27824B" stroke-width="3" />
+      </g>
+      <path
+        d="M74 58Q107 54 135 83L181 85L184 108L126 108L93 123L61 91"
+        fill="#57BF72"
+      />
+      <g class="svet-toggle">
+        <path
+          d="M174 86Q184 76 196 80L207 83Q216 87 210 94L203 98Q213 102 204 110L184 111Q172 106 174 86Z"
+          fill="#57BF72"
+          stroke-width="5"
+        />
+        <path d="M190 92L203 96M186 101L199 105" fill="none" stroke-width="3" />
+      </g>
       <use href="#croc-head" />
     </g>
   </defs>
@@ -179,7 +269,7 @@
     font-weight="700"
     fill="#173D32"
   >
-    GitVet
+    Svet
   </text>
   <text
     x="630"

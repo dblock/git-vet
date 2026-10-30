@@ -40,7 +40,7 @@ async function snapshot(root, prefix = "") {
 
 export async function createConsumer(t) {
   const root = await realpath(
-    await mkdtemp(join(tmpdir(), "git-vet integration \u03bb ")),
+    await mkdtemp(join(tmpdir(), "svet integration \u03bb ")),
   );
   t.after(() => rm(root, { recursive: true, force: true }));
   const packed = join(root, "packed");
@@ -102,13 +102,13 @@ export async function createConsumer(t) {
     ],
     consumer,
   );
-  const executable = join(consumer, "node_modules", ".bin", "git-vet");
+  const executable = join(consumer, "node_modules", ".bin", "svet");
   await access(executable);
-  const packageRoot = join(consumer, "node_modules", "git-vet");
+  const packageRoot = join(consumer, "node_modules", "svet");
   const manifest = JSON.parse(
     await readFile(join(packageRoot, "package.json"), "utf8"),
   );
-  const entry = join(packageRoot, manifest.bin["git-vet"]);
+  const entry = join(packageRoot, manifest.bin["svet"]);
   const offline = join(consumer, "offline.mjs");
   await cp(new URL("offline.mjs", import.meta.url), offline);
   const gitConfig = join(root, "empty-git-config");
@@ -180,9 +180,9 @@ export async function createConsumer(t) {
           command.every((arg) => typeof arg === "string"),
       );
       assert.ok(
-        command[0] === "git-vet" ||
-          (command[0] === "git" && command[1] === "vet"),
-        "Fixtures must invoke git-vet or git vet.",
+        command[0] === "svet" ||
+          (command[0] === "git" && command[1] === "svet"),
+        "Fixtures must invoke svet or git svet.",
       );
       const before = await snapshot(directory);
       const [program, args] =

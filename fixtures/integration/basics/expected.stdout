@@ -1,4 +1,4 @@
-Configuration: git-vet.config.json
+Configuration: svet.config.json
 Profile: (base)
 Files: git/tracked-text (selected)
 Checks: git/index-lf (completed)

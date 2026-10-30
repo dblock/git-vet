@@ -1,3 +1,0 @@
-{
-  "checks": [{ "plugin": "@git-vet/check-index-lf" }]
-}

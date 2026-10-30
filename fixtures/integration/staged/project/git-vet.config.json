@@ -1,7 +1,0 @@
-{
-  "files": {
-    "plugin": "@git-vet/files-git",
-    "options": { "mode": "staged" }
-  },
-  "checks": [{ "plugin": "@git-vet/check-index-lf" }]
-}

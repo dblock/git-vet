@@ -1,17 +1,17 @@
 # Git Selection Plugin
 
-`@git-vet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
+`@svet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
 
 The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependencies, including `simple-git` for Git process execution, its public `@simple-git/argv-parser` environment parser, and `picomatch` for exclusions. `simple-git` wraps the installed Git executable; it does not replace Git or download it. The provider is not automatically selected by core or a shipped default configuration.
 
 ```js
 export default {
-  files: "@git-vet/files-git",
-  checks: [{ plugin: "@git-vet/check-index-lf" }],
+  files: "@svet/files-git",
+  checks: [{ plugin: "@svet/check-index-lf" }],
 };
 ```
 
-In another installation, restore the provider and [indexed LF check](../../checks/index-lf/README.md) packages alongside GitVet through the package manager before execution. The driver never discovers or installs them automatically. This provider only selects files; it does not implicitly activate the example's check.
+In another installation, restore the provider and [indexed LF check](../../checks/index-lf/README.md) packages alongside Svet through the package manager before execution. The driver never discovers or installs them automatically. This provider only selects files; it does not implicitly activate the example's check.
 
 ## Selection and Snapshots
 
@@ -34,8 +34,8 @@ Use an explicit plugin object when selecting a scope or other options:
 
 ```js
 export default {
-  files: [{ plugin: "@git-vet/files-git", options: { mode: "staged" } }],
-  checks: [{ plugin: "@git-vet/check-index-lf" }],
+  files: [{ plugin: "@svet/files-git", options: { mode: "staged" } }],
+  checks: [{ plugin: "@svet/check-index-lf" }],
 };
 ```
 

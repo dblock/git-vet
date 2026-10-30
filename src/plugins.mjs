@@ -10,7 +10,7 @@ export async function loadPlugin(entry, kind, moduleRoot) {
     : entry.plugin;
   const url = resolve(
     specifier,
-    pathToFileURL(join(moduleRoot, "__git_vet_resolver__.mjs")).href,
+    pathToFileURL(join(moduleRoot, "__svet_resolver__.mjs")).href,
   );
   invariant(
     new URL(url).protocol === "file:",
