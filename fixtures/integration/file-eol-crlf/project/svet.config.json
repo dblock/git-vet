@@ -1,0 +1,6 @@
+{
+  "files": "*.txt",
+  "checks": [
+    { "plugin": "@svet/check-file-eol", "options": { "eol": "cr-lf" } }
+  ]
+}

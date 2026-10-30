@@ -7,11 +7,11 @@ The package is currently private and unpublished. It is an npm workspace in this
 ```js
 export default {
   files: "@svet/files-git",
-  checks: ["@svet/check-file-lf"],
+  checks: ["@svet/check-file-eol"],
 };
 ```
 
-Svet's declared dependencies include the provider and [file LF check](../../checks/file-lf/README.md) for default runs. For custom configurations, restore the referenced plugin packages where they resolve beside your configuration. The driver never discovers or installs plugins on demand. This provider only selects files; it does not implicitly activate the example's check.
+Svet's declared dependencies include the provider and [file EOL check](../../checks/file-eol/README.md) for default runs. For custom configurations, restore the referenced plugin packages where they resolve beside your configuration. The driver never discovers or installs plugins on demand. This provider only selects files; it does not implicitly activate the example's check.
 
 ## Selection and Snapshots
 
@@ -35,7 +35,7 @@ Use an explicit plugin object when selecting a scope or other options:
 ```js
 export default {
   files: [{ plugin: "@svet/files-git", options: { mode: "staged" } }],
-  checks: ["@svet/check-git-index-lf"],
+  checks: ["@svet/check-git-index-eol"],
 };
 ```
 

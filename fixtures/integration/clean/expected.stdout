@@ -1,5 +1,5 @@
 Configuration: svet.config.json
 Profile: (base)
 Files: git/tracked-text (selected)
-Checks: git/index-lf (completed)
+Checks: git/index-eol (completed)
 Selected 2; checked 2; findings 0; skipped 0; failed 0; unavailable 0.

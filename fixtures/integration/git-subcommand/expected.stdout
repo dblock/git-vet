@@ -1,5 +1,5 @@
 Configuration: (defaults)
 Profile: (base)
 Files: git/tracked-text (selected)
-Checks: file/lf (completed)
+Checks: file/eol (completed)
 Selected 1; checked 1; findings 0; skipped 0; failed 0; unavailable 0.

@@ -73,12 +73,12 @@ test("profiles replace the complete base plan, including intentionally empty pro
 
 test("checks accepts mixed module strings and configured objects in base and profile plans", () => {
   const checks = [
-    "@svet/check-file-lf",
+    "@svet/check-file-eol",
     "unscoped-check",
     "./tools/check.mjs",
     new URL("../fixtures/file-check.mjs", import.meta.url).href,
     {
-      plugin: "@svet/check-git-index-lf",
+      plugin: "@svet/check-git-index-eol",
       options: { example: true },
       severity: "warning",
     },
@@ -96,7 +96,7 @@ test("checks accepts mixed module strings and configured objects in base and pro
     expected,
   );
   assert.deepEqual(resolveConfig({ checks: expected }).checks, expected);
-  assert.equal(document.checks[0], "@svet/check-file-lf");
+  assert.equal(document.checks[0], "@svet/check-file-eol");
 });
 
 test("files accepts scoped plugin and glob shortcuts, single objects, and ordered mixed pipelines", () => {

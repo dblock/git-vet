@@ -1,0 +1,7 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: files/glob (selected)
+Checks: file/eol (completed)
+cr.txt:1: error [file/eol/eol]: Selected text contains CR line endings; expected CRLF. Convert the intended source to CRLF and run the check again.
+mixed.txt:3: error [file/eol/eol]: Selected text contains LF line endings; expected CRLF. Convert the intended source to CRLF and run the check again.
+Selected 3; checked 3; findings 2; skipped 0; failed 0; unavailable 0.

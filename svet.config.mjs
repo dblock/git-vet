@@ -5,5 +5,5 @@ export default {
       exclude: ["fixtures/integration/**", "test/integration.test.mjs"],
     },
   },
-  checks: ["@svet/check-git-index-lf"],
+  checks: ["@svet/check-git-index-eol"],
 };
