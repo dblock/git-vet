@@ -1,0 +1,4 @@
+{
+  "command": ["git-vet"],
+  "git": true
+}

@@ -1,7 +1,33 @@
-# Test Plugins
+# Test Fixtures
 
 These are test fixtures, not GitVet's shipped providers or default checks. They use the public version-1 contract without private driver imports.
 
 The memory source, recent-file filter, and file/project checks exercise orchestration and snapshot preservation. The separate `timestamp-package` is packed and installed alongside the packed driver during `npm test`. Its import-only package exports exercise ESM package resolution from a configuration directory different from the project root.
 
-The package integration restores dependencies from local archives offline into an empty npm cache, blocks socket connections and `fetch`, and verifies that selected files' contents and modification times remain unchanged. Timestamp selection runs with an empty executable search path even when the real Git provider is installed but unselected. A second run selects the packed Git provider and checks actual staged blobs against different working-tree bytes. The timestamp fixture captures bytes during selection and retains the full inventory when selecting only recent files.
+## CLI Acceptance Projects
+
+The [integration suite](../test/integration.test.mjs) discovers checked-in directories such as [basics](integration/basics). Each contains:
+
+```text
+basics/
+  command.json
+  expected.stdout
+  expected.stderr
+  expected.exit-code
+  project/
+    git-vet.config.json
+    good.txt
+    bad.txt
+```
+
+`command.json` specifies a string-array `command` invoking `git-vet` or `git vet`. Optional `git: true` initializes a real repository and stages the project; `withoutGit: true` removes Git from the runtime `PATH` for non-Git workflows. An optional `index/` tree overlays files before staging, then `project/` restores their working-tree contents. Keep overlay files present in both trees. The `staged` case demonstrates indexed CRLF content with a clean working-tree copy.
+
+The [consumer harness](integration.mjs) packs and installs the complete production dependency graph once, offline into an initially empty npm cache. It copies each project to a fresh temporary directory containing spaces and Unicode, then executes the installed CLI, never `loadConfig()` or `run()` from a test wrapper. Windows launches the installed bin entry through Node; the separate `git vet` case verifies native Git dispatch. A [preload](offline.mjs) blocks socket connections and `fetch` during CLI execution.
+
+Expected files are reviewed fixtures, not generated from the implementation. Empty streams use zero-byte files; exit codes contain `0`, `1`, or `2` and a final newline. Text streams compare exactly. JSON stdout compares parsed objects, retaining all semantic fields and replacing temporary project paths with `<project>`; path separators are normalized only in those absolute paths.
+
+Cases cover LF findings and clean runs, staged versus working-tree content, non-Git installed plugins, replacement profiles, explicit config/root/profile flags, empty JSON output, configuration errors in both formats, unavailable capabilities, native `git vet`, help/version without configuration, and argument errors. Existing component tests retain detailed provider and contract edge-case coverage.
+
+The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies.
+
+Run these projects with `npm test -- test/integration.test.mjs`. Add a new fixture directory to add a user workflow; do not generate its source files or expected diagnostics in test code. Intentional CRLF bytes are preserved by `.gitattributes`. Integration projects are excluded from ESLint, Prettier, and the repository's own GitVet check.

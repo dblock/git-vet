@@ -29,6 +29,8 @@
 - Keep Markdown paragraphs on one source line. Use LF line endings and preserve intended formatting through the project configuration.
 - Lead configuration examples with `files` plugin-name or glob shorthand. Reserve expanded file plugin/options examples for advanced configuration sections.
 - Add focused tests for introduced behavior, including external plugins, unselected-plugin non-loading, configuration replacement, capability mismatches, and non-Git operation where relevant.
+- Add user-visible acceptance workflows as checked-in projects under `fixtures/integration/<case>/project`, with `command.json`, `expected.stdout`, `expected.stderr`, and `expected.exit-code`. Run the actual installed CLI through `test/integration.test.mjs`, not an API wrapper or test-generated projects. Share the offline installation, isolate each project, and preserve read-only assertions. Keep focused component coverage alongside CLI acceptance tests.
+- Run this repository's indexed LF check with `npm run check`; exclude integration fixture and test paths in `git-vet.config.mjs`. Preserve intentional fixture bytes with `.gitattributes` and keep fixture projects out of formatting/linting.
 - Test actual staged/revision snapshots and packaged execution when implementing those features. Do not replace these with working-tree or source-checkout proxies.
 - Run `npm run lint` and the relevant tests immediately before committing. Do not add tests solely for constants or trivial accessors.
 - Keep original artwork sources and document how generated assets are reproduced. Artwork tooling must not become a prerequisite of ordinary CLI execution.

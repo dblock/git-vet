@@ -1,0 +1,14 @@
+Usage: git-vet [options]
+
+Run the checks selected by git-vet.config.mjs or git-vet.config.json.
+
+Options:
+  --config <file>       Use an explicit configuration file
+  --root <directory>    Override the project root
+  --profile <name>      Select a replacement configuration profile
+  --format <text|json>  Output format (default: text)
+  -h, --help           Show this help
+  -v, --version        Show the version
+
+Exit codes: 0 completed or intentionally empty; 1 findings; 2 errors.
+No shipped default configuration is available yet.

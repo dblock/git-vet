@@ -1,0 +1,1 @@
+error [CAPABILITY_UNAVAILABLE] check git/index-lf: Required capabilities unavailable: content.text, git.index.

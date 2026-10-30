@@ -6,7 +6,7 @@ Git and filesystem linter.
 
 ## Status
 
-This repository contains an experimental [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), [programmatic runner](docs/running.md), optional [Git file provider](plugins/files/git/README.md), [glob file selector](plugins/files/glob/README.md), and [indexed LF check](plugins/checks/index-lf/README.md). Shipped defaults, additional checking plugins, and the CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No CLI checking command is available yet.
+This repository contains an experimental [CLI and programmatic runner](docs/running.md), [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), optional [Git file provider](plugins/files/git/README.md), [glob file selector](plugins/files/glob/README.md), and [indexed LF check](plugins/checks/index-lf/README.md). Packages remain private and unpublished. Shipped defaults and additional checking plugins remain under development in the [project issues](https://github.com/dblock/git-vet/issues); running without configuration is an explicit error.
 
 See the [changelog](CHANGELOG.md) for implemented features.
 
@@ -26,7 +26,10 @@ Requires Node.js 22.18 or later.
 npm ci
 npm run lint
 npm test
+npm run check
 ```
+
+`npm run check` runs GitVet on this repository's indexed text, excluding integration fixture and test paths. The [CLI acceptance suite](fixtures/README.md) runs checked-in fixture projects through the installed command and compares output and exit codes.
 
 See [AGENTS.md](AGENTS.md) for contributor instructions.
 

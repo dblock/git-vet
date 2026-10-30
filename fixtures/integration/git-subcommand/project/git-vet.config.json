@@ -1,0 +1,4 @@
+{
+  "files": "@git-vet/files-git",
+  "checks": [{ "plugin": "@git-vet/check-index-lf" }]
+}

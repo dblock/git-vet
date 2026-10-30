@@ -1,6 +1,6 @@
 # Configuration (Foundation)
 
-The library supports replacement-only configuration; no CLI or shipped Git/check defaults are available yet. `loadConfig` accepts an explicit `defaults: { config, directory }` document for embedding and tests. Without a discovered file or this document, it raises `DEFAULT_CONFIG_UNAVAILABLE` rather than manufacturing an empty successful default run. Shipped inspectable defaults will be wired in after basic checks exist; the optional Git provider alone does not activate default behavior.
+The CLI and library support replacement-only configuration; no shipped Git/check defaults are available yet. `loadConfig` accepts an explicit `defaults: { config, directory }` document for embedding and tests. Without a discovered file or this document, it raises `DEFAULT_CONFIG_UNAVAILABLE` rather than manufacturing an empty successful default run. The CLI requires a configuration file; the optional Git provider alone does not activate default behavior.
 
 ## Discovery and Roots
 
@@ -47,7 +47,7 @@ Plugin objects name a `plugin` module and optional `options` object. Checks rema
 
 First choose the entire user or default document; then select `profile`, if requested, exclusively from that document. A profile completely replaces the base `files` and `checks`, not merges them. An empty profile stays empty. An unknown profile is an error, including when that name exists only in omitted defaults.
 
-`resolveConfig(document, { profile? })` performs this shape/profile resolution without filesystem access. The loader's explicit root/file/profile parameters are the current override boundary. There is intentionally no arbitrary plugin-merging override: a future CLI must modify only the effective plan and must not resurrect omitted defaults.
+`resolveConfig(document, { profile? })` performs this shape/profile resolution without filesystem access. The CLI exposes the loader's explicit parameters as `--root`, `--config`, and `--profile`. There is intentionally no arbitrary plugin-merging override, and omitted defaults are never resurrected.
 
 All configuration is trusted executable JavaScript. Keep untrusted repository code out of the invoking process; this library does not sandbox configuration or plugins.
 
