@@ -17,18 +17,18 @@ test("custom and empty configurations replace every supplied default", async (t)
   const defaults = {
     directory: cwd,
     config: {
-      selectors: [{ plugin: "uninstalled-default-selector" }],
+      files: [{ plugin: "uninstalled-default-selector" }],
       checks: [{ plugin: "uninstalled-default-check" }],
       profiles: { inherited: { checks: [{ plugin: "uninstalled-profile" }] } },
     },
   };
   const shipped = await loadConfig({ cwd, defaults });
   assert.equal(shipped.source.kind, "defaults");
-  assert.equal(shipped.selectors[0].plugin, "uninstalled-default-selector");
+  assert.equal(shipped.files[0].plugin, "uninstalled-default-selector");
 
   await writeFile(configFile, '{"checks":[{"plugin":"custom-check"}]}');
   const custom = await loadConfig({ cwd, defaults, configFile });
-  assert.deepEqual(custom.selectors, []);
+  assert.deepEqual(custom.files, []);
   assert.deepEqual(custom.checks, [{ plugin: "custom-check", options: {} }]);
   assert.equal(custom.source.kind, "file");
   await assert.rejects(
@@ -38,13 +38,13 @@ test("custom and empty configurations replace every supplied default", async (t)
 
   await writeFile(configFile, "{}");
   const empty = await loadConfig({ cwd, defaults, configFile });
-  assert.deepEqual(empty.selectors, []);
+  assert.deepEqual(empty.files, []);
   assert.deepEqual(empty.checks, []);
 });
 
 test("profiles replace the complete base plan, including intentionally empty profiles", () => {
   const config = {
-    selectors: [{ plugin: "base-selector" }],
+    files: [{ plugin: "base-selector" }],
     checks: [{ plugin: "base-check" }],
     profiles: {
       independent: { checks: [{ plugin: "profile-check" }] },
@@ -53,12 +53,12 @@ test("profiles replace the complete base plan, including intentionally empty pro
   };
   assert.deepEqual(resolveConfig(config, { profile: "independent" }), {
     profile: "independent",
-    selectors: [],
+    files: [],
     checks: [{ plugin: "profile-check", options: {} }],
   });
   assert.deepEqual(resolveConfig(config, { profile: "empty" }), {
     profile: "empty",
-    selectors: [],
+    files: [],
     checks: [],
   });
   for (const profile of ["missing", "constructor", "", null]) {
@@ -66,6 +66,37 @@ test("profiles replace the complete base plan, including intentionally empty pro
       code: "INVALID_CONFIG",
     });
   }
+});
+
+test("files accepts scoped plugin and glob shortcuts, single objects, and ordered mixed pipelines", () => {
+  const git = { plugin: "@git-vet/files-git", options: {} };
+  assert.deepEqual(resolveConfig({ files: "@git-vet/files-git" }).files, [git]);
+  assert.deepEqual(resolveConfig({ files: "**/*.js" }).files, ["**/*.js"]);
+  const object = { plugin: "./source.mjs", options: { recent: true } };
+  assert.deepEqual(resolveConfig({ files: object }).files, [object]);
+  const plan = resolveConfig({
+    files: ["@git-vet/files-git", "**/*.{js,ts}", "!vendor/**", object],
+    profiles: { js: { files: "**/*.js" }, empty: {} },
+  });
+  assert.deepEqual(plan.files, [git, "**/*.{js,ts}", "!vendor/**", object]);
+  assert.deepEqual(
+    resolveConfig({ files: plan.files, checks: plan.checks }),
+    plan,
+  );
+  assert.deepEqual(
+    resolveConfig(
+      { files: "@git-vet/files-git", profiles: { js: { files: "*.js" } } },
+      { profile: "js" },
+    ).files,
+    ["*.js"],
+  );
+  assert.deepEqual(
+    resolveConfig(
+      { files: "@git-vet/files-git", profiles: { empty: {} } },
+      { profile: "empty" },
+    ).files,
+    [],
+  );
 });
 
 test("discovery finds the nearest config without consulting Git and resolves modules beside it", async (t) => {
@@ -144,12 +175,18 @@ test("strict configuration shapes reject accidental inheritance and malformed en
     [],
     new Map(),
     { extends: "defaults" },
-    { selectors: null },
+    { selectors: [] },
+    { files: null },
+    { files: "" },
+    { files: ["   "] },
+    { files: [42] },
+    { files: [["*.js"]] },
+    { files: { glob: "*.js" } },
     { checks: ["a-package"] },
     { checks: [{ plugin: "" }] },
     { checks: [{ plugin: "check", options: [] }] },
     { checks: [{ plugin: "check", severity: "off" }] },
-    { selectors: [{ plugin: "select", severity: "error" }] },
+    { files: [{ plugin: "select", severity: "error" }] },
     { profiles: null },
     { profiles: { nested: { profiles: {} } } },
   ]) {

@@ -34,7 +34,7 @@ test("async checks retain findings and independent results after a snapshot read
   const root = await workspace(t);
   await writeFile(join(root, "a.txt"), "working tree must not be read");
   const config = await configure(root, {
-    selectors: [{ ...source, options: { unreadable: ["a.txt"] } }],
+    files: [{ ...source, options: { unreadable: ["a.txt"] } }],
     checks: [{ ...file, severity: "error" }, project],
   });
   const result = await run(config);
@@ -81,7 +81,7 @@ test("inactive/default/installed plugins are not imported, including empty profi
     {
       checks: [{ plugin: "installed-trap" }],
       profiles: {
-        active: { selectors: [source], checks: [project] },
+        active: { files: [source], checks: [project] },
         unused: { checks: [{ plugin: "./inactive.mjs" }] },
         empty: {},
       },
@@ -95,7 +95,7 @@ test("inactive/default/installed plugins are not imported, including empty profi
     await configure(
       root,
       {
-        selectors: [{ plugin: "./inactive.mjs" }],
+        files: [{ plugin: "./inactive.mjs" }],
         checks: [{ plugin: "installed-trap" }],
         profiles: { empty: {} },
       },
@@ -125,7 +125,7 @@ test("missing and incompatible plugins and invalid async options fail without lo
   `,
   );
   const config = await configure(root, {
-    selectors: [source],
+    files: [source],
     checks: [
       { plugin: "not-installed-git-vet-check" },
       { plugin: incompatible },
@@ -168,7 +168,7 @@ test("missing capabilities never invoke a check or implicitly supply Git", async
   );
   const result = await run(
     await configure(root, {
-      selectors: [source],
+      files: [source],
       checks: [{ plugin }, project],
     }),
   );
@@ -200,7 +200,7 @@ test("ordered filters retain snapshots, full inventory, and earlier provenance",
   );
   const result = await run(
     await configure(root, {
-      selectors: [
+      files: [
         {
           ...source,
           options: {
@@ -244,7 +244,7 @@ test("filters cannot change candidate identity, replace capabilities, or discove
     );
     const result = await run(
       await configure(root, {
-        selectors: [source, { plugin }],
+        files: [source, { plugin }],
         checks: [project],
       }),
     );
@@ -265,7 +265,7 @@ test("a failed selector stops later stage imports but preserves independent proj
   );
   const result = await run(
     await configure(root, {
-      selectors: [{ plugin: failure }, { plugin: "missing-later-stage" }],
+      files: [{ plugin: failure }, { plugin: "missing-later-stage" }],
       checks: [file, project],
     }),
   );
@@ -304,7 +304,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
 
   const none = await run(
     await configure(root, {
-      selectors: [{ ...source, options: { paths: [] } }],
+      files: [{ ...source, options: { paths: [] } }],
       checks: [file],
     }),
   );
@@ -313,7 +313,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
 
   const skipped = await run(
     await configure(root, {
-      selectors: [source],
+      files: [source],
       checks: [{ ...file, options: { skip: true } }],
     }),
   );
@@ -341,7 +341,7 @@ test("invalid results fail per invocation, and duplicate ids from distinct modul
   const root = await workspace(t);
   const invalid = await run(
     await configure(root, {
-      selectors: [source],
+      files: [source],
       checks: [{ ...file, options: { invalidResult: true } }, project],
     }),
   );
@@ -367,9 +367,7 @@ test("invalid results fail per invocation, and duplicate ids from distinct modul
 test("reports are deterministic JSON data, not options, bytes, readers, or arbitrary plugin fields", async (t) => {
   const root = await workspace(t);
   const config = (paths) => ({
-    selectors: [
-      { ...source, options: { paths, content: "private source bytes" } },
-    ],
+    files: [{ ...source, options: { paths, content: "private source bytes" } }],
     checks: [file],
   });
   const first = await run(await configure(root, config(["b.txt", "a.txt"])));

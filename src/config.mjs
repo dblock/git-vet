@@ -51,10 +51,24 @@ function entries(value, kind) {
   });
 }
 
+function files(value) {
+  const stages =
+    value === undefined ? [] : Array.isArray(value) ? value : [value];
+  return stages.map((entry) => {
+    if (typeof entry !== "string") {
+      return entries([entry], "files")[0];
+    }
+    assert(entry.trim().length > 0, "Files entries must not be empty.");
+    return /^@[a-z0-9._-]+\/[a-z0-9._-]+(?:\/[a-zA-Z0-9._/-]+)?$/.test(entry)
+      ? { plugin: entry, options: {} }
+      : entry;
+  });
+}
+
 export function resolveConfig(document, { profile } = {}) {
-  keys(document, ["selectors", "checks", "profiles"], "configuration");
+  keys(document, ["files", "checks", "profiles"], "configuration");
   const base = {
-    selectors: entries(document.selectors, "selectors"),
+    files: files(document.files),
     checks: entries(document.checks, "checks"),
   };
   const profiles = document.profiles === undefined ? {} : document.profiles;
@@ -62,9 +76,9 @@ export function resolveConfig(document, { profile } = {}) {
   const plans = new Map();
   for (const [name, plan] of Object.entries(profiles)) {
     assert(name.length > 0, "Profile names must not be empty.");
-    keys(plan, ["selectors", "checks"], `profile ${name}`);
+    keys(plan, ["files", "checks"], `profile ${name}`);
     plans.set(name, {
-      selectors: entries(plan.selectors, "selectors"),
+      files: files(plan.files),
       checks: entries(plan.checks, "checks"),
     });
   }

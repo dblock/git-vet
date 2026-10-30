@@ -6,7 +6,9 @@
 - Keep generic core limited to configuration, public plugin contracts, orchestration, and reporting. Do not query Git or assume Git, text files, or a particular filesystem provider in generic core.
 - Make providers and checks independently packageable through public interfaces. Do not import private driver modules from plugins or give shipped plugins privileged interfaces.
 - Load only plugins selected by the effective configuration. Do not statically import concrete plugins, discover installed plugins, or initialize inactive profiles.
-- User configuration completely replaces shipped defaults. Empty and partial configurations must not restore omitted selectors, checks, profiles, options, or exclusions.
+- User configuration completely replaces shipped defaults. Empty and partial configurations must not restore omitted `files` stages, checks, profiles, options, or exclusions.
+- Configure selection through `files`, not `selectors`. A glob is only shorthand for the public `@git-vet/files-glob` selector; keep discovery and matching in that plugin, not core. Ordered stages narrow candidates and preserve their snapshots and capabilities.
+- Place file selector packages under `plugins/files/<name>` and their tests under `test/plugins/files/<name>.test.mjs`.
 - Providers own candidate identity, snapshots, metadata, optional capabilities, and selection provenance. Checks must declare their requirements and explicitly report incompatibility.
 - Preserve full-inventory context when narrowing selected files. Do not confuse changed files with newly introduced findings.
 - Keep the initial selector contract open to later composition without prematurely implementing unrequested providers or pipeline operators.
