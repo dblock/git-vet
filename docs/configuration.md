@@ -4,7 +4,7 @@ The CLI and library support replacement-only configuration; no shipped Git/check
 
 ## Discovery and Roots
 
-`await loadConfig({ cwd?, root?, configFile?, profile?, defaults? })` searches for `git-vet.config.mjs` or `git-vet.config.json`. Starting at `cwd` (default: the process working directory), it uses the nearest ancestor containing one of these files and stops at the filesystem root. Finding both names in the same directory is an error.
+`await loadConfig({ cwd?, root?, configFile?, profile?, defaults? })` searches for `svet.config.mjs` or `svet.config.json`. Starting at `cwd` (default: the process working directory), it uses the nearest ancestor containing one of these files and stops at the filesystem root. Finding both names in the same directory is an error.
 
 An explicit `configFile` is resolved relative to `cwd` and bypasses discovery. Missing, unreadable, malformed, unsupported-extension, and incorrectly exported files are errors; they never fall back to defaults. ESM configuration must default-export an object. Imported ESM configuration follows Node's normal process-wide module caching.
 
@@ -15,10 +15,10 @@ The returned object contains `source: { kind: "file", path }` or `{ kind: "defau
 ## Complete Replacement
 
 ```js
-// git-vet.config.mjs
+// svet.config.mjs
 export default {
-  files: "@git-vet/files-git",
-  checks: [{ plugin: "@git-vet/check-index-lf" }],
+  files: "@svet/files-git",
+  checks: [{ plugin: "@svet/check-index-lf" }],
 };
 ```
 
@@ -30,14 +30,14 @@ A user file completely replaces the supplied defaults, including profiles and al
 
 ```js
 export default {
-  files: ["@git-vet/files-git", "**/*.{js,ts}", "!vendor/**"],
+  files: ["@svet/files-git", "**/*.{js,ts}", "!vendor/**"],
   checks: [{ plugin: "./tools/check.mjs" }],
 };
 ```
 
-`files: "@git-vet/files-git"` selects the separately installed Git provider. Scoped package names (and scoped package subpaths) without glob syntax support string shorthand. For plugin-specific options, bare/unscoped package names, local modules, and module URLs, see [Advanced configuration](#advanced-configuration).
+`files: "@svet/files-git"` selects the separately installed Git provider. Scoped package names (and scoped package subpaths) without glob syntax support string shorthand. For plugin-specific options, bare/unscoped package names, local modules, and module URLs, see [Advanced configuration](#advanced-configuration).
 
-`files: "**/*.js"` is a shortcut for the ordinary [`@git-vet/files-glob`](../plugins/files/glob/README.md) selector with `options: { pattern: "**/*.js" }`. A first glob discovers filesystem files without Git. A later glob only filters the preceding provider's candidates, preserving its snapshots, capabilities, and inventory. The glob plugin implements discovery and matching; generic core only expands shorthand and orchestrates public plugin calls. The shortcut resolves the driver's declared glob dependency, while explicit plugin references resolve beside the configuration like other modules.
+`files: "**/*.js"` is a shortcut for the ordinary [`@svet/files-glob`](../plugins/files/glob/README.md) selector with `options: { pattern: "**/*.js" }`. A first glob discovers filesystem files without Git. A later glob only filters the preceding provider's candidates, preserving its snapshots, capabilities, and inventory. The glob plugin implements discovery and matching; generic core only expands shorthand and orchestrates public plugin calls. The shortcut resolves the driver's declared glob dependency, while explicit plugin references resolve beside the configuration like other modules.
 
 Stages narrow in array order, not union: `["**/*.js", "**/*.ts"]` is an intersection, not a way to include both extensions; use `"**/*.{js,ts}"`. Negated globs such as `"!vendor/**"` require an earlier source. Omitted `files` or `files: []` means no source, with no inherited provider. A single entry is normalized to an array; scoped plugin strings become plugin objects and glob strings remain shortcut entries until active plugin loading.
 
@@ -53,12 +53,12 @@ All configuration is trusted executable JavaScript. Keep untrusted repository co
 
 ## Advanced Configuration
 
-Use explicit plugin objects for options or local modules. For example, `files: { plugin: "@git-vet/files-git", options: { mode: "staged" } }` selects staged Git content.
+Use explicit plugin objects for options or local modules. For example, `files: { plugin: "@svet/files-git", options: { mode: "staged" } }` selects staged Git content.
 
 This expanded example combines local file selection, check options, a severity override, and replacement profiles:
 
 ```js
-// git-vet.config.mjs
+// svet.config.mjs
 export default {
   files: [{ plugin: "./tools/source.mjs", options: { scope: "recent" } }],
   checks: [

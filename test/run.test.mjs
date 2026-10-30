@@ -12,13 +12,13 @@ const file = { plugin: fixture("file-check") };
 const project = { plugin: fixture("project-check") };
 
 async function workspace(t) {
-  const root = await mkdtemp(join(tmpdir(), "git-vet runner \u03bb "));
+  const root = await mkdtemp(join(tmpdir(), "svet runner \u03bb "));
   t.after(() => rm(root, { recursive: true, force: true }));
   return root;
 }
 
 async function configure(root, document, profile) {
-  const configFile = join(root, "git-vet.config.json");
+  const configFile = join(root, "svet.config.json");
   await writeFile(configFile, JSON.stringify(document));
   return loadConfig({ cwd: root, configFile, profile });
 }
@@ -127,7 +127,7 @@ test("missing and incompatible plugins and invalid async options fail without lo
   const config = await configure(root, {
     files: [source],
     checks: [
-      { plugin: "not-installed-git-vet-check" },
+      { plugin: "not-installed-svet-check" },
       { plugin: incompatible },
       { ...file, options: { invalid: true } },
       { plugin: invalidValidator },

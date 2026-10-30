@@ -7,7 +7,7 @@
 - Make providers and checks independently packageable through public interfaces. Do not import private driver modules from plugins or give shipped plugins privileged interfaces.
 - Load only plugins selected by the effective configuration. Do not statically import concrete plugins, discover installed plugins, or initialize inactive profiles.
 - User configuration completely replaces shipped defaults. Empty and partial configurations must not restore omitted `files` stages, checks, profiles, options, or exclusions.
-- Configure selection through `files`, not `selectors`. A glob is only shorthand for the public `@git-vet/files-glob` selector; keep discovery and matching in that plugin, not core. Ordered stages narrow candidates and preserve their snapshots and capabilities.
+- Configure selection through `files`, not `selectors`. A glob is only shorthand for the public `@svet/files-glob` selector; keep discovery and matching in that plugin, not core. Ordered stages narrow candidates and preserve their snapshots and capabilities.
 - Place file selector packages under `plugins/files/<name>` and their tests under `test/plugins/files/<name>.test.mjs`.
 - Place checking plugins under `plugins/checks/<name>` and their tests under `test/plugins/checks/<name>.test.mjs`.
 - Providers own candidate identity, snapshots, metadata, optional capabilities, and selection provenance. Checks must declare their requirements and explicitly report incompatibility.
@@ -30,7 +30,7 @@
 - Lead configuration examples with `files` plugin-name or glob shorthand. Reserve expanded file plugin/options examples for advanced configuration sections.
 - Add focused tests for introduced behavior, including external plugins, unselected-plugin non-loading, configuration replacement, capability mismatches, and non-Git operation where relevant.
 - Add user-visible acceptance workflows as checked-in projects under `fixtures/integration/<case>/project`, with `command.json`, `expected.stdout`, `expected.stderr`, and `expected.exit-code`. Run the actual installed CLI through `test/integration.test.mjs`, not an API wrapper or test-generated projects. Share the offline installation, isolate each project, and preserve read-only assertions. Keep focused component coverage alongside CLI acceptance tests.
-- Run this repository's indexed LF check with `npm run check`; exclude integration fixture and test paths in `git-vet.config.mjs`. Preserve intentional fixture bytes with `.gitattributes` and keep fixture projects out of formatting/linting.
+- Run this repository's indexed LF check with `npm run check`; exclude integration fixture and test paths in `svet.config.mjs`. Preserve intentional fixture bytes with `.gitattributes` and keep fixture projects out of formatting/linting.
 - Test actual staged/revision snapshots and packaged execution when implementing those features. Do not replace these with working-tree or source-checkout proxies.
 - Run `npm run lint` and the relevant tests immediately before committing. Do not add tests solely for constants or trivial accessors.
 - Keep original artwork sources and document how generated assets are reproduced. Artwork tooling must not become a prerequisite of ordinary CLI execution.
@@ -42,5 +42,5 @@
 - Leave issues open while a pull request is pending. Use closing references only for requirements the pull request actually completes; reference partial work without claiming completion.
 - Update directly related documentation. Keep proposed functionality distinct from implemented behavior.
 - Keep `CHANGELOG.md` feature-only, with an entry linked to the implementing pull request for each user-visible feature. Do not add entries for bug fixes, refactoring, tooling, documentation, or branding-only changes.
-- Format changelog entries as `- [#15](https://github.com/dblock/git-vet/pull/15): Description - [@contributor](https://github.com/contributor).`, using the actual pull request number and contributor.
+- Format changelog entries as `- [#15](https://github.com/dblock/svet/pull/15): Description - [@contributor](https://github.com/contributor).`, using the actual pull request number and contributor.
 - Do not publish packages or create release tags without explicit authorization.

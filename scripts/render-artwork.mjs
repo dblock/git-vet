@@ -17,7 +17,7 @@ for (const command of ["rsvg-convert", "pngquant"]) {
 
 const prettierOptions = await resolveConfig(fileURLToPath(sourcePath));
 const font = 'font-family="Arial, Helvetica, sans-serif"';
-const head = '<use href="#croc-head"';
+const head = '<use href="#croc-icon"';
 
 function document(title, width, height, content) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title">
@@ -29,20 +29,20 @@ function document(title, width, height, content) {
 
 function wordmark(fill) {
   return document(
-    "GitVet wordmark with the crocodile mascot",
-    900,
+    "Svet wordmark with the crocodile mascot",
+    760,
     250,
     `${head} transform="translate(110 193) scale(.9)"/>
-     <text x="300" y="174" ${font} font-size="138" font-weight="700" fill="${fill}">GitVet</text>`,
+     <text x="325" y="174" ${font} font-size="138" font-weight="700" fill="${fill}">Svet</text>`,
   );
 }
 
 const avatar = document(
-  "GitVet crocodile avatar",
+  "Svet crocodile and light-bulb avatar",
   512,
   512,
   `<circle cx="256" cy="256" r="248" fill="#C5E6AE"/>
-   ${head} transform="translate(225 353) scale(1.35)"/>`,
+   ${head} transform="translate(195 353) scale(1.16)"/>`,
 );
 
 const variants = [
@@ -50,28 +50,28 @@ const variants = [
   [
     "mascot-badge",
     document(
-      "GitVet full-standing crocodile in a green circle",
+      "Svet crocodile switching a light on and off in a green circle",
       512,
       512,
       `<circle cx="256" cy="256" r="248" fill="#C5E6AE"/>
-       <use href="#crocodile" transform="translate(211 210)"/>`,
+       <use href="#crocodile" transform="translate(195 210) scale(.88)"/>`,
     ),
     512,
   ],
-  ["logo", wordmark("#173D32"), 900],
-  ["logo-dark", wordmark("#F6FFE9"), 900],
+  ["logo", wordmark("#173D32"), 760],
+  ["logo-dark", wordmark("#F6FFE9"), 760],
   ["favicon", avatar, 32],
   [
     "social-preview",
     document(
-      "GitVet - Git and filesystem linter.",
+      "Svet - Git and filesystem linter.",
       1200,
       630,
       `<rect width="1200" height="630" fill="#DDEEDB"/>
        <circle cx="316" cy="310" r="256" fill="#C5E6AE"/>
        <ellipse cx="340" cy="583" rx="150" ry="15" fill="#8ABB7B" opacity=".38"/>
        <use href="#crocodile" transform="translate(290 303) scale(1.05)"/>
-       <text x="625" y="254" ${font} font-size="110" font-weight="700" fill="#173D32">GitVet</text>
+       <text x="625" y="254" ${font} font-size="110" font-weight="700" fill="#173D32">Svet</text>
        <text x="630" y="322" ${font} font-size="32" fill="#27824B">Git and filesystem linter.</text>`,
     ),
     1200,

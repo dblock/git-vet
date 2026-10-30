@@ -1,6 +1,6 @@
 {
   "command": [
-    "git-vet",
+    "svet",
     "--config",
     "configuration/check.json",
     "--root",

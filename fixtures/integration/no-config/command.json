@@ -1,4 +1,4 @@
 {
-  "command": ["git-vet"],
+  "command": ["svet"],
   "withoutGit": true
 }

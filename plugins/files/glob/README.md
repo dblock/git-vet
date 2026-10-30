@@ -1,6 +1,6 @@
 # Glob File Selector
 
-`@git-vet/files-glob` is an independently packageable version-1 selector with stable plugin id `files/glob`. It uses Node.js 22.18+ and the declared JavaScript dependency `picomatch`; it has no private driver imports, Git requirement, subprocesses, downloads, or runtime networking.
+`@svet/files-glob` is an independently packageable version-1 selector with stable plugin id `files/glob`. It uses Node.js 22.18+ and the declared JavaScript dependency `picomatch`; it has no private driver imports, Git requirement, subprocesses, downloads, or runtime networking.
 
 The package is private and unpublished. It is a dependency of the driver so glob shorthand works after ordinary dependency restoration. Neither installing it nor mentioning it in an inactive profile activates it.
 
@@ -19,7 +19,7 @@ With an earlier provider, it performs **no filesystem discovery or content reads
 
 ```js
 export default {
-  files: ["@git-vet/files-git", "**/*.js", "!vendor/**"],
+  files: ["@svet/files-git", "**/*.js", "!vendor/**"],
   checks: [{ plugin: "./tools/check.mjs" }],
 };
 ```
@@ -41,7 +41,7 @@ The glob shorthand selects this ordinary plugin with `options: { pattern: "**/*.
 ```js
 export default {
   files: {
-    plugin: "@git-vet/files-glob",
+    plugin: "@svet/files-glob",
     options: { pattern: "**/*.js" },
   },
   checks: [{ plugin: "./tools/check.mjs" }],

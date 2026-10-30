@@ -183,7 +183,7 @@ export async function run(resolvedConfig) {
       const configured =
         typeof entry === "string"
           ? {
-              plugin: import.meta.resolve("@git-vet/files-glob"),
+              plugin: import.meta.resolve("@svet/files-glob"),
               options: { pattern: entry },
             }
           : entry;

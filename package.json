@@ -1,5 +1,5 @@
 {
-  "name": "git-vet",
+  "name": "svet",
   "version": "0.1.0",
   "private": true,
   "workspaces": [
@@ -10,7 +10,8 @@
   "type": "module",
   "exports": "./src/index.mjs",
   "bin": {
-    "git-vet": "./bin/git-vet.mjs"
+    "svet": "./bin/svet.mjs",
+    "git-svet": "./bin/svet.mjs"
   },
   "files": [
     "bin",
@@ -28,24 +29,24 @@
   "author": "Daniel Doubrovkine",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dblock/git-vet.git"
+    "url": "git+https://github.com/dblock/svet.git"
   },
   "bugs": {
-    "url": "https://github.com/dblock/git-vet/issues"
+    "url": "https://github.com/dblock/svet/issues"
   },
-  "homepage": "https://github.com/dblock/git-vet#readme",
+  "homepage": "https://github.com/dblock/svet#readme",
   "engines": {
     "node": ">=22.18.0"
   },
   "scripts": {
     "artwork": "node scripts/render-artwork.mjs",
     "lint": "eslint . && prettier --check .",
-    "check": "node bin/git-vet.mjs",
+    "check": "node bin/svet.mjs",
     "format": "prettier --write .",
     "test": "node --test"
   },
   "dependencies": {
-    "@git-vet/files-glob": "0.1.0",
+    "@svet/files-glob": "0.1.0",
     "import-meta-resolve": "4.2.0"
   },
   "devDependencies": {

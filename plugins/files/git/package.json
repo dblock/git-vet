@@ -1,8 +1,8 @@
 {
-  "name": "@git-vet/files-git",
+  "name": "@svet/files-git",
   "version": "0.1.0",
   "private": true,
-  "description": "Git-tracked text selection and content snapshots for GitVet.",
+  "description": "Git-tracked text selection and content snapshots for Svet.",
   "type": "module",
   "exports": "./index.mjs",
   "files": [
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dblock/git-vet.git",
+    "url": "git+https://github.com/dblock/svet.git",
     "directory": "plugins/files/git"
   },
   "engines": {

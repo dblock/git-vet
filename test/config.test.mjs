@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { Error, loadConfig, resolveConfig } from "../src/index.mjs";
 
 async function workspace(t) {
-  const root = await mkdtemp(join(tmpdir(), "git-vet config \u03bb "));
+  const root = await mkdtemp(join(tmpdir(), "svet config \u03bb "));
   t.after(() => rm(root, { recursive: true, force: true }));
   return root;
 }
@@ -69,13 +69,13 @@ test("profiles replace the complete base plan, including intentionally empty pro
 });
 
 test("files accepts scoped plugin and glob shortcuts, single objects, and ordered mixed pipelines", () => {
-  const git = { plugin: "@git-vet/files-git", options: {} };
-  assert.deepEqual(resolveConfig({ files: "@git-vet/files-git" }).files, [git]);
+  const git = { plugin: "@svet/files-git", options: {} };
+  assert.deepEqual(resolveConfig({ files: "@svet/files-git" }).files, [git]);
   assert.deepEqual(resolveConfig({ files: "**/*.js" }).files, ["**/*.js"]);
   const object = { plugin: "./source.mjs", options: { recent: true } };
   assert.deepEqual(resolveConfig({ files: object }).files, [object]);
   const plan = resolveConfig({
-    files: ["@git-vet/files-git", "**/*.{js,ts}", "!vendor/**", object],
+    files: ["@svet/files-git", "**/*.{js,ts}", "!vendor/**", object],
     profiles: { js: { files: "**/*.js" }, empty: {} },
   });
   assert.deepEqual(plan.files, [git, "**/*.{js,ts}", "!vendor/**", object]);
@@ -85,14 +85,14 @@ test("files accepts scoped plugin and glob shortcuts, single objects, and ordere
   );
   assert.deepEqual(
     resolveConfig(
-      { files: "@git-vet/files-git", profiles: { js: { files: "*.js" } } },
+      { files: "@svet/files-git", profiles: { js: { files: "*.js" } } },
       { profile: "js" },
     ).files,
     ["*.js"],
   );
   assert.deepEqual(
     resolveConfig(
-      { files: "@git-vet/files-git", profiles: { empty: {} } },
+      { files: "@svet/files-git", profiles: { empty: {} } },
       { profile: "empty" },
     ).files,
     [],
@@ -103,13 +103,13 @@ test("discovery finds the nearest config without consulting Git and resolves mod
   const root = await workspace(t);
   const nested = join(root, "nested", "deeper");
   await mkdir(nested, { recursive: true });
-  await writeFile(join(root, "git-vet.config.mjs"), "export default {};");
+  await writeFile(join(root, "svet.config.mjs"), "export default {};");
   const config = await loadConfig({ cwd: nested });
   assert.equal(config.root, root);
   assert.equal(config.moduleRoot, root);
-  assert.equal(config.source.path, join(root, "git-vet.config.mjs"));
+  assert.equal(config.source.path, join(root, "svet.config.mjs"));
 
-  const nearer = join(root, "nested", "git-vet.config.json");
+  const nearer = join(root, "nested", "svet.config.json");
   await writeFile(nearer, '{"checks":[{"plugin":"./check.mjs"}]}');
   const local = await loadConfig({ cwd: nested });
   assert.equal(local.root, join(root, "nested"));
@@ -120,14 +120,14 @@ test("an explicit root bounds discovery while an explicit file is relative to cw
   const cwd = await workspace(t);
   const root = join(cwd, "project");
   await mkdir(root);
-  await writeFile(join(cwd, "git-vet.config.json"), "{}");
+  await writeFile(join(cwd, "svet.config.json"), "{}");
   await assert.rejects(loadConfig({ cwd, root: "project" }), {
     code: "DEFAULT_CONFIG_UNAVAILABLE",
   });
   const config = await loadConfig({
     cwd,
     root: "project",
-    configFile: "git-vet.config.json",
+    configFile: "svet.config.json",
   });
   assert.equal(config.root, root);
   assert.equal(config.moduleRoot, cwd);
@@ -135,8 +135,8 @@ test("an explicit root bounds discovery while an explicit file is relative to cw
 
 test("missing, malformed, ambiguous, and invalid configurations fail explicitly", async (t) => {
   const cwd = await workspace(t);
-  const json = join(cwd, "git-vet.config.json");
-  const mjs = join(cwd, "git-vet.config.mjs");
+  const json = join(cwd, "svet.config.json");
+  const mjs = join(cwd, "svet.config.mjs");
   await assert.rejects(
     loadConfig({ cwd, configFile: "missing.json", defaults: { config: {} } }),
     { code: "CONFIG_LOAD_FAILED" },
@@ -165,7 +165,7 @@ test("a broken configuration symlink is an error, not absent configuration", asy
     return;
   }
   const cwd = await workspace(t);
-  await symlink("missing.mjs", join(cwd, "git-vet.config.mjs"));
+  await symlink("missing.mjs", join(cwd, "svet.config.mjs"));
   await assert.rejects(loadConfig({ cwd }), { code: "CONFIG_LOAD_FAILED" });
 });
 

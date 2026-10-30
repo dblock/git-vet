@@ -1,4 +1,4 @@
-# Running GitVet
+# Running Svet
 
 The experimental CLI and library run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/files/git/README.md), [glob selector](../plugins/files/glob/README.md), and [indexed LF check](../plugins/checks/index-lf/README.md). Packages remain private and unpublished; no shipped default configuration is available.
 
@@ -8,11 +8,11 @@ After restoring dependencies in this checkout, run:
 
 ```sh
 npm run check
-node bin/git-vet.mjs --format json
-node bin/git-vet.mjs --help
+node bin/svet.mjs --format json
+node bin/svet.mjs --help
 ```
 
-The package declares a `git-vet` executable. When installed and its executable directory is on `PATH`, both `git-vet` and `git vet` run the same CLI. The integration suite verifies the packed distribution rather than invoking a test-only API wrapper.
+The package declares `svet` and `git-svet` executables pointing to the same entry point. When installed and their executable directory is on `PATH`, both `svet` and `git svet` run the same CLI. The integration suite verifies the packed distribution rather than invoking a test-only API wrapper.
 
 | Option | Meaning |
 | --- | --- |
@@ -31,14 +31,14 @@ Text output identifies the configuration, profile, selection stages, checks, fin
 
 Exit codes are `0` for completed or intentionally empty runs, `1` for findings (including warnings), and `2` for configuration, capability, or execution errors. Errors take precedence without discarding findings.
 
-The repository's [configuration](../git-vet.config.mjs) enables the indexed LF check and excludes `fixtures/integration/**` and `test/integration.test.mjs`. CI runs it with `npm run check`. Fixture bytes intentionally include invalid content; `.gitattributes` preserves them and the formatters ignore the fixture projects.
+The repository's [configuration](../svet.config.mjs) enables the indexed LF check and excludes `fixtures/integration/**` and `test/integration.test.mjs`. CI runs it with `npm run check`. Fixture bytes intentionally include invalid content; `.gitattributes` preserves them and the formatters ignore the fixture projects.
 
 ## Programmatic API
 
 ```js
-import { loadConfig, run } from "git-vet";
+import { loadConfig, run } from "svet";
 
-const config = await loadConfig({ configFile: "./git-vet.config.mjs" });
+const config = await loadConfig({ configFile: "./svet.config.mjs" });
 const report = await run(config);
 console.log(JSON.stringify(report, null, 2));
 process.exitCode = report.exitCode;

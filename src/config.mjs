@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import { Error, invariant } from "./errors.mjs";
 import { isRecord } from "./contracts.mjs";
 
-const filenames = ["git-vet.config.mjs", "git-vet.config.json"];
+const filenames = ["svet.config.mjs", "svet.config.json"];
 
 function assert(condition, message) {
   invariant(condition, "INVALID_CONFIG", message);
