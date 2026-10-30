@@ -1,7 +1,7 @@
 {
   "files": "@svet/files-git",
   "checks": [
-    { "plugin": "@svet/check-git-index-lf" },
-    { "plugin": "@svet/check-file-lf" }
+    "@svet/check-git-index-lf",
+    "@svet/check-file-lf"
   ]
 }

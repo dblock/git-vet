@@ -7,7 +7,7 @@ The package is private and unpublished. It is a dependency of the driver so glob
 ```js
 export default {
   files: "**/*.js",
-  checks: [{ plugin: "./tools/check.mjs" }],
+  checks: ["./tools/check.mjs"],
 };
 ```
 
@@ -20,7 +20,7 @@ With an earlier provider, it performs **no filesystem discovery or content reads
 ```js
 export default {
   files: ["@svet/files-git", "**/*.js", "!vendor/**"],
-  checks: [{ plugin: "./tools/check.mjs" }],
+  checks: ["./tools/check.mjs"],
 };
 ```
 
@@ -44,6 +44,6 @@ export default {
     plugin: "@svet/files-glob",
     options: { pattern: "**/*.js" },
   },
-  checks: [{ plugin: "./tools/check.mjs" }],
+  checks: ["./tools/check.mjs"],
 };
 ```

@@ -24,9 +24,9 @@ git add .
 npm run check
 ```
 
-No Svet configuration is needed. By default, Svet selects Git-tracked text files and checks their **indexed contents** for LF line endings. Untracked files are not checked; after fixing a file, review and stage the intended changes before checking again. Svet never edits or stages files for you.
+No Svet configuration is needed. By default, Svet selects Git-tracked text files and checks their **working-tree contents** for LF line endings. Untracked files are not checked; stage new files to include them. After fixing a tracked file, run the check again without needing to stage the fix. Svet never edits or stages files for you.
 
-Example output with CRLF line endings staged in `bad.txt`:
+Example output with CRLF line endings in `bad.txt`:
 
 ```text
 > my-project@1.0.0 check
@@ -35,8 +35,8 @@ Example output with CRLF line endings staged in `bad.txt`:
 Configuration: (defaults)
 Profile: (base)
 Files: git/tracked-text (selected)
-Checks: git/index-lf (completed)
-bad.txt:1: error [git/index-lf/lf]: Indexed text contains CRLF or CR line endings. Convert to LF and stage the intended changes manually.
+Checks: file/lf (completed)
+bad.txt:1: error [file/lf/lf]: Selected text contains CRLF or CR line endings. Convert the intended source to LF and run the check again.
 Selected 4; checked 4; findings 1; skipped 0; failed 0; unavailable 0.
 ```
 
@@ -55,8 +55,8 @@ Exit codes are `0` for a completed or intentionally empty run, `1` for findings,
 
 | Plugin | Checks | Enabled by default |
 | --- | --- | --- |
-| [`@svet/check-git-index-lf`](plugins/checks/git-index-lf/README.md) | LF line endings in captured Git index blobs, regardless of unstaged edits. | Yes |
-| [`@svet/check-file-lf`](plugins/checks/file-lf/README.md) | LF line endings in the selected content snapshot; filesystem and Git working-tree sources capture actual file contents. | No |
+| [`@svet/check-git-index-lf`](plugins/checks/git-index-lf/README.md) | LF line endings in captured Git index blobs, regardless of unstaged edits. | No |
+| [`@svet/check-file-lf`](plugins/checks/file-lf/README.md) | LF line endings in the selected content snapshot; filesystem and Git working-tree sources capture actual file contents. | Yes |
 
 Packages remain private and unpublished; the usage example assumes the planned 0.1.0 release. See [configuration](docs/configuration.md), [CLI and API usage](docs/running.md), [plugin contracts](docs/plugin-api.md), and the [changelog](CHANGELOG.md).
 

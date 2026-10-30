@@ -2,7 +2,7 @@
 
 `@svet/check-file-lf` is an independently packageable version-1 checking plugin with stable id `file/lf` and rule `lf`. It requires Node.js 22.18+ and a provider exposing `content.snapshot: true`, captured `candidate.read()` readers, and `content.text.isText(bytes)`. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
 
-The package is private and unpublished. It is opt-in, not part of Svet's default plan. Restore it alongside Svet before using it in a custom configuration.
+The package is private and unpublished. Svet declares it as a runtime dependency and selects it in the ordinary shipped default plan. For custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
 
 For the planned 0.1.0 release:
 
@@ -13,7 +13,7 @@ npm install --save-dev @svet/check-file-lf@0.1.0
 ```js
 export default {
   files: "**/*.txt",
-  checks: [{ plugin: "@svet/check-file-lf" }],
+  checks: ["@svet/check-file-lf"],
 };
 ```
 

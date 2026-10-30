@@ -29,6 +29,7 @@
 - Use `.mjs` for JavaScript modules, existing Node.js APIs, ESLint, and Prettier. Prefer the simplest implementation that satisfies the documented contracts.
 - Keep Markdown paragraphs on one source line. Use LF line endings and preserve intended formatting through the project configuration.
 - Lead configuration examples with `files` plugin-name or glob shorthand. Reserve expanded file plugin/options examples for advanced configuration sections.
+- Prefer module-name strings in `checks` arrays; use objects when options or severity overrides are needed. Both forms may be mixed in base plans, profiles, and supplied defaults.
 - Add focused tests for introduced behavior, including external plugins, unselected-plugin non-loading, configuration replacement, capability mismatches, and non-Git operation where relevant.
 - Add user-visible acceptance workflows as checked-in projects under `fixtures/integration/<case>/project`, with `command.json`, `expected.stdout`, `expected.stderr`, and `expected.exit-code`. Run the actual installed CLI through `test/integration.test.mjs`, not an API wrapper or test-generated projects. Share the offline installation, isolate each project, and preserve read-only assertions. Keep focused component coverage alongside CLI acceptance tests.
 - Run this repository's indexed LF check with `npm run check`; exclude integration fixture and test paths in `svet.config.mjs`. Preserve intentional fixture bytes with `.gitattributes` and keep fixture projects out of formatting/linting.

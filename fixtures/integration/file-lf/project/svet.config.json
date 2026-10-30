@@ -1,4 +1,0 @@
-{
-  "files": "*",
-  "checks": [{ "plugin": "@svet/check-file-lf" }]
-}

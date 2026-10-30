@@ -1,10 +1,11 @@
 {
   "files": "@svet/files-git",
-  "checks": [{ "plugin": "@svet/check-git-index-lf" }],
+  "checks": ["@svet/check-git-index-lf"],
   "profiles": {
     "words": {
       "files": "*.txt",
       "checks": [
+        "@svet/check-file-lf",
         {
           "plugin": "svet-fixture-timestamps/check",
           "severity": "warning"
