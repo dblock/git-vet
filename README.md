@@ -9,7 +9,9 @@ Git and filesystem linter.
 
 ## Status
 
-This repository contains an experimental [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), and [programmatic runner](docs/running.md) for explicitly configured plugins. Shipped defaults, concrete providers/checks, and the CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No checking command is available yet.
+This repository contains an experimental [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), [programmatic runner](docs/running.md), and an optional [Git selection provider](plugins/git/README.md). Shipped defaults, production checking plugins, and the CLI remain under development in the [project issues](https://github.com/dblock/git-vet/issues). No checking command is available yet.
+
+See the [changelog](CHANGELOG.md) for implemented features.
 
 ## Design
 

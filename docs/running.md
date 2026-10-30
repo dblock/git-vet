@@ -1,6 +1,6 @@
 # Programmatic Runner (Foundation)
 
-The experimental library can run explicitly configured local or installed plugins. It does not yet ship a CLI, Git provider, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
+The experimental library can run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/git/README.md). It does not yet ship a CLI, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
 
 ```js
 import { loadConfig, run } from "git-vet";
@@ -41,11 +41,11 @@ The returned object is JSON-safe data and contains:
 | `selection` | Selection status, selected candidate summaries, capability names, and ordered stage reports. |
 | `checks` | Configured module references/indices, resolved plugin ids/scopes, overall statuses, and per-invocation outcomes. |
 | `findings` | Deterministically ordered declared rule findings with plugin id, check index, severity, message, optional paths and location. |
-| `errors` | Explicit phase/reference/index, optional plugin/candidate identity, code, and message. No automatic stacks or cause dumps. |
+| `errors` | Explicit phase/reference/index, optional plugin/candidate identity, code, optional external `pluginCode`, and message. No automatic stacks or cause dumps. |
 | `summary` | Selected candidates, distinct files checked by at least one check, checked/skipped/failed invocation counts, unavailable checks, and finding count. |
 
 File outcomes identify `candidateId` and `path`; project outcomes do not invent a path. Selected candidates do not imply checked files. The distinct checked-file count is not a claim that every configured check inspected each file: consult per-check outcomes for skips/failures. Selection decisions describe provider-reported inclusion, filtering, exclusions, or unavailability without implying unvisited directories were exhaustively scanned.
 
 Only id/path/snapshot summaries, capability names, whitelisted finding/error fields, and explicitly reportable selector context/decisions enter reports. Readers, capability values (including full inventories), arbitrary candidate metadata, plugin options, environment, and source bytes are not automatically serialized. Plugins are trusted and remain responsible for keeping their messages/context free of sensitive data and terminal control sequences.
 
-There are no progress prints or process exits in core. Terminal formatting, CLI error handling/overrides, packaged `git vet` invocation, real Git snapshot semantics, and shipped default-run acceptance remain separate work.
+There are no progress prints or process exits in core. Terminal formatting, CLI error handling/overrides, packaged `git vet` invocation, production checking plugins, and shipped default-run acceptance remain separate work. The optional Git provider owns its index/revision semantics without adding Git queries to core.

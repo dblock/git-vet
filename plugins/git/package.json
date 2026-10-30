@@ -1,0 +1,25 @@
+{
+  "name": "git-vet-selector-git",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Git-tracked text selection and content snapshots for GitVet.",
+  "type": "module",
+  "exports": "./index.mjs",
+  "files": [
+    "*.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dblock/git-vet.git",
+    "directory": "plugins/git"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "picomatch": "4.0.7"
+  }
+}
