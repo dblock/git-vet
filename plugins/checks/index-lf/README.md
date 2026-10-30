@@ -2,7 +2,7 @@
 
 `@svet/check-index-lf` is an independently packageable version-1 checking plugin with stable id `git/index-lf` and rule `lf`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
 
-The package is private and unpublished. Restore dependencies separately with `npm ci` in this repository; elsewhere, install the package alongside the driver/provider before execution. Installed plugins are not automatically activated.
+The package is private and unpublished. Svet declares it as a runtime dependency and selects it in the ordinary shipped default configuration. Restore dependencies separately with `npm ci` in this repository; for custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
 
 ```js
 export default {

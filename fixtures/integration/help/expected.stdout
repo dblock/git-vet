@@ -1,6 +1,6 @@
 Usage: svet [options]
 
-Run the checks selected by svet.config.mjs or svet.config.json.
+Run configured checks, or the shipped defaults when no configuration exists.
 
 Options:
   --config <file>       Use an explicit configuration file
@@ -11,4 +11,4 @@ Options:
   -v, --version        Show the version
 
 Exit codes: 0 completed or intentionally empty; 1 findings; 2 errors.
-No shipped default configuration is available yet.
+Defaults: Git-tracked text files checked for LF line endings in the Git index.

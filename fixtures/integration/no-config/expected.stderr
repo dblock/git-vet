@@ -1,1 +1,0 @@
-error [DEFAULT_CONFIG_UNAVAILABLE]: No configuration found. Create svet.config.mjs or svet.config.json, or pass --config. Shipped defaults are not available yet.

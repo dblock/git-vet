@@ -2,7 +2,7 @@
 
 `@svet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
 
-The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependencies, including `simple-git` for Git process execution, its public `@simple-git/argv-parser` environment parser, and `picomatch` for exclusions. `simple-git` wraps the installed Git executable; it does not replace Git or download it. The provider is not automatically selected by core or a shipped default configuration.
+The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependencies, including `simple-git` for Git process execution, its public `@simple-git/argv-parser` environment parser, and `picomatch` for exclusions. `simple-git` wraps the installed Git executable; it does not replace Git or download it. Svet declares this provider as a runtime dependency and selects it through the ordinary shipped configuration, not special core behavior.
 
 ```js
 export default {
@@ -11,7 +11,7 @@ export default {
 };
 ```
 
-In another installation, restore the provider and [indexed LF check](../../checks/index-lf/README.md) packages alongside Svet through the package manager before execution. The driver never discovers or installs them automatically. This provider only selects files; it does not implicitly activate the example's check.
+Svet's declared dependencies include the provider and [indexed LF check](../../checks/index-lf/README.md) for default runs. For custom configurations, restore the referenced plugin packages where they resolve beside your configuration. The driver never discovers or installs plugins on demand. This provider only selects files; it does not implicitly activate the example's check.
 
 ## Selection and Snapshots
 

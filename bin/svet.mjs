@@ -6,7 +6,7 @@ import { Error as SvetError, loadConfig, run } from "../src/index.mjs";
 
 const help = `Usage: svet [options]
 
-Run the checks selected by svet.config.mjs or svet.config.json.
+Run configured checks, or the shipped defaults when no configuration exists.
 
 Options:
   --config <file>       Use an explicit configuration file
@@ -17,7 +17,7 @@ Options:
   -v, --version        Show the version
 
 Exit codes: 0 completed or intentionally empty; 1 findings; 2 errors.
-No shipped default configuration is available yet.
+Defaults: Git-tracked text files checked for LF line endings in the Git index.
 `;
 
 function text(value) {
@@ -136,11 +136,9 @@ try {
       ? error.code
       : "CLI_FAILED";
   const message =
-    code === "DEFAULT_CONFIG_UNAVAILABLE"
-      ? "No configuration found. Create svet.config.mjs or svet.config.json, or pass --config. Shipped defaults are not available yet."
-      : error instanceof globalThis.Error
-        ? error.message
-        : "Unexpected non-Error failure.";
+    error instanceof globalThis.Error
+      ? error.message
+      : "Unexpected non-Error failure.";
   if (format === "json") {
     process.stdout.write(
       `${JSON.stringify({ schemaVersion: 1, status: "error", exitCode: 2, errors: [{ phase, code, message }] }, null, 2)}\n`,

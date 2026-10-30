@@ -1,6 +1,6 @@
 # Running Svet
 
-The experimental CLI and library run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/files/git/README.md), [glob selector](../plugins/files/glob/README.md), and [indexed LF check](../plugins/checks/index-lf/README.md). Packages remain private and unpublished; no shipped default configuration is available.
+The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the indexed LF check. User configurations completely replace that plan and can select Git-independent local or installed plugins. Packages remain private and unpublished; see the [README usage example](../README.md#usage) for the intended 0.1.0 installation flow.
 
 ## CLI
 
@@ -23,7 +23,7 @@ The package declares `svet` and `git-svet` executables pointing to the same entr
 | `-h`, `--help` | Show help without loading configuration. |
 | `-v`, `--version` | Show the package version without loading configuration. |
 
-No positional arguments or arbitrary plugin-option overrides are supported. Missing configuration is an error, not an empty successful default run. See [configuration](configuration.md) for discovery and replacement semantics.
+No positional arguments or arbitrary plugin-option overrides are supported. No user configuration means shipped defaults, labeled `Configuration: (defaults)` in text and `configuration.source.kind: "defaults"` in JSON. An explicitly requested missing or malformed configuration remains an error; it never falls back. See [configuration](configuration.md) for discovery and replacement semantics.
 
 Text output identifies the configuration, profile, selection stages, checks, findings, exclusions/skips, and coverage counts on stdout. Errors go to stderr. Dynamic text is stripped of terminal escapes and control characters are escaped. Empty runs state why no checks completed rather than claiming success.
 
@@ -38,7 +38,7 @@ The repository's [configuration](../svet.config.mjs) enables the indexed LF chec
 ```js
 import { loadConfig, run } from "svet";
 
-const config = await loadConfig({ configFile: "./svet.config.mjs" });
+const config = await loadConfig();
 const report = await run(config);
 console.log(JSON.stringify(report, null, 2));
 process.exitCode = report.exitCode;
@@ -81,4 +81,4 @@ File outcomes identify `candidateId` and `path`; project outcomes do not invent 
 
 Only id/path/snapshot summaries, capability names, whitelisted finding/error fields, and explicitly reportable selector context/decisions enter reports. Readers, capability values (including full inventories), arbitrary candidate metadata, plugin options, environment, and source bytes are not automatically serialized. Plugins are trusted and remain responsible for keeping their messages/context free of sensitive data and terminal control sequences.
 
-There are no progress prints or process exits in core; those responsibilities belong to the CLI. Additional checking plugins and shipped default-run acceptance remain separate work. The optional Git provider owns its index/revision semantics without adding Git queries to core.
+There are no progress prints or process exits in core; those responsibilities belong to the CLI. The default plan is ordinary configuration, not privileged plugin-loading behavior. The Git provider owns its index/revision semantics without adding Git queries to core.
