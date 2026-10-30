@@ -138,6 +138,11 @@ export async function run(resolvedConfig) {
         ? {}
         : { candidateId: candidate.id, path: candidate.path }),
       code: error instanceof Error ? error.code : "PLUGIN_EXECUTION_FAILED",
+      ...(error instanceof globalThis.Error &&
+      !(error instanceof Error) &&
+      typeof error.code === "string"
+        ? { pluginCode: error.code }
+        : {}),
       message:
         error instanceof globalThis.Error
           ? error.message

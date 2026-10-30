@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-test("packed driver runs installed import-only plugins offline, without Git or a source checkout", async (t) => {
+test("packed driver runs independent timestamp and Git plugins offline without source-checkout imports", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "git-vet packaged \u03bb "));
   t.after(() => rm(root, { recursive: true, force: true }));
   const packed = join(root, "packed");
@@ -68,6 +68,12 @@ test("packed driver runs installed import-only plugins offline, without Git or a
   const resolverArchive = pack(
     fileURLToPath(new URL(".", import.meta.resolve("import-meta-resolve"))),
   );
+  const gitArchive = pack(
+    fileURLToPath(new URL("../plugins/git/", import.meta.url)),
+  );
+  const picomatchArchive = pack(
+    fileURLToPath(new URL(".", import.meta.resolve("picomatch"))),
+  );
   await writeFile(
     join(consumer, "package.json"),
     '{"private":true,"type":"module"}',
@@ -82,6 +88,8 @@ test("packed driver runs installed import-only plugins offline, without Git or a
       driverArchive,
       pluginArchive,
       resolverArchive,
+      gitArchive,
+      picomatchArchive,
     ],
     consumer,
   );
@@ -155,5 +163,62 @@ test("packed driver runs installed import-only plugins offline, without Git or a
       (entry) => entry.mtimeMs,
     ),
     before.map((entry) => entry.mtimeMs),
+  );
+
+  const gitProject = join(consumer, "Git files \u03bb");
+  await mkdir(gitProject);
+  const git = (...args) =>
+    execFileSync("git", ["-C", gitProject, ...args], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  git("init", "--initial-branch=main", "--template=");
+  git("config", "core.autocrlf", "false");
+  await writeFile(join(gitProject, "tracked.txt"), "bad staged\n");
+  await writeFile(join(gitProject, "binary.dat"), Buffer.from([0, 1, 2]));
+  git("add", "--all");
+  await writeFile(join(gitProject, "tracked.txt"), "clean unstaged content\n");
+  const index = await readFile(join(gitProject, ".git", "index"));
+  await writeFile(
+    configFile,
+    JSON.stringify({
+      selectors: [
+        { plugin: "git-vet-selector-git", options: { mode: "staged" } },
+      ],
+      checks: [
+        { plugin: "git-vet-fixture-timestamps/check" },
+        { plugin: "git-vet-fixture-timestamps/inventory" },
+      ],
+    }),
+  );
+  await writeFile(
+    runner,
+    `
+    import net from "node:net";
+    net.Socket.prototype.connect = function() {throw new Error("Unexpected runtime networking.");};
+    globalThis.fetch = () => {throw new Error("Unexpected runtime fetch.");};
+    const {loadConfig,run} = await import("git-vet");
+    const config = await loadConfig({
+      cwd:${JSON.stringify(gitProject)},root:${JSON.stringify(gitProject)},
+      configFile:${JSON.stringify(configFile)}
+    });
+    process.stdout.write(JSON.stringify(await run(config)));
+  `,
+  );
+  const gitReport = JSON.parse(
+    execFileSync(process.execPath, [runner], {
+      cwd: consumer,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }),
+  );
+  assert.equal(gitReport.exitCode, 1);
+  assert.equal(gitReport.findings[0].path, "tracked.txt");
+  assert.equal(gitReport.selection.candidates[0].snapshot.kind, "git-index");
+  assert.equal(gitReport.checks[1].status, "completed");
+  assert.deepEqual(await readFile(join(gitProject, ".git", "index")), index);
+  assert.equal(
+    await readFile(join(gitProject, "tracked.txt"), "utf8"),
+    "clean unstaged content\n",
   );
 });

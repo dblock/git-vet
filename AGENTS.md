@@ -35,4 +35,6 @@
 - Keep each pull request focused and its branch history to one logical commit. Do not force-push `main` or amend commits without explicit authorization.
 - Leave issues open while a pull request is pending. Use closing references only for requirements the pull request actually completes; reference partial work without claiming completion.
 - Update directly related documentation. Keep proposed functionality distinct from implemented behavior.
+- Keep `CHANGELOG.md` feature-only, with an entry linked to the implementing pull request for each user-visible feature. Do not add entries for bug fixes, refactoring, tooling, documentation, or branding-only changes.
+- Format changelog entries as `- [#15](https://github.com/dblock/git-vet/pull/15): Description - [@contributor](https://github.com/contributor).`, using the actual pull request number and contributor.
 - Do not publish packages or create release tags without explicit authorization.

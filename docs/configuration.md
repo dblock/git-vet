@@ -1,6 +1,6 @@
 # Configuration (Foundation)
 
-The library supports replacement-only configuration; no CLI or shipped Git/check defaults are available yet. `loadConfig` accepts an explicit `defaults: { config, directory }` document for embedding and tests. Without a discovered file or this document, it raises `DEFAULT_CONFIG_UNAVAILABLE` rather than manufacturing an empty successful default run. Shipped inspectable defaults will be wired in with the Git provider and basic checks.
+The library supports replacement-only configuration; no CLI or shipped Git/check defaults are available yet. `loadConfig` accepts an explicit `defaults: { config, directory }` document for embedding and tests. Without a discovered file or this document, it raises `DEFAULT_CONFIG_UNAVAILABLE` rather than manufacturing an empty successful default run. Shipped inspectable defaults will be wired in after basic checks exist; the optional Git provider alone does not activate default behavior.
 
 ## Discovery and Roots
 

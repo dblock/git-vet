@@ -2,13 +2,18 @@
   "name": "git-vet",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "plugins/*"
+  ],
   "description": "Git and filesystem linter.",
   "type": "module",
   "exports": "./src/index.mjs",
   "files": [
     "src",
     "docs",
+    "plugins/git/README.md",
     "artwork",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
