@@ -76,7 +76,7 @@ test("tracked-text defaults retain unchanged/new staged text, binary/directory i
     ["normal.txt", "original\n"],
     ["empty", ""],
     ["extensionless", "hello"],
-    ["assets/binary.md", Buffer.from([1, 0, 2])],
+    ["assets/binary.md", Buffer.from([255, 0, 254])],
     ["stable/counterpart.txt", "stable\n"],
   ])
     await write(root, path, content);
@@ -140,6 +140,10 @@ test("tracked-text defaults retain unchanged/new staged text, binary/directory i
   assert.equal(
     decode(await selection.capabilities["git.index"].read("normal.txt")),
     "original\n",
+  );
+  assert.deepEqual(
+    await selection.capabilities["git.index"].read("assets/binary.md"),
+    new Uint8Array([255, 0, 254]),
   );
 });
 
@@ -233,6 +237,65 @@ test("staged selection reads captured raw index blobs, not normalized or partial
     await readFile(join(root, "file.txt"), "utf8"),
     "unstaged and normalized\n",
   );
+});
+
+test("staged selection preserves trusted Git environment settings and an alternate index", async (t) => {
+  const root = await repository(t);
+  await write(root, "file.txt", "baseline\n");
+  await commit(root);
+  const index = await readFile(join(root, ".git", "index"));
+  const alternate = join(root, ".git", "alternate-index");
+  await writeFile(alternate, index);
+  const globalConfig = join(root, ".git", "caller-config");
+  await writeFile(globalConfig, "");
+  const environment = {
+    ...process.env,
+    GIT_INDEX_FILE: alternate,
+    GIT_CONFIG_GLOBAL: globalConfig,
+    GIT_EDITOR: "git-vet-editor-must-not-run",
+    GIT_PAGER: "git-vet-pager-must-not-run",
+    GIT_SSH_COMMAND: "git-vet-ssh-must-not-run",
+  };
+  await write(root, "file.txt", "alternate staged\n");
+  await execute("git", ["-C", root, "add", "--", "file.txt"], {
+    env: environment,
+  });
+  const alternateIndex = await readFile(alternate);
+  await write(root, "file.txt", "unstaged\n");
+  const output = execFileSync(
+    process.execPath,
+    [
+      "--input-type=module",
+      "-e",
+      `
+    import selector from ${JSON.stringify(new URL("../../../plugins/files/git/index.mjs", import.meta.url).href)};
+    const selection = await selector.select({root:${JSON.stringify(root)},options:{mode:"staged"},input:null});
+    process.stdout.write(JSON.stringify({
+      paths:selection.candidates.map(file=>file.path),
+      content:new TextDecoder().decode(await selection.capabilities["git.index"].read("file.txt"))
+    }));
+  `,
+    ],
+    { encoding: "utf8", env: environment },
+  );
+  assert.deepEqual(JSON.parse(output), {
+    paths: ["file.txt"],
+    content: "alternate staged\n",
+  });
+  assert.deepEqual(await readFile(join(root, ".git", "index")), index);
+  assert.deepEqual(await readFile(alternate), alternateIndex);
+  assert.equal(await readFile(join(root, "file.txt"), "utf8"), "unstaged\n");
+});
+
+test("Git command failures without stderr are not mistaken for success", async (t) => {
+  const root = await repository(t);
+  const { git: command } = await import("../../../plugins/files/git/git.mjs");
+  const args = ["config", "--get", "git-vet.missing"];
+  await assert.rejects(command(root, args), { code: "GIT_COMMAND_FAILED" });
+  const result = await command(root, args, [0, 1]);
+  assert.equal(result.code, 1);
+  assert.equal(result.stdout.length, 0);
+  assert.equal(result.stderr.length, 0);
 });
 
 test("changed/staged modes distinguish renames, deleted paths, unstaged changes, and unchanged counterparts", async (t) => {

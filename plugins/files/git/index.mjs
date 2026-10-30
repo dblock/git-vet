@@ -166,10 +166,10 @@ async function local(root) {
     filters.map((key) => key.slice(7, key.lastIndexOf("."))),
   );
   const disabledFilters = [...drivers].flatMap((driver) =>
-    ["clean", "smudge", "process", "required"].flatMap((setting) => [
-      "-c",
-      `filter.${driver}.${setting}=${setting === "required" ? "false" : ""}`,
-    ]),
+    ["clean", "smudge", "process", "required"].map(
+      (setting) =>
+        `filter.${driver}.${setting}=${setting === "required" ? "false" : ""}`,
+    ),
   );
   const status = worktreeChanges(
     (

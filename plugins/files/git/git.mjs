@@ -1,7 +1,6 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
+import { parseEnv } from "@simple-git/argv-parser";
+import { simpleGit } from "simple-git";
 
-const execute = promisify(execFile);
 const decoder = new TextDecoder("utf-8", { fatal: true });
 
 export function error(code, message, cause) {
@@ -11,45 +10,99 @@ export function error(code, message, cause) {
 }
 
 export async function git(root, args, accepted = [0], configuration = []) {
+  const abort = new AbortController();
+  const environment = {
+    ...process.env,
+    GIT_OPTIONAL_LOCKS: "0",
+    GIT_TERMINAL_PROMPT: "0",
+  };
+  let response;
+  let failure;
+  let outputExceeded = false;
   try {
-    const result = await execute(
-      "git",
-      [
-        "--no-optional-locks",
-        "-c",
+    const client = simpleGit({
+      baseDir: root,
+      config: [
         "core.fsmonitor=false",
-        "-c",
         "core.quotepath=false",
         ...configuration,
-        "-C",
-        root,
-        ...args,
       ],
-      {
-        encoding: "buffer",
-        maxBuffer: 256 * 1024 * 1024,
-        env: {
-          ...process.env,
-          GIT_OPTIONAL_LOCKS: "0",
-          GIT_TERMINAL_PROMPT: "0",
-        },
+      abort: abort.signal,
+      completion: { onClose: true, onExit: false },
+      allowEnvironment: Object.keys(environment),
+      // Preserve trusted caller settings without enabling unrelated command overrides.
+      unsafe: {
+        ...Object.fromEntries(
+          parseEnv(environment).vulnerabilities.map(({ category }) => [
+            category,
+            true,
+          ]),
+        ),
+        allowUnsafeFsMonitor: true,
+        allowUnsafeFilter: true,
       },
-    );
-    return { ...result, code: 0 };
+      errors(cause, result) {
+        // Capture metadata before simple-git's raw() decodes it as UTF-8.
+        response = {
+          stdout: Buffer.concat(result.stdOut),
+          stderr: Buffer.concat(result.stdErr),
+          code: result.exitCode,
+        };
+        const detail = response.stderr.toString("utf8").trim();
+        // simple-git serializes spawn errors into stderr, losing their errno.
+        if (outputExceeded) {
+          failure = error(
+            "GIT_COMMAND_FAILED",
+            "Git output exceeded 256 MiB.",
+            cause,
+          );
+        } else if (
+          result.exitCode < 0 &&
+          /\bspawn git ENOENT\b/u.test(detail)
+        ) {
+          failure = error(
+            "GIT_NOT_FOUND",
+            "Git is required by the Git selector.",
+            cause,
+          );
+        } else if (!accepted.includes(result.exitCode)) {
+          failure = error(
+            "GIT_COMMAND_FAILED",
+            `Git ${args[0]} failed: ${detail || cause?.message || `exit ${result.exitCode}`}`,
+            cause,
+          );
+        }
+        return failure ?? (cause && result.exitCode === 0 ? cause : undefined);
+      },
+    }).env(environment);
+    client.outputHandler((_command, stdout, stderr) => {
+      for (const stream of [stdout, stderr]) {
+        let size = 0;
+        stream.on("data", (chunk) => {
+          size += chunk.length;
+          if (size > 256 * 1024 * 1024) {
+            outputExceeded = true;
+            abort.abort();
+          }
+        });
+      }
+    });
+    if (args[0] === "cat-file") {
+      await client.binaryCatFile(args.slice(1));
+    } else {
+      await client.raw(["--no-optional-locks", "--no-pager", ...args]);
+    }
+    if (response === undefined) {
+      throw error("GIT_COMMAND_FAILED", "Git returned no command result.");
+    }
+    return response;
   } catch (cause) {
-    if (accepted.includes(cause.code)) {
-      return { stdout: cause.stdout, stderr: cause.stderr, code: cause.code };
-    }
-    if (cause.code === "ENOENT") {
-      throw error(
-        "GIT_NOT_FOUND",
-        "Git is required by the Git selector.",
-        cause,
-      );
-    }
+    if (failure !== undefined) throw failure;
+    if (["GIT_NOT_FOUND", "GIT_COMMAND_FAILED"].includes(cause.code))
+      throw cause;
     throw error(
       "GIT_COMMAND_FAILED",
-      `Git ${args[0]} failed: ${cause.stderr?.toString("utf8").trim() || cause.message}`,
+      `Git ${args[0]} failed: ${cause.message}`,
       cause,
     );
   }
