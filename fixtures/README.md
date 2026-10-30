@@ -26,7 +26,7 @@ The [consumer harness](integration.mjs) packs and installs the complete producti
 
 Expected files are reviewed fixtures, not generated from the implementation. Empty streams use zero-byte files; exit codes contain `0`, `1`, or `2` and a final newline. Text streams compare exactly. JSON stdout compares parsed objects, retaining all semantic fields and replacing temporary project paths with `<project>`; path separators are normalized only in those absolute paths.
 
-Cases cover LF findings and clean runs, staged versus working-tree content, non-Git installed plugins, replacement profiles, explicit config/root/profile flags, empty JSON output, configuration errors in both formats, unavailable capabilities, native `git svet`, help/version without configuration, and argument errors. Existing component tests retain detailed provider and contract edge-case coverage.
+Cases cover shipped defaults with findings and clean native `git svet` execution, the exported default document, missing Git, empty configuration replacing defaults, staged versus working-tree content, non-Git installed plugins, replacement profiles, explicit config/root/profile flags, empty JSON output, configuration errors in both formats, unavailable capabilities, help/version without configuration, and argument errors. Existing component tests retain detailed provider and contract edge-case coverage.
 
 The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies.
 

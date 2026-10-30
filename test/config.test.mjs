@@ -121,7 +121,11 @@ test("an explicit root bounds discovery while an explicit file is relative to cw
   const root = join(cwd, "project");
   await mkdir(root);
   await writeFile(join(cwd, "svet.config.json"), "{}");
-  await assert.rejects(loadConfig({ cwd, root: "project" }), {
+  const defaults = await loadConfig({ cwd, root: "project" });
+  assert.equal(defaults.source.kind, "defaults");
+  assert.equal(defaults.root, root);
+  assert.notEqual(defaults.moduleRoot, cwd);
+  await assert.rejects(loadConfig({ cwd, root: "project", defaults: null }), {
     code: "DEFAULT_CONFIG_UNAVAILABLE",
   });
   const config = await loadConfig({

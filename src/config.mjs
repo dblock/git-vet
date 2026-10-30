@@ -1,10 +1,15 @@
 import { lstat, readFile, stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import defaultConfig from "../defaults.mjs";
 import { Error, invariant } from "./errors.mjs";
 import { isRecord } from "./contracts.mjs";
 
 const filenames = ["svet.config.mjs", "svet.config.json"];
+const shippedDefaults = {
+  config: defaultConfig,
+  directory: fileURLToPath(new URL("../", import.meta.url)),
+};
 
 function assert(condition, message) {
   invariant(condition, "INVALID_CONFIG", message);
@@ -175,7 +180,7 @@ export async function loadConfig({
   root,
   configFile,
   profile,
-  defaults,
+  defaults = shippedDefaults,
 } = {}) {
   assert(typeof cwd === "string" && cwd.length > 0, "cwd must be a directory.");
   assert(
@@ -212,7 +217,7 @@ export async function loadConfig({
       typeof defaults.directory === "string" &&
       defaults.directory.length > 0,
     "DEFAULT_CONFIG_UNAVAILABLE",
-    "Shipped defaults are not implemented yet; supply a configuration file or an explicit defaults document.",
+    "Defaults must provide a config document and a module directory.",
   );
   return {
     ...resolveConfig(defaults.config, { profile }),

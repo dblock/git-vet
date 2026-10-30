@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#22](https://github.com/dblock/svet/pull/22): Run an inspectable shipped default plan without user configuration, selecting Git-tracked text and checking indexed LF line endings while preserving complete custom replacement - [@dblock](https://github.com/dblock).
 - [#20](https://github.com/dblock/svet/pull/20): Add an experimental `svet` / `git svet` CLI with configuration overrides, terminal and JSON reports, and explicit findings/error exit codes - [@dblock](https://github.com/dblock).
 - [#16](https://github.com/dblock/svet/pull/16): Add an independently packaged LF check for captured Git index text blobs, with explicit skips and first-offending-line diagnostics - [@dblock](https://github.com/dblock).
 - [#17](https://github.com/dblock/svet/pull/17): Configure `files` with scoped plugin names or glob shortcuts, backed by an independently packaged filesystem glob selector and snapshot-preserving filters - [@dblock](https://github.com/dblock).
