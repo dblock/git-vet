@@ -11,18 +11,6 @@ export default {
 };
 ```
 
-The glob is only shorthand for selecting this ordinary plugin with `options: { pattern: "**/*.js" }`:
-
-```js
-export default {
-  files: {
-    plugin: "@git-vet/files-glob",
-    options: { pattern: "**/*.js" },
-  },
-  checks: [{ plugin: "./tools/check.mjs" }],
-};
-```
-
 ## Sources and Filters
 
 As the first `files` stage, the plugin discovers matching paths under the project root using Node's filesystem glob implementation. It captures regular-file bytes during selection and returns copied `Uint8Array` snapshots, including binary files. Matched directories, symlinks, and special files are explicitly excluded from content selection. It does not traverse directory symlinks, follow selected file symlinks for content, or rewrite files. Read/discovery failures are execution errors.
@@ -45,3 +33,17 @@ Patterns use case-sensitive POSIX `/` paths, with braces, wildcards, and explici
 A filesystem source provides `content.snapshot: true`, `content.text: { isText(bytes) }` (no NUL in the first 8000 bytes), and `fs.inventory`. Inventory contains the matched records plus their parent directory records, not an exhaustive listing of unmatched files under the root. Subsequent narrowing preserves that source inventory unchanged.
 
 Records have stable `glob:<path>` identities, root-relative POSIX paths, and `metadata.kind`. Captured files additionally have `metadata.text`, a SHA-256 `snapshot` with kind `filesystem`, and a reader. Reportable context identifies root, pattern, and snapshot kind. It does not expose a fabricated `git.index`; index-specific checks are explicitly incompatible with a filesystem-only source.
+
+## Advanced Configuration
+
+The glob shorthand selects this ordinary plugin with `options: { pattern: "**/*.js" }`. The equivalent expanded configuration is:
+
+```js
+export default {
+  files: {
+    plugin: "@git-vet/files-glob",
+    options: { pattern: "**/*.js" },
+  },
+  checks: [{ plugin: "./tools/check.mjs" }],
+};
+```

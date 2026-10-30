@@ -9,6 +9,7 @@
 - User configuration completely replaces shipped defaults. Empty and partial configurations must not restore omitted `files` stages, checks, profiles, options, or exclusions.
 - Configure selection through `files`, not `selectors`. A glob is only shorthand for the public `@git-vet/files-glob` selector; keep discovery and matching in that plugin, not core. Ordered stages narrow candidates and preserve their snapshots and capabilities.
 - Place file selector packages under `plugins/files/<name>` and their tests under `test/plugins/files/<name>.test.mjs`.
+- Place checking plugins under `plugins/checks/<name>` and their tests under `test/plugins/checks/<name>.test.mjs`.
 - Providers own candidate identity, snapshots, metadata, optional capabilities, and selection provenance. Checks must declare their requirements and explicitly report incompatibility.
 - Preserve full-inventory context when narrowing selected files. Do not confuse changed files with newly introduced findings.
 - Keep the initial selector contract open to later composition without prematurely implementing unrequested providers or pipeline operators.
@@ -26,6 +27,7 @@
 
 - Use `.mjs` for JavaScript modules, existing Node.js APIs, ESLint, and Prettier. Prefer the simplest implementation that satisfies the documented contracts.
 - Keep Markdown paragraphs on one source line. Use LF line endings and preserve intended formatting through the project configuration.
+- Lead configuration examples with `files` plugin-name or glob shorthand. Reserve expanded file plugin/options examples for advanced configuration sections.
 - Add focused tests for introduced behavior, including external plugins, unselected-plugin non-loading, configuration replacement, capability mismatches, and non-Git operation where relevant.
 - Test actual staged/revision snapshots and packaged execution when implementing those features. Do not replace these with working-tree or source-checkout proxies.
 - Run `npm run lint` and the relevant tests immediately before committing. Do not add tests solely for constants or trivial accessors.
