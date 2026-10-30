@@ -1,0 +1,2 @@
+error [CAPABILITY_UNAVAILABLE] check path/case: Required capabilities unavailable: fs.inventory.
+error [CAPABILITY_UNAVAILABLE] check path/case-collision: Required capabilities unavailable: fs.inventory.

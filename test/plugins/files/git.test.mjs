@@ -16,6 +16,8 @@ import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import selector from "@svet/files-git";
+import collisionCheck from "@svet/check-path-case-collision";
+import caseCheck from "@svet/check-path-case";
 import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
 
 const execute = promisify(execFile);
@@ -68,6 +70,81 @@ function paths(selection) {
 }
 
 const decode = (bytes) => new TextDecoder().decode(bytes);
+
+test("path checks compare staged additions with unchanged indexed names and allow a resulting case-only rename", async (t) => {
+  const root = await repository(t);
+  await git(root, "config", "core.ignorecase", "false");
+  await write(root, "blob.txt", "snapshot\n");
+  const oid = (await git(root, "hash-object", "-w", "--", "blob.txt")).trim();
+  await git(
+    root,
+    "update-index",
+    "--add",
+    "--cacheinfo",
+    "100644",
+    oid,
+    "Foo.txt",
+  );
+  await git(root, "commit", "--quiet", "-m", "Original indexed name");
+  await git(
+    root,
+    "update-index",
+    "--add",
+    "--cacheinfo",
+    "100644",
+    oid,
+    "foo.txt",
+  );
+  const index = await readFile(join(root, ".git", "index"));
+  const selection = await select(root, { mode: "staged" });
+  assert.deepEqual(paths(selection), ["foo.txt"]);
+  assert.deepEqual(
+    (await collisionCheck.check({ selection })).findings[0].paths,
+    ["Foo.txt", "foo.txt"],
+  );
+  assert.deepEqual(
+    (await caseCheck.check({ selection })).findings.map(
+      (finding) => finding.path,
+    ),
+    ["Foo.txt"],
+  );
+  assert.deepEqual(await readFile(join(root, ".git", "index")), index);
+  await git(root, "update-index", "--force-remove", "--", "Foo.txt");
+  const renamed = await select(root, { mode: "staged" });
+  assert.deepEqual(
+    (await collisionCheck.check({ selection: renamed })).findings,
+    [],
+  );
+});
+
+test("path checks retain binary-only collisions even when no content candidates are selected", async (t) => {
+  const root = await repository(t);
+  await git(root, "config", "core.ignorecase", "false");
+  await write(root, "blob.bin", Buffer.from([0, 255]));
+  const oid = (await git(root, "hash-object", "-w", "--", "blob.bin")).trim();
+  for (const path of ["Image.png", "image.png"])
+    await git(
+      root,
+      "update-index",
+      "--add",
+      "--cacheinfo",
+      "100644",
+      oid,
+      path,
+    );
+  const selection = await select(root, { mode: "staged" });
+  assert.deepEqual(paths(selection), []);
+  assert.deepEqual(
+    (await collisionCheck.check({ selection })).findings[0].paths,
+    ["Image.png", "image.png"],
+  );
+  assert.deepEqual(
+    (await caseCheck.check({ selection })).findings.map(
+      (finding) => finding.path,
+    ),
+    ["Image.png"],
+  );
+});
 
 test("tracked-text defaults retain unchanged/new staged text, binary/directory inventory, and provenance", async (t) => {
   const root = await repository(t);

@@ -32,6 +32,14 @@ A selection contains `candidates` with unique ids and a `capabilities` object, e
 
 Optional `decisions` contains `{ state, reason, path?, candidateId? }` records. States are `selected`, `filtered`, `excluded`, and `unavailable`. Reasons identify why a selector included or omitted a path; absence from the candidate list alone does not establish that it was scanned or excluded. Optional `context` is an explicitly reportable JSON-safe object for scope/baseline descriptions, not a dump of internal metadata or secrets.
 
+### Path Inventory Capability
+
+The shipped path checks require `"fs.inventory"` as an array of records with a nonempty, well-formed Unicode `path` and `metadata.kind`: `file`, `directory`, `symlink`, `submodule`, `untracked`, or `special`. Paths are provider-relative POSIX strings without leading/trailing slashes, empty components, `.` components, or `..` traversal; a directory record for the root `.` is allowed and ignored. Backslashes are literal name characters, not separators.
+
+The public `@svet/files-glob/inventory` export provides `pathInventory(selection)`. It validates this contract, infers directory prefixes, deduplicates entries, and returns deterministic `{ path, kind: "file" | "directory" }` records without readers or filesystem queries. Submodules use directory semantics; symlinks, untracked file entries, and special files use leaf semantics. Contradictory file/directory descriptions of exactly one path are errors, not an arbitrary winning entry.
+
+Inventory completeness belongs to the provider. Git exposes all current tracked paths (plus opted-in untracked paths), even when content candidates are filtered, binary, missing, or scoped to changes. Glob sources expose their matched inventory and ancestors, not unseen files. Project-level path checks inspect that whole inventory, not merely `selection.candidates`, and never augment it with historical paths from change provenance.
+
 ## Checks
 
 ```js

@@ -6,7 +6,8 @@
   "type": "module",
   "exports": {
     ".": "./index.mjs",
-    "./fixes": "./fixes.mjs"
+    "./fixes": "./fixes.mjs",
+    "./inventory": "./inventory.mjs"
   },
   "files": [
     "*.mjs",

@@ -1,0 +1,15 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: git/tracked-text (selected) -> files/glob (empty)
+Checks: path/case-collision (completed)
+filtered File: Glob "selected.txt" did not match.
+filtered Foo.txt: Glob "selected.txt" did not match.
+filtered Src/a.txt: Glob "selected.txt" did not match.
+filtered file/a.txt: Glob "selected.txt" did not match.
+filtered foo.txt: Glob "selected.txt" did not match.
+filtered src/b.txt: Glob "selected.txt" did not match.
+filtered svet.config.mjs: Glob "selected.txt" did not match.
+File, file: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+Foo.txt, foo.txt: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+Src, src: error [path/case-collision/case-collision]: Paths collide under NFC normalization and Unicode case folding.
+Selected 0; checked 0; findings 3; skipped 0; failed 0; unavailable 0.

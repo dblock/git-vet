@@ -1,0 +1,5 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: (none)
+Checks: path/case (unavailable), path/case-collision (unavailable)
+Selected 0; checked 0; findings 0; skipped 0; failed 0; unavailable 2.

@@ -1,0 +1,12 @@
+[
+  { "path": "STRASSE.TXT", "source": "blob.txt" },
+  { "path": "Straße.txt", "source": "blob.txt" },
+  { "path": "strasse.txt", "source": "blob.txt" },
+  { "path": "cafe\u0301.txt", "source": "blob.txt" },
+  { "path": "café.txt", "source": "blob.txt" },
+  { "path": "Σ.txt", "source": "blob.txt" },
+  { "path": "ς.txt", "source": "blob.txt" },
+  { "path": "σ.txt", "source": "blob.txt" },
+  { "path": "Image.png", "source": "binary.bin" },
+  { "path": "image.png", "source": "binary.bin" }
+]

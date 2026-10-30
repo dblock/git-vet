@@ -187,6 +187,35 @@ export async function createConsumer(t) {
           await cp(join(fixture, "index"), project, { recursive: true });
         git("add", "--all");
         if (index) await cp(source, project, { recursive: true });
+        if ((await readdir(fixture)).includes("index-entries.json")) {
+          git("config", "core.ignorecase", "false");
+          git("config", "core.precomposeunicode", "false");
+          const entries = JSON.parse(
+            await readFile(join(fixture, "index-entries.json"), "utf8"),
+          );
+          assert.ok(Array.isArray(entries));
+          for (const entry of entries) {
+            assert.ok(
+              typeof entry.path === "string" &&
+                typeof entry.source === "string",
+            );
+            const oid = git(
+              "hash-object",
+              "-w",
+              "--no-filters",
+              "--",
+              join(fixture, entry.source),
+            ).trim();
+            git(
+              "update-index",
+              "--add",
+              "--cacheinfo",
+              "100644",
+              oid,
+              entry.path,
+            );
+          }
+        }
       }
       const env = {
         ...environment,

@@ -67,8 +67,12 @@ Exit codes are `0` for a completed or intentionally empty run, `1` for findings,
 | [`@svet/check-git-index-eol`](plugins/checks/git-index-eol/README.md) | Configurable line endings in captured Git index blobs, regardless of unstaged edits. | No |
 | [`@svet/check-file-eol`](plugins/checks/file-eol/README.md) | Configurable line endings in the selected content snapshot; filesystem and Git working-tree sources capture actual file contents. | Yes |
 | [`@svet/check-file-trailing-whitespace`](plugins/checks/file-trailing-whitespace/README.md) | Trailing spaces/tabs or configured single Unicode characters in captured file contents. | No |
+| [`@svet/check-path-case`](plugins/checks/path-case/README.md) | Lowercase/uppercase names with shared defaults, file/directory overrides, and exceptions across provider inventory. | No |
+| [`@svet/check-path-case-collision`](plugins/checks/path-case-collision/README.md) | Unicode case-insensitive file/directory collisions across provider inventory, including binary and unselected paths. | No |
 
 Both EOL checks default to LF. To require CRLF instead, configure `{ plugin: "@svet/check-file-eol", options: { eol: "crlf" } }`; `"cr"` and the `"cr-lf"` spelling are also supported.
+
+The path-case check defaults to lowercase files and directories. Configure `{ plugin: "@svet/check-path-case", options: { case: "lower", files: { exceptions: ["README.md", "LICENSE"] } } }` for file-specific exceptions, or `files: false` to check only directory casing. The collision check has no options. Both inspect full provider inventory even after content selection is narrowed, and neither renames paths.
 
 See [configuration](docs/configuration.md), [CLI and API usage](docs/running.md), [plugin contracts](docs/plugin-api.md), and the [changelog](CHANGELOG.md).
 

@@ -1,0 +1,26 @@
+{
+  "name": "@svet/check-path-case",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Configurable file and directory casing policies for Svet inventories.",
+  "type": "module",
+  "exports": "./index.mjs",
+  "files": [
+    "*.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dblock/svet.git",
+    "directory": "plugins/checks/path-case"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "@svet/files-glob": "0.1.0",
+    "picomatch": "4.0.7"
+  }
+}

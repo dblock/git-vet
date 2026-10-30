@@ -38,6 +38,8 @@ A filesystem source provides `content.snapshot: true`, `content.text: { isText(b
 
 Records have stable `glob:<path>` identities, root-relative POSIX paths, and `metadata.kind`. Captured files additionally have `metadata.text`, a SHA-256 `snapshot` with kind `filesystem`, and a reader. Reportable context identifies root, pattern, and snapshot kind. It does not expose a fabricated `git.index`; index-specific checks are explicitly incompatible with a filesystem-only source.
 
+`@svet/files-glob/inventory` exports the pure `pathInventory(selection)` helper for provider-independent inventory checks. It validates paths/kinds, infers parent directories, deduplicates and sorts names, and never invokes the selector or reads content. The [path case](../../checks/path-case/README.md) and [collision](../../checks/path-case-collision/README.md) checks share this public contract. They inspect the source inventory even when later filters leave no selected content candidates.
+
 ## Advanced Configuration
 
 The glob shorthand selects this ordinary plugin with `options: { pattern: "**/*.js" }`. The equivalent expanded configuration is:

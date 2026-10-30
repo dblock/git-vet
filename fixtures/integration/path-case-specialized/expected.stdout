@@ -1,0 +1,9 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: files/glob (selected)
+Checks: path/case (completed)
+excluded API: Only regular files provide glob content snapshots.
+excluded Src: Only regular files provide glob content snapshots.
+Src: error [path/case/case]: Directory name must be lowercase.
+API/lower.txt: error [path/case/case]: Filename must be uppercase.
+Selected 4; checked 0; findings 2; skipped 0; failed 0; unavailable 0.

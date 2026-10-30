@@ -102,6 +102,49 @@ export default {
 
 To customize the character set, use `{ plugin: "@svet/check-file-trailing-whitespace", options: { whitespace: ["space", "tab", "x", "\u00a0"] } }`. The nonempty list replaces the defaults and accepts named spaces/tabs or any single Unicode code point except CR/LF. Literal characters match their exact UTF-8 bytes; no normalization occurs. Only configured terminal characters are rejected, including on whitespace-only or nonterminated lines. This check is read-only and follows the selected snapshot, including staged or revision contents.
 
+### Path Casing and Collisions
+
+These are separate opt-in, metadata-only checks. Casing shorthand requires lowercase filenames and directory components; collision shorthand detects distinct NFC/Unicode-case-fold-equivalent paths without prescribing a naming style:
+
+```js
+export default {
+  files: "@svet/files-git",
+  checks: [
+    "@svet/check-file-eol",
+    "@svet/check-path-case",
+    "@svet/check-path-case-collision",
+  ],
+};
+```
+
+Both require `fs.inventory` and inspect the provider's full inventory, including binaries, directory prefixes, and unselected entries. Changed/staged scopes, content exclusions, and later globs do not hide inventory findings or unchanged counterparts. Filesystem globs can be the source without Git, but only expose their discovered inventory. Neither check reads content or offers renaming fixes.
+
+Use shared defaults and per-category overrides for casing:
+
+```js
+export default {
+  files: "**/*",
+  checks: [
+    {
+      plugin: "@svet/check-path-case",
+      options: {
+        case: "lower",
+        exceptions: ["LICENSE"],
+        files: {
+          case: "lower",
+          exceptions: ["README.md", "LICENSE", "**/Dockerfile"],
+        },
+        directories: { exceptions: ["API"] },
+      },
+    },
+  ],
+};
+```
+
+Shared `case` defaults to `"lower"` and accepts `"upper"`. `files` and `directories` accept override objects (`case`, `exceptions`) or `false` to disable that category. Omitted fields inherit shared settings; explicit exception arrays replace rather than merge. Both categories cannot be disabled together; omit the plugin instead. Filenames include their extensions, and directory names are checked independently.
+
+Exceptions are positive, case-sensitive provider-relative globs, including dotfiles. `README.md` exempts only that root file; `**/README.md` also matches nested files. A file exception never exempts its parent directory. Exceptions apply only to casing, never collision detection. See the [case](../plugins/checks/path-case/README.md) and [collision](../plugins/checks/path-case-collision/README.md) contracts for Unicode comparison and inventory semantics.
+
 ## Profiles and Overrides
 
 First choose the entire user or default document; then select `profile`, if requested, exclusively from that document. A profile completely replaces the base `files` and `checks`, not merges them. An empty profile stays empty. An unknown profile is an error, including when that name exists only in omitted defaults.

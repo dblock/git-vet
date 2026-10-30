@@ -1,0 +1,8 @@
+[
+  { "path": "Foo.txt", "source": "blob.txt" },
+  { "path": "foo.txt", "source": "blob.txt" },
+  { "path": "Src/a.txt", "source": "blob.txt" },
+  { "path": "src/b.txt", "source": "blob.txt" },
+  { "path": "File", "source": "blob.txt" },
+  { "path": "file/a.txt", "source": "blob.txt" }
+]

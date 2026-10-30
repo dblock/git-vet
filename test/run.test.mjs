@@ -30,6 +30,55 @@ async function module(root, name, body) {
   return path;
 }
 
+test("path checks require inventory, inspect metadata-only selections, and report unavailable fixes without mutation", async (t) => {
+  const root = await workspace(t);
+  const casing = import.meta.resolve("@svet/check-path-case");
+  const collision = import.meta.resolve("@svet/check-path-case-collision");
+  const missing = await run(
+    await configure(root, { checks: [casing, collision] }),
+  );
+  assert.equal(missing.exitCode, 2);
+  assert.ok(missing.checks.every((check) => check.status === "unavailable"));
+  const provider = await module(
+    root,
+    "inventory.mjs",
+    `
+    export default {apiVersion:1,id:"example/inventory",kind:"selector",async select() {
+      return {candidates:[],capabilities:{"fs.inventory":[
+        {path:"Foo.txt",metadata:{kind:"file",text:false}},
+        {path:"foo.txt",metadata:{kind:"file",text:false}}
+      ]}};
+    }};
+  `,
+  );
+  const config = await configure(root, {
+    files: { plugin: provider },
+    checks: [{ plugin: casing, severity: "warning" }, collision],
+  });
+  const result = await run(config, { fix: true });
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.summary.checkedInvocations, 2);
+  assert.equal(result.summary.checkedFiles, 0);
+  assert.equal(result.fix.summary.unavailable, 2);
+  assert.ok(
+    result.findings.some(
+      (finding) =>
+        finding.pluginId === "path/case" && finding.severity === "warning",
+    ),
+  );
+  assert.deepEqual(
+    result.findings.find(
+      (finding) => finding.pluginId === "path/case-collision",
+    ).paths,
+    ["Foo.txt", "foo.txt"],
+  );
+  const omitted = await run(
+    await configure(root, { files: { plugin: provider } }),
+  );
+  assert.deepEqual(omitted.checks, []);
+  assert.deepEqual(omitted.findings, []);
+});
+
 test("async checks retain findings and independent results after a snapshot read fails", async (t) => {
   const root = await workspace(t);
   await writeFile(join(root, "a.txt"), "working tree must not be read");
