@@ -2,7 +2,7 @@
 
 `@git-vet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
 
-The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependency. It is not automatically selected by core or a shipped default configuration.
+The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependencies, including `simple-git` for Git process execution, its public `@simple-git/argv-parser` environment parser, and `picomatch` for exclusions. `simple-git` wraps the installed Git executable; it does not replace Git or download it. The provider is not automatically selected by core or a shipped default configuration.
 
 ```js
 export default {
@@ -49,7 +49,7 @@ Untracked files are excluded unless `includeUntracked: true`. Ignored untracked 
 
 Deleted or missing working-tree paths are reported unavailable without inventing content; staged/revision deletions appear in change metadata but not the current snapshot inventory. Symlinks and submodules remain in inventory but are not selected as regular-file content; working-tree symlink replacements are not followed. Unmerged index entries fail local selection explicitly rather than choosing an arbitrary conflict stage. Revision mode is independent of the current index.
 
-Git path parsing uses NUL-separated output and preserves spaces, Unicode, tabs, newlines, and backslashes where the filesystem supports them. Paths not representable as UTF-8 fail explicitly instead of being decoded lossily. Bare repositories are not supported.
+Git path parsing uses NUL-separated output and preserves spaces, Unicode, tabs, newlines, and backslashes where the filesystem supports them. Paths not representable as UTF-8 fail explicitly instead of being decoded lossily. The provider retains its byte-oriented metadata parsers and uses `simple-git`'s public output/error hooks and binary blob reader so command output is not lossily decoded. Bare repositories are not supported.
 
 ## Public Capabilities
 
@@ -67,4 +67,4 @@ Selection decisions label `selected`, `filtered`, `excluded`, and `unavailable` 
 
 Git errors carry provider-specific codes such as `GIT_NOT_FOUND`, `GIT_NOT_REPOSITORY`, `GIT_INVALID_REFERENCE`, `GIT_BASELINE_UNAVAILABLE`, `GIT_UNMERGED_INDEX`, and `GIT_CONTENT_UNAVAILABLE`. The runner retains these as `pluginCode` alongside its execution-error classification.
 
-All commands are read-only. Optional index-refresh locks and fsmonitor hooks are disabled. Configured external clean/smudge/process filters are disabled for status classification, so raw working-tree bytes that differ from filtered index representations can be reported modified. Revision diffing disables external diff/textconv commands. Content reads do not invoke smudge filters, build artifacts, install hooks, stage, stash, normalize, or rewrite files. Configuration/plugins remain trusted code rather than an operating-system sandbox.
+All commands are read-only. Optional index-refresh locks and fsmonitor hooks are disabled. Configured external clean/smudge/process filters are disabled for status classification, so raw working-tree bytes that differ from filtered index representations can be reported modified. Revision diffing disables external diff/textconv commands. Content reads do not invoke smudge filters, build artifacts, install hooks, stage, stash, normalize, or rewrite files. The caller's environment remains trusted and is explicitly passed through `simple-git`, including `GIT_INDEX_FILE` for alternate indexes and caller-supplied Git configuration. Guard categories used by that trusted environment are permitted using the library's environment parser. The fsmonitor/filter categories are also permitted because their guards reject disabling these commands; unrelated command guards remain active. Optional locks, terminal prompts, and paging are disabled, and these read-only commands never launch an editor. Command output is limited to 256 MiB per stream. Configuration/plugins remain trusted code rather than an operating-system sandbox.

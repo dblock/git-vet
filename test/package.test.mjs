@@ -63,23 +63,11 @@ test("packed driver runs independent timestamp, glob, Git, and indexed LF plugin
       )[0].filename,
     );
   }
-  const driverArchive = pack(driver);
-  const pluginArchive = pack(fixture);
-  const resolverArchive = pack(
-    fileURLToPath(new URL(".", import.meta.resolve("import-meta-resolve"))),
-  );
-  const gitArchive = pack(
-    fileURLToPath(new URL("../plugins/files/git/", import.meta.url)),
-  );
-  const globArchive = pack(
-    fileURLToPath(new URL("../plugins/files/glob/", import.meta.url)),
-  );
-  const indexLfArchive = pack(
-    fileURLToPath(new URL("../plugins/checks/index-lf/", import.meta.url)),
-  );
-  const picomatchArchive = pack(
-    fileURLToPath(new URL(".", import.meta.resolve("picomatch"))),
-  );
+  const archives = npm(["ls", "--all", "--omit=dev", "--parseable"], driver)
+    .trim()
+    .split(/\r?\n/u)
+    .map(pack);
+  archives.push(pack(fixture));
   await writeFile(
     join(consumer, "package.json"),
     '{"private":true,"type":"module"}',
@@ -91,13 +79,7 @@ test("packed driver runs independent timestamp, glob, Git, and indexed LF plugin
       "--ignore-scripts",
       "--no-audit",
       "--no-fund",
-      driverArchive,
-      pluginArchive,
-      resolverArchive,
-      gitArchive,
-      globArchive,
-      indexLfArchive,
-      picomatchArchive,
+      ...archives,
     ],
     consumer,
   );

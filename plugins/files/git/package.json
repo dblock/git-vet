@@ -20,6 +20,8 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
-    "picomatch": "4.0.7"
+    "@simple-git/argv-parser": "2.0.1",
+    "picomatch": "4.0.7",
+    "simple-git": "4.0.2"
   }
 }
