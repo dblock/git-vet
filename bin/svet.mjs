@@ -13,11 +13,13 @@ Options:
   --root <directory>    Override the project root
   --profile <name>      Select a replacement configuration profile
   --format <text|json>  Output format (default: text)
+  --fix                 Apply supported working-tree fixes and recheck
+  --dry-run             Preview checking or fixing without applying fixes
   -h, --help           Show this help
   -v, --version        Show the version
 
-Exit codes: 0 completed or intentionally empty; 1 findings; 2 errors.
-Defaults: Git-tracked text files checked for LF line endings in the Git index.
+Exit codes: 0 completed, intentionally empty, or checking preview; 1 findings; 2 errors.
+Defaults: Git-tracked text files checked for LF line endings in the working tree.
 `;
 
 function text(value) {
@@ -75,6 +77,22 @@ function terminal(report) {
   if (report.status === "empty") {
     stdout.push(`No checks completed: ${report.emptyReason}.`);
   }
+  if (report.dryRun) {
+    for (const candidate of selection.candidates)
+      stdout.push(`selected ${text(candidate.path)}`);
+    stdout.push("Dry run: checks were not executed.");
+  }
+  if (report.fix) {
+    for (const file of report.fix.files) {
+      stdout.push(
+        `fix ${file.status} ${text(file.path ?? "(project)")}${file.reason ? `: ${text(file.reason)}` : ""}`,
+      );
+    }
+    const counts = report.fix.summary;
+    stdout.push(
+      `Fixes: applied ${counts.applied}; proposed ${counts.proposed}; unavailable ${counts.unavailable}; failed ${counts.failed}.`,
+    );
+  }
   stdout.push(
     `Selected ${summary.selected}; checked ${summary.checkedFiles}; findings ${summary.findings}; skipped ${summary.skippedInvocations}; failed ${summary.failedInvocations}; unavailable ${summary.unavailableChecks}.`,
   );
@@ -97,6 +115,8 @@ try {
       root: { type: "string" },
       profile: { type: "string" },
       format: { type: "string", default: "text" },
+      fix: { type: "boolean" },
+      "dry-run": { type: "boolean" },
       help: { type: "boolean", short: "h" },
       version: { type: "boolean", short: "v" },
     },
@@ -120,7 +140,10 @@ try {
       profile: values.profile,
     });
     phase = "execution";
-    const report = await run(config);
+    const report = await run(config, {
+      fix: values.fix,
+      dryRun: values["dry-run"],
+    });
     if (format === "json") {
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     } else {

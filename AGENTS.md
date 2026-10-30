@@ -18,6 +18,7 @@
 ## Safety and reporting
 
 - Checks are read-only. Never stage, stash, rewrite, rename, build artifacts, install dependencies, install hooks, or fetch plugins while executing checks.
+- Autofix is a separate, explicit runner phase: checks propose snapshot-bound byte edits, and only the source's private writer applies them. Never write to the Git index or committed snapshots.
 - Dependency restoration is separate from execution. Packaged checks must work offline after their declared dependencies are installed; do not download native checker binaries.
 - Treat JavaScript configuration and plugins as trusted executable code, not sandboxed input.
 - Distinguish findings, skips, exclusions, unavailable content/capabilities, configuration errors, and execution failures. Never imply that unprocessed files or an empty run passed validation.

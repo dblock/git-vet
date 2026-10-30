@@ -36,11 +36,12 @@ export default {
   kind: "check",
   scope: "file",
   rules: ["trailing-whitespace"],
+  fixable: true,
   requires: ["content.snapshot", "content.text"],
   validateOptions(options) {
     characters(options);
   },
-  async check({ selection, candidate, options = {} }) {
+  async check({ selection, candidate, options = {}, fix = false }) {
     const patterns = characters(options);
     const text = selection.capabilities["content.text"];
     if (
@@ -64,34 +65,40 @@ export default {
       return { skip: "The selected content snapshot is binary." };
     }
     let start = 0;
+    const findings = [];
+    const edits = [];
     for (let offset = 0, line = 1; offset <= bytes.length; offset++) {
       const byte = bytes[offset];
       if (offset !== bytes.length && byte !== 10 && byte !== 13) continue;
-      if (
-        patterns.some(
+      let end = offset;
+      for (;;) {
+        const pattern = patterns.find(
           (pattern) =>
-            offset - pattern.length >= start &&
+            end - pattern.length >= start &&
             pattern.every(
-              (byte, index) => bytes[offset - pattern.length + index] === byte,
+              (byte, index) => bytes[end - pattern.length + index] === byte,
             ),
-        )
-      ) {
-        return {
-          findings: [
-            {
-              ruleId: "trailing-whitespace",
-              path: candidate.path,
-              location: { line },
-              message:
-                "Selected text contains trailing whitespace. Remove it from the intended source and run the check again.",
-            },
-          ],
-        };
+        );
+        if (!pattern) break;
+        end -= pattern.length;
+      }
+      if (end < offset) {
+        if (!findings.length) {
+          findings.push({
+            ruleId: "trailing-whitespace",
+            path: candidate.path,
+            location: { line },
+            message:
+              "Selected text contains trailing whitespace. Remove it from the intended source and run the check again.",
+          });
+        }
+        if (!fix) return { findings };
+        edits.push({ start: end, end: offset, replacement: new Uint8Array() });
       }
       if (byte === 13 && bytes[offset + 1] === 10) offset++;
       start = offset + 1;
       line++;
     }
-    return { findings: [] };
+    return { findings, ...(fix ? { edits } : {}) };
   },
 };

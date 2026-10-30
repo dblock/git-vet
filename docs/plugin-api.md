@@ -65,6 +65,18 @@ Checks return either `{ findings: [...] }` or `{ skip: "reason" }`. A skip descr
 
 Findings name a declared `ruleId` and nonempty `message`. Optional `severity` is `error` or `warning`; a configured check severity overrides it. Optional `path` identifies a primary path, `paths` represents a cross-file group, and `location: { line, column? }` uses positive one-based positions and requires a primary path. Omit paths for project-level findings. Plugin authors must not include source contents, credentials, or environment dumps in messages or reportable context.
 
+## Fix Proposals and Source Writers
+
+File checks may declare optional `fixable: true`. The runner passes `fix: true` when fix planning is requested. Checks remain read-only and can attach `edits: [{ start, end, replacement }]` to findings. Offsets are safe-integer, zero-based, half-open byte ranges against `candidate.read()`'s captured `Uint8Array`; `replacement` is a `Uint8Array`. Edits cannot name paths, require findings, and cannot accompany a skip. Empty edit arrays are allowed; zero-length edits with empty replacements are not. Project checks cannot propose edits.
+
+The runner binds edits to the current candidate, verifies snapshot bounds, deduplicates identical edits, rejects conflicts, and merges adjacent edits before application. Checks do not receive writers. All affected lines should have proposals even if diagnostics only report the first violation.
+
+Sources receive a boolean `fix` request during selection and may return an optional top-level `fixer: { async validate({ candidate, original, replacement? }), async apply({ candidate, original, replacement }) }`. `original` and `replacement` are byte arrays. Validation must not write. The writer owns target registration, snapshot verification, and mutation semantics; `apply` must repeat validation before replacing content and throw on failure. There is no implicit disk fallback. Later filters receive no writer and may not introduce or replace one.
+
+The core retains the writer privately and never serializes it or passes it into check/filter inputs. A source must never attach writers to capability values, candidate metadata, or reportable context. `@svet/files-glob/fixes` exports `async createFixer(root)`, returning `{ async capture(candidate, bytes), writer }`; the Git working-tree provider reuses this public helper through its declared package dependency. The helper registers exact candidate objects and only replaces regular owned files under its root, subject to the [filesystem safety restrictions](running.md#autofix-and-dry-run).
+
+Unsupported checks/sources remain explicit unavailable fix outcomes, not successful fixes. Writer failures are structured `phase: "fix"` errors. The runner reselects/rechecks after actual application and retains initial errors. Plugins must not include source/replacement bytes in findings, context, or errors.
+
 ## Trust and Read-Only Behavior
 
 Configuration and plugins are trusted JavaScript running as the invoking user, not a sandbox. Read-only behavior is a plugin contract, not an operating-system security boundary. Do not write, rename, stage, stash, build, install dependencies, install hooks, or use runtime network access while checking. The driver never installs missing plugins. Third-party prerequisites must be documented and errors explicit.

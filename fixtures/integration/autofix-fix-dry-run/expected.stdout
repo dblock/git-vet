@@ -1,0 +1,9 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: files/glob (selected)
+Checks: file/eol (completed), file/trailing-whitespace (completed)
+a.txt:1: error [file/eol/eol]: Selected text contains CRLF line endings; expected LF. Convert the intended source to LF and run the check again.
+a.txt:1: error [file/trailing-whitespace/trailing-whitespace]: Selected text contains trailing whitespace. Remove it from the intended source and run the check again.
+fix proposed a.txt
+Fixes: applied 0; proposed 1; unavailable 0; failed 0.
+Selected 1; checked 1; findings 2; skipped 0; failed 0; unavailable 0.

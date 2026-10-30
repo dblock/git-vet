@@ -30,7 +30,11 @@ Cases cover shipped defaults with findings and clean native `git svet` execution
 
 Check module-name shorthand is exercised in JSON and ESM configuration, exported defaults, installed unscoped packages, and a replacement profile mixing strings with severity-configured objects. The `defaults` case retains clean indexed content beneath CRLF working-tree bytes, proving that the default file check inspects the working tree rather than the index.
 
-The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies.
+The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies except for explicitly expected autofix changes.
+
+Autofix cases include a reviewed `fixed/` overlay containing the exact resulting bytes of existing files allowed to change. Their original modes must remain intact; only those files' contents/mtimes and ancestor directory mtimes may differ. All other entries, Git metadata/indexes, and temporary-file absence remain strictly verified. Cases without `fixed/`, including both dry-run modes and unsupported indexed fixes, retain complete immutability assertions.
+
+The `autofix` cases cover combined working-tree EOL/whitespace fixes, checking previews that do not even import a trap check, fix previews with unchanged files, and indexed snapshots with explicitly unavailable fixes.
 
 The `file-eol` case checks filesystem text without Git, including CRLF/lone-CR findings and binary skips. `eol-snapshots` runs both EOL checks against differing indexed and working-tree bytes. `file-eol-staged` proves the file check follows a staged snapshot rather than reading a clean working-tree replacement; `file-eol-missing-capability` reports unavailable content capabilities.
 

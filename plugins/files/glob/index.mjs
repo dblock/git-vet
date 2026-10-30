@@ -3,6 +3,7 @@ import { constants } from "node:fs";
 import { glob, lstat, open } from "node:fs/promises";
 import { isAbsolute, join, posix, relative, sep } from "node:path";
 import picomatch from "picomatch";
+import { createFixer } from "./fixes.mjs";
 
 function matcher(options) {
   if (
@@ -72,7 +73,7 @@ export default {
   validateOptions(options) {
     matcher(options);
   },
-  async select({ root, options, input }) {
+  async select({ root, options, input, fix = false }) {
     const matches = matcher(options);
     if (input !== null) {
       return {
@@ -96,6 +97,7 @@ export default {
     const candidates = [];
     const decisions = [];
     const inventory = new Map();
+    const fixer = fix ? await createFixer(root) : undefined;
     for await (const path of paths(root, options.pattern, matches)) {
       const filename = join(root, path);
       const info = await lstat(filename);
@@ -136,6 +138,7 @@ export default {
         id: createHash("sha256").update(bytes).digest("hex"),
       };
       record.read = async () => new Uint8Array(bytes);
+      if (fixer) await fixer.capture(record, bytes);
       candidates.push(record);
       decisions.push({
         path,
@@ -147,6 +150,7 @@ export default {
     const order = (a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0);
     return {
       candidates: candidates.sort(order),
+      ...(fixer ? { fixer: fixer.writer } : {}),
       capabilities: {
         "content.snapshot": true,
         "content.text": { isText },

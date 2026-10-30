@@ -7,8 +7,10 @@ Options:
   --root <directory>    Override the project root
   --profile <name>      Select a replacement configuration profile
   --format <text|json>  Output format (default: text)
+  --fix                 Apply supported working-tree fixes and recheck
+  --dry-run             Preview checking or fixing without applying fixes
   -h, --help           Show this help
   -v, --version        Show the version
 
-Exit codes: 0 completed or intentionally empty; 1 findings; 2 errors.
-Defaults: Git-tracked text files checked for LF line endings in the Git index.
+Exit codes: 0 completed, intentionally empty, or checking preview; 1 findings; 2 errors.
+Defaults: Git-tracked text files checked for LF line endings in the working tree.

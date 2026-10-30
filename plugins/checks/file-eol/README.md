@@ -46,6 +46,10 @@ Binary snapshots are explicitly skipped using the provider's text classifier. Ev
 
 Convert the intended source to the configured style and select a fresh snapshot by rerunning Svet. With Git index or revision selection, stage or commit the intended correction yourself as appropriate; changing only the working tree does not update those snapshots. The check never writes files, stages changes, installs hooks, or silently switches snapshot kinds.
 
+## Autofix
+
+With `svet --fix`, this check proposes byte edits for every mismatched ending, preserving all other bytes and whether the file has a final newline. The runner applies them only through a writable filesystem or Git working-tree source and rechecks fresh snapshots. `svet --fix --dry-run` prepares and validates those edits without writing. Indexed and committed sources remain read-only; their fixes are explicitly unavailable.
+
 ## Choosing the EOL Check
 
 | Plugin | Reads | Git required |

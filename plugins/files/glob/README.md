@@ -28,6 +28,10 @@ Array stages execute in order and narrow, not union, previous results. Multiple 
 
 Patterns use case-sensitive POSIX `/` paths, with braces, wildcards, and explicit dotfile patterns. Ordinary wildcards do not match hidden path components; use an explicit dot component to select them. Absolute patterns, drive-prefixed patterns, and `..` path components are rejected. There are no implicit Git-ignore, extension, `node_modules`, or vendor exclusions. Only `pattern` is an accepted option.
 
+## Explicit Fixes
+
+Ordinary selection and all check invocations are read-only. When the runner requests `fix: true`, a filesystem source registers selected snapshots and returns a private writer for the separate fix phase. Narrowing filters preserve the source's registered candidates without owning writes. See [autofix safety](../../../docs/running.md#autofix-and-dry-run) for identity/content validation, atomic replacement, permission restrictions, and concurrent-editor limitations. The public `@svet/files-glob/fixes` export provides the same `createFixer(root)` helper to other filesystem-backed providers.
+
 ## Capabilities
 
 A filesystem source provides `content.snapshot: true`, `content.text: { isText(bytes) }` (no NUL in the first 8000 bytes), and `fs.inventory`. Inventory contains the matched records plus their parent directory records, not an exhaustive listing of unmatched files under the root. Subsequent narrowing preserves that source inventory unchanged.

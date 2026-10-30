@@ -28,6 +28,10 @@ Revision mode requires both `base` and `target`; there is no remote/default-bran
 
 The provider discovers the working-tree repository root from the supplied project root, including invocation in subdirectories and linked worktrees. It selects repository-wide paths, reported relative to that Git root with `/` separators. Root discovery belongs to this provider, not generic core.
 
+## Explicit Fixes
+
+Only working-tree snapshots can supply a writer when the runner requests fixes. The provider reuses the public `@svet/files-glob/fixes` helper through its declared dependency; checks still receive no write interface. Staged/index/revision sources never write to disk or the index. Supported fixes replace selected working files, preserve ordinary file permission bits, and leave staging to you. See [autofix safety and dry-run](../../../docs/running.md#autofix-and-dry-run).
+
 ## Advanced Configuration
 
 Use an explicit plugin object when selecting a scope or other options:
