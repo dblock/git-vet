@@ -2,6 +2,8 @@
 
 The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the indexed LF check. User configurations completely replace that plan and can select Git-independent local or installed plugins. Packages remain private and unpublished; see the [README usage example](../README.md#usage) for the intended 0.1.0 installation flow.
 
+The default checking package is `@svet/check-git-index-lf`, with unchanged diagnostic id `git/index-lf`. The opt-in [`@svet/check-file-lf`](../plugins/checks/file-lf/README.md) checks provider-captured contents and can run without Git when used with filesystem globs.
+
 ## CLI
 
 After restoring dependencies in this checkout, run:

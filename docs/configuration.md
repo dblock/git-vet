@@ -1,6 +1,6 @@
 # Configuration
 
-Without a user configuration, the CLI and `loadConfig()` use the ordinary, inspectable [shipped configuration](../defaults.mjs): select Git-tracked text with `@svet/files-git` and run `@svet/check-index-lf`. These plugins are declared runtime dependencies of Svet. No other checking plugins, profiles, or exclusions are enabled implicitly.
+Without a user configuration, the CLI and `loadConfig()` use the ordinary, inspectable [shipped configuration](../defaults.mjs): select Git-tracked text with `@svet/files-git` and run `@svet/check-git-index-lf`. These plugins are declared runtime dependencies of Svet. No other checking plugins, profiles, or exclusions are enabled implicitly.
 
 The default LF check reads captured Git index blobs, not unstaged working-tree edits. Git 2.31+ and a Git working tree are required by the default provider. A custom non-Git configuration replaces that provider and does not require Git.
 
@@ -20,7 +20,7 @@ The returned object contains `source: { kind: "file", path }` or `{ kind: "defau
 // svet.config.mjs
 export default {
   files: "@svet/files-git",
-  checks: [{ plugin: "@svet/check-index-lf" }],
+  checks: [{ plugin: "@svet/check-git-index-lf" }],
 };
 ```
 
@@ -29,6 +29,17 @@ A user file completely replaces the supplied defaults, including profiles and al
 For example, `svet.config.json` containing `{}` intentionally runs no plugins, even when Git is unavailable. A file containing only `checks` does not inherit the default Git provider; missing required capabilities are reported explicitly.
 
 ## Files
+
+For LF checks on filesystem contents without Git, install `@svet/check-file-lf` beside your configuration and replace the default plan:
+
+```js
+export default {
+  files: "**/*.txt",
+  checks: [{ plugin: "@svet/check-file-lf" }],
+};
+```
+
+The file check reads the selected provider snapshot, not live disk after selection. Filesystem and Git working-tree sources capture actual file contents; staged/index and revision providers retain their indexed or committed snapshots. The default `@svet/check-git-index-lf` instead reads captured Git index blobs even when selection uses working-tree content.
 
 `files` replaces the former `selectors` field; the old name is an error, not an alias. It accepts a single scoped plugin name, a glob string, a `{ plugin, options? }` object, or an ordered array of these:
 

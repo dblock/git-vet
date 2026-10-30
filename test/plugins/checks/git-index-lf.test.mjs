@@ -13,7 +13,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import check from "@svet/check-index-lf";
+import check from "@svet/check-git-index-lf";
 import selector from "@svet/files-git";
 import { loadConfig, run } from "../../../src/index.mjs";
 
@@ -53,7 +53,7 @@ async function inspect(root, options = {}) {
         directory: moduleRoot,
         config: {
           files: [{ plugin: "@svet/files-git", options }],
-          checks: [{ plugin: "@svet/check-index-lf" }],
+          checks: [{ plugin: "@svet/check-git-index-lf" }],
         },
       },
     }),
@@ -217,7 +217,7 @@ test("missing and revision-only index capabilities are unavailable rather than f
       root,
       defaults: {
         directory: moduleRoot,
-        config: { checks: [{ plugin: "@svet/check-index-lf" }] },
+        config: { checks: [{ plugin: "@svet/check-git-index-lf" }] },
       },
     }),
   );

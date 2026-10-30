@@ -42,11 +42,23 @@ Selected 4; checked 4; findings 1; skipped 0; failed 0; unavailable 0.
 
 Exit codes are `0` for a completed or intentionally empty run, `1` for findings, and `2` for errors. To customize selection or checks, add [`svet.config.mjs` or `svet.config.json`](docs/configuration.md); your configuration completely replaces the defaults.
 
-## Status
+## Plugins
 
-This repository contains an experimental [CLI and programmatic runner](docs/running.md), [public plugin contract](docs/plugin-api.md), [replacement-only configuration loader](docs/configuration.md), [shipped defaults](defaults.mjs), [Git file provider](plugins/files/git/README.md), [glob file selector](plugins/files/glob/README.md), and [indexed LF check](plugins/checks/index-lf/README.md). Packages remain private and unpublished; the usage example assumes the planned 0.1.0 release. Additional checking plugins remain under development in the [project issues](https://github.com/dblock/svet/issues).
+### File Selection
 
-See the [changelog](CHANGELOG.md) for implemented features.
+| Plugin | Selects | Enabled by default |
+| --- | --- | --- |
+| [`@svet/files-git`](plugins/files/git/README.md) | Git-tracked text, with working-tree, index, staged, and revision selection. | Yes |
+| [`@svet/files-glob`](plugins/files/glob/README.md) | Filesystem globs, or narrowing filters over an earlier selection. | No |
+
+### Checks
+
+| Plugin | Checks | Enabled by default |
+| --- | --- | --- |
+| [`@svet/check-git-index-lf`](plugins/checks/git-index-lf/README.md) | LF line endings in captured Git index blobs, regardless of unstaged edits. | Yes |
+| [`@svet/check-file-lf`](plugins/checks/file-lf/README.md) | LF line endings in the selected content snapshot; filesystem and Git working-tree sources capture actual file contents. | No |
+
+Packages remain private and unpublished; the usage example assumes the planned 0.1.0 release. See [configuration](docs/configuration.md), [CLI and API usage](docs/running.md), [plugin contracts](docs/plugin-api.md), and the [changelog](CHANGELOG.md).
 
 ## Design
 

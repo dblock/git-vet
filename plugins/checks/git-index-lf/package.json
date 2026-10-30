@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-index-lf",
+  "name": "@svet/check-git-index-lf",
   "version": "0.1.0",
   "private": true,
   "description": "Read-only LF validation of selected Git index text blobs for Svet.",
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dblock/svet.git",
-    "directory": "plugins/checks/index-lf"
+    "directory": "plugins/checks/git-index-lf"
   },
   "engines": {
     "node": ">=22.18.0"

@@ -1,0 +1,7 @@
+{
+  "files": {
+    "plugin": "@svet/files-git",
+    "options": { "mode": "staged" }
+  },
+  "checks": [{ "plugin": "@svet/check-file-lf" }]
+}
