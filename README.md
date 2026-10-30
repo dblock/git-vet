@@ -1,9 +1,6 @@
 # GitVet
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="artwork/logo-dark.svg">
-  <img src="artwork/logo.svg" alt="GitVet, with its crocodile mascot" width="450">
-</picture>
+<img src="artwork/mascot-badge.png" alt="GitVet's full-standing crocodile mascot in a green circle" width="133">
 
 Git and filesystem linter.
 

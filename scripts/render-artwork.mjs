@@ -47,6 +47,17 @@ const avatar = document(
 
 const variants = [
   ["avatar", avatar, 512],
+  [
+    "mascot-badge",
+    document(
+      "GitVet full-standing crocodile in a green circle",
+      512,
+      512,
+      `<circle cx="256" cy="256" r="248" fill="#C5E6AE"/>
+       <use href="#crocodile" transform="translate(211 210)"/>`,
+    ),
+    512,
+  ],
   ["logo", wordmark("#173D32"), 900],
   ["logo-dark", wordmark("#F6FFE9"), 900],
   ["favicon", avatar, 32],

@@ -9,6 +9,7 @@ GitVet's original crocodile mascot carries a clipboard and a magnifying glass.
 | Asset | SVG | PNG | PNG size |
 | --- | --- | --- | --- |
 | Full mascot, transparent | [Source](mascot.svg) | [Export](mascot.png) | 840 x 940 |
+| Full-body circular badge | [Vector](mascot-badge.svg) | [Export](mascot-badge.png) | 512 x 512 |
 | Circular avatar | [Vector](avatar.svg) | [Export](avatar.png) | 512 x 512 |
 | Wordmark, light backgrounds | [Vector](logo.svg) | [Export](logo.png) | 900 x 250 |
 | Wordmark, dark backgrounds | [Vector](logo-dark.svg) | [Export](logo-dark.png) | 900 x 250 |
@@ -16,6 +17,8 @@ GitVet's original crocodile mascot carries a clipboard and a magnifying glass.
 | Social preview | [Vector](social-preview.svg) | [Export](social-preview.png) | 1200 x 630 |
 
 Use the full mascot when there is room for the inspection tools, and the head for avatars and small icons. Keep the original proportions and leave space around the silhouette. Use the light-lettered wordmark on dark backgrounds.
+
+The main README uses the full-body circular badge at 133 pixels wide, inline beneath the title.
 
 The social preview is ready for use as a repository's social image; committing it does not automatically configure GitHub's repository settings.
 
@@ -47,6 +50,6 @@ npm run format
 npm run artwork
 ```
 
-This regenerates the avatar, both wordmarks, icon, social preview, and optimized PNG exports. Lettering uses Arial with Helvetica and sans-serif fallbacks; rasterized lettering can vary with installed fonts. Review the rendered images after changing geometry or layouts.
+This regenerates the avatar, full-body circular badge, both wordmarks, icon, social preview, and optimized PNG exports. Lettering uses Arial with Helvetica and sans-serif fallbacks; rasterized lettering can vary with installed fonts. Review the rendered images after changing geometry or layouts.
 
 These are optional artwork-development tools, not GitVet runtime dependencies. Ordinary installation, linting, and testing do not require them. The artwork is covered by the repository's [MIT license](../LICENSE).
