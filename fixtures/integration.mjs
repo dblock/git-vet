@@ -38,6 +38,38 @@ async function snapshot(root, prefix = "") {
   return result;
 }
 
+function allowFixes(before, after, expected) {
+  const at = (tree, parts) =>
+    parts.reduce((directory, part, index) => {
+      const entry = directory[parts.slice(0, index + 1).join("/")];
+      assert.ok(entry, `Missing expected fix target: ${parts.join("/")}`);
+      return index === parts.length - 1 ? entry : entry.directory;
+    }, tree);
+  for (const [name, entry] of Object.entries(expected)) {
+    if (entry.directory) {
+      allowFixes(before, after, entry.directory);
+      continue;
+    }
+    const target = ["project files", ...name.split("/")];
+    assert.ok(entry.bytes, "Fix expectations must contain regular files.");
+    const original = at(before, target);
+    const actual = at(after, target);
+    assert.ok(original.bytes, "Fixes may only replace existing regular files.");
+    assert.deepEqual(
+      actual.bytes,
+      entry.bytes,
+      `Incorrect fixed contents: ${target.join("/")}`,
+    );
+    assert.equal(actual.mode, original.mode, "Fixes must preserve file modes.");
+    actual.bytes = original.bytes;
+    actual.mtimeMs = original.mtimeMs;
+    for (let length = 1; length < target.length; length++) {
+      const parent = target.slice(0, length);
+      at(after, parent).mtimeMs = at(before, parent).mtimeMs;
+    }
+  }
+}
+
 export async function createConsumer(t) {
   const root = await realpath(
     await mkdtemp(join(tmpdir(), "svet integration \u03bb ")),
@@ -199,8 +231,12 @@ export async function createConsumer(t) {
       assert.ifError(result.error);
       assert.equal(result.signal, null);
       assert.notEqual(result.status, null);
+      const after = await snapshot(directory);
+      if ((await readdir(fixture)).includes("fixed")) {
+        allowFixes(before, after, await snapshot(join(fixture, "fixed")));
+      }
       assert.deepEqual(
-        await snapshot(directory),
+        after,
         before,
         "The CLI modified the fixture project or Git metadata.",
       );

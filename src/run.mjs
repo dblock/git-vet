@@ -7,6 +7,7 @@ import {
 import { resolveConfig } from "./config.mjs";
 import { Error, invariant } from "./errors.mjs";
 import { loadPlugin } from "./plugins.mjs";
+import { fixRun } from "./fixes.mjs";
 
 function compare(a, b) {
   return a < b ? -1 : a > b ? 1 : 0;
@@ -118,13 +119,16 @@ function configuration(config) {
   };
 }
 
-export async function run(resolvedConfig) {
+async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
   const config = configuration(resolvedConfig);
   const errors = [];
   const findings = [];
   const stages = [];
   const checks = [];
   const identities = new Map();
+  const plans = [];
+  const unavailable = [];
+  let fixer;
   let selection = null;
   let selectionFailed = false;
 
@@ -195,8 +199,17 @@ export async function run(resolvedConfig) {
           root: config.root,
           options: configured.options,
           input: selection,
+          fix,
         }),
       );
+      if (output.fixer !== undefined) {
+        invariant(
+          selection === null,
+          "INVALID_CONTRACT",
+          "Only a source may supply a fixer.",
+        );
+        fixer = output.fixer;
+      }
       refinement(selection, output);
       selection = {
         ...output,
@@ -206,6 +219,7 @@ export async function run(resolvedConfig) {
           ...(output.decisions ?? []),
         ],
       };
+      delete selection.fixer;
       Object.assign(stage, {
         status: selection.candidates.length ? "selected" : "empty",
         candidates: selection.candidates.map(candidateSummary),
@@ -229,6 +243,10 @@ export async function run(resolvedConfig) {
   for (const [index, entry] of config.checks.entries()) {
     const check = { index, reference: entry.plugin, outcomes: [] };
     checks.push(check);
+    if (dryRun && !fix) {
+      Object.assign(check, { status: "not-run", reason: "dry-run" });
+      continue;
+    }
     let plugin;
     try {
       plugin = await prepare(entry, "check");
@@ -285,6 +303,7 @@ export async function run(resolvedConfig) {
             root: config.root,
             options: entry.options,
             selection,
+            fix,
             ...(candidate === undefined ? {} : { candidate }),
           }),
           plugin,
@@ -298,6 +317,40 @@ export async function run(resolvedConfig) {
             ),
           );
           outcome.status = "checked";
+          if (fix && result.findings.length) {
+            if (result.edits?.length) {
+              invariant(
+                selection.capabilities["content.snapshot"] === true &&
+                  typeof candidate.read === "function",
+                "INVALID_FIX",
+                "Fixes require captured candidate.read() snapshots.",
+              );
+              const original = await candidate.read();
+              invariant(
+                original instanceof Uint8Array,
+                "INVALID_FIX",
+                "Fix snapshots must return Uint8Array bytes.",
+              );
+              plans.push({
+                candidate,
+                original: Buffer.from(original),
+                edits: result.edits.map((edit) => ({
+                  start: edit.start,
+                  end: edit.end,
+                  replacement: new Uint8Array(edit.replacement),
+                })),
+              });
+            } else {
+              unavailable.push({
+                pluginId: plugin.id,
+                ...(candidate === undefined
+                  ? {}
+                  : { candidateId: candidate.id, path: candidate.path }),
+                status: "unavailable",
+                reason: "This check does not provide fixes.",
+              });
+            }
+          }
         }
       } catch (error) {
         outcome.status = "failed";
@@ -315,15 +368,18 @@ export async function run(resolvedConfig) {
   const checked = outcomes.filter((outcome) => outcome.status === "checked");
   const status = errors.length
     ? "error"
-    : findings.length
-      ? "findings"
-      : checked.length
-        ? "completed"
-        : "empty";
-  return {
+    : dryRun && !fix
+      ? "planned"
+      : findings.length
+        ? "findings"
+        : checked.length
+          ? "completed"
+          : "empty";
+  const report = {
     schemaVersion: 1,
     status,
     exitCode: errors.length ? 2 : findings.length ? 1 : 0,
+    ...(dryRun && !fix ? { dryRun: true } : {}),
     ...(status !== "empty"
       ? {}
       : {
@@ -375,4 +431,26 @@ export async function run(resolvedConfig) {
       findings: findings.length,
     },
   };
+  return { report, plans, unavailable, fixer };
+}
+
+export async function run(resolvedConfig, options = {}) {
+  invariant(
+    isRecord(options) &&
+      Object.keys(options).every((key) => ["fix", "dryRun"].includes(key)) &&
+      ["fix", "dryRun"].every(
+        (key) =>
+          options[key] === undefined || typeof options[key] === "boolean",
+      ),
+    "INVALID_CONFIG",
+    "Runner options must contain only boolean fix and dryRun fields.",
+  );
+  const initial = await inspect(resolvedConfig, options);
+  return options.fix
+    ? fixRun(
+        initial,
+        async () => (await inspect(resolvedConfig)).report,
+        options.dryRun ?? false,
+      )
+    : initial.report;
 }

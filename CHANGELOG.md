@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#27](https://github.com/dblock/svet/pull/27): Add explicit working-tree autofix for file EOL/trailing whitespace and a global `--dry-run` preview for checking and fixing - [@dblock](https://github.com/dblock).
 - [#26](https://github.com/dblock/svet/pull/26): Add opt-in `@svet/check-file-trailing-whitespace` with configurable spaces, tabs, and literal single-character policies for captured contents - [@dblock](https://github.com/dblock).
 - [#25](https://github.com/dblock/svet/pull/25): Support configurable LF, CR, and CRLF endings in `@svet/check-file-eol` and `@svet/check-git-index-eol`, with LF as the default - [@dblock](https://github.com/dblock).
 - [#24](https://github.com/dblock/svet/pull/24): Support check module-name shorthand throughout configuration and use captured file contents for the default LF check - [@dblock](https://github.com/dblock).

@@ -78,6 +78,12 @@ export function validatePlugin(plugin, kind) {
     );
   } else {
     assert(
+      plugin.fixable === undefined ||
+        (typeof plugin.fixable === "boolean" &&
+          (!plugin.fixable || plugin.scope === "file")),
+      "Only file checks may declare fixable: true.",
+    );
+    assert(
       ["file", "project"].includes(plugin.scope),
       `Check ${plugin.id} must declare file or project scope.`,
     );
@@ -99,6 +105,13 @@ export function validatePlugin(plugin, kind) {
 
 export function validateSelection(selection) {
   assert(isRecord(selection), "A selector must return a selection object.");
+  assert(
+    selection.fixer === undefined ||
+      (isRecord(selection.fixer) &&
+        typeof selection.fixer.validate === "function" &&
+        typeof selection.fixer.apply === "function"),
+    "A source fixer must provide validate() and apply().",
+  );
   assert(
     Array.isArray(selection.candidates),
     "A selection must contain a candidates array.",
@@ -171,7 +184,34 @@ export function validateCheckResult(result, plugin) {
     `Check ${plugin.id} must return findings or a nonempty skip reason, not both.`,
   );
   if (skipped) {
+    assert(result.edits === undefined, "Skipped checks cannot propose edits.");
     return result;
+  }
+  if (result.edits !== undefined) {
+    assert(
+      plugin.fixable === true && plugin.scope === "file",
+      "Only fixable file checks may propose edits.",
+    );
+    assert(Array.isArray(result.edits), "Fix edits must be an array.");
+    assert(
+      result.edits.length === 0 || result.findings.length > 0,
+      "Fix edits require findings.",
+    );
+    for (const edit of result.edits) {
+      assert(
+        isRecord(edit) &&
+          Object.keys(edit).every((key) =>
+            ["start", "end", "replacement"].includes(key),
+          ) &&
+          Number.isSafeInteger(edit.start) &&
+          edit.start >= 0 &&
+          Number.isSafeInteger(edit.end) &&
+          edit.end >= edit.start &&
+          edit.replacement instanceof Uint8Array &&
+          (edit.end > edit.start || edit.replacement.length > 0),
+        "Fix edits require valid byte ranges and Uint8Array replacements, without paths.",
+      );
+    }
   }
   for (const finding of result.findings) {
     assert(

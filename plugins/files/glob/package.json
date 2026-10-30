@@ -4,7 +4,10 @@
   "private": true,
   "description": "Filesystem glob sources and snapshot-preserving glob filters for Svet.",
   "type": "module",
-  "exports": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./fixes": "./fixes.mjs"
+  },
   "files": [
     "*.mjs",
     "README.md",

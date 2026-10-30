@@ -24,7 +24,16 @@ git add .
 npm run check
 ```
 
-No Svet configuration is needed. By default, Svet selects Git-tracked text files and checks their **working-tree contents** for LF line endings. Untracked files are not checked; stage new files to include them. After fixing a tracked file, run the check again without needing to stage the fix. Svet never edits or stages files for you.
+No Svet configuration is needed. By default, Svet selects Git-tracked text files and checks their **working-tree contents** for LF line endings. Untracked files are not checked; stage new files to include them. Ordinary checks never edit files. Use `svet --fix` to apply supported working-tree fixes and recheck; Svet never stages changes.
+
+```sh
+svet                  # Run checks.
+svet --fix            # Check, apply supported fixes, and recheck.
+svet --dry-run        # Select files and list checks without importing or running checks.
+svet --fix --dry-run  # Run checks and prepare/validate fixes without writing.
+```
+
+File EOL and trailing-whitespace checks support fixes with filesystem globs and Git working-tree snapshots. Indexed and committed snapshots remain read-only. See [autofix safety and reporting](docs/running.md#autofix-and-dry-run).
 
 Example output with CRLF line endings in `bad.txt`:
 

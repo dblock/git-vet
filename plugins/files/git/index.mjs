@@ -3,6 +3,7 @@ import { constants } from "node:fs";
 import { lstat, open } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import picomatch from "picomatch";
+import { createFixer } from "@svet/files-glob/fixes";
 import {
   commit,
   error,
@@ -240,7 +241,7 @@ async function revisions(root, settings) {
   };
 }
 
-async function select({ root, options: supplied, input }) {
+async function select({ root, options: supplied, input, fix = false }) {
   if (input !== null) {
     throw error(
       "GIT_SOURCE_ONLY",
@@ -296,6 +297,10 @@ async function select({ root, options: supplied, input }) {
     }
   }
   const candidates = [];
+  const fixer =
+    fix && settings.snapshot === "worktree"
+      ? await createFixer(repositoryRoot)
+      : undefined;
   const inventory = [];
   const directories = new Set();
   for (const entry of [...entries.values()].sort(order)) {
@@ -406,6 +411,7 @@ async function select({ root, options: supplied, input }) {
       continue;
     }
     record.read = async () => new Uint8Array(bytes);
+    if (fixer) await fixer.capture(record, bytes);
     candidates.push(record);
     decision("selected", `Selected ${settings.snapshot} text content.`);
   }
@@ -464,6 +470,7 @@ async function select({ root, options: supplied, input }) {
   }
   return {
     candidates,
+    ...(fixer ? { fixer: fixer.writer } : {}),
     capabilities,
     decisions,
     context: {

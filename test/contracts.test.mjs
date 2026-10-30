@@ -18,6 +18,47 @@ const check = {
   },
 };
 
+test("fixes require file-check opt-in and path-free byte edits attached to findings", () => {
+  const finding = { ruleId: "spelling", message: "Fix this." };
+  const edit = { start: 0, end: 1, replacement: new Uint8Array([10]) };
+  const fixable = { ...check, fixable: true };
+  validatePlugin(fixable, "check");
+  validateCheckResult({ findings: [finding], edits: [edit] }, fixable);
+  assert.throws(
+    () => validatePlugin({ ...fixable, scope: "project" }, "check"),
+    { code: "INVALID_CONTRACT" },
+  );
+  assert.throws(
+    () => validateCheckResult({ findings: [finding], edits: [edit] }, check),
+    { code: "INVALID_CONTRACT" },
+  );
+  for (const result of [
+    { findings: [], edits: [edit] },
+    { skip: "Binary.", edits: [] },
+    { findings: [finding], edits: [{ ...edit, path: "other.txt" }] },
+    { findings: [finding], edits: [{ ...edit, start: -1 }] },
+    { findings: [finding], edits: [{ ...edit, end: 0.5 }] },
+    {
+      findings: [finding],
+      edits: [{ ...edit, end: 0, replacement: new Uint8Array() }],
+    },
+    { findings: [finding], edits: [{ ...edit, replacement: "\n" }] },
+  ]) {
+    assert.throws(() => validateCheckResult(result, fixable), {
+      code: "INVALID_CONTRACT",
+    });
+  }
+  assert.throws(
+    () =>
+      validateSelection({
+        candidates: [],
+        capabilities: {},
+        fixer: { apply() {} },
+      }),
+    { code: "INVALID_CONTRACT" },
+  );
+});
+
 test("versioned asynchronous selectors and checks share the public contract", () => {
   assert.equal(validatePlugin(check, "check"), check);
   const selector = {

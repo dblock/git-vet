@@ -1,0 +1,4 @@
+{
+  "command": ["svet", "--dry-run"],
+  "withoutGit": true
+}

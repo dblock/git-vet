@@ -1,0 +1,7 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: files/glob (selected)
+Checks: ./trap-check.mjs (not-run)
+selected a.txt
+Dry run: checks were not executed.
+Selected 1; checked 0; findings 0; skipped 0; failed 0; unavailable 0.

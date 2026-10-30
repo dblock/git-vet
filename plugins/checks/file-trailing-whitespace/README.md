@@ -47,6 +47,10 @@ Characters match exact UTF-8 byte sequences without decoding or normalizing the 
 
 Filesystem and Git working-tree selection capture actual file contents. Git staged/index and revision selection retain their selected indexed or committed snapshots. The checker never substitutes live disk or queries Git. Remove trailing characters from the intended source and rerun selection; stage or commit corrections yourself when checking indexed or committed snapshots.
 
+## Autofix
+
+With `svet --fix`, this check proposes removal of every terminal run of configured characters across all lines, including a final line without a newline. It does not remove unconfigured characters, indentation/interior bytes, or line boundaries. The runner applies edits only through a writable filesystem or Git working-tree source and rechecks. `svet --fix --dry-run` prepares and validates edits without writing. Indexed and committed snapshots remain read-only and report fixes unavailable.
+
 ## Incompatibility and Failures
 
 Missing required capabilities are unavailable errors, not passes. Invalid snapshot capabilities, missing readers, non-byte results, invalid text classifiers, and snapshot read failures are explicit errors. The check never trims files, changes line endings, stages changes, installs hooks, or falls back to another content source.

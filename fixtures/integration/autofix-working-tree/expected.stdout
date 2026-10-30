@@ -1,0 +1,8 @@
+Configuration: svet.config.mjs
+Profile: (base)
+Files: git/tracked-text (selected) -> files/glob (selected)
+Checks: file/eol (completed), file/trailing-whitespace (completed)
+filtered svet.config.mjs: Glob "*.txt" did not match.
+fix applied a.txt
+Fixes: applied 1; proposed 0; unavailable 0; failed 0.
+Selected 1; checked 1; findings 0; skipped 0; failed 0; unavailable 0.
