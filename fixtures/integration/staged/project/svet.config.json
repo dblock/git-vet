@@ -3,5 +3,5 @@
     "plugin": "@svet/files-git",
     "options": { "mode": "staged" }
   },
-  "checks": [{ "plugin": "@svet/check-git-index-lf" }]
+  "checks": ["@svet/check-git-index-lf"]
 }

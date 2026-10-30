@@ -18,15 +18,18 @@ test("custom and empty configurations replace every supplied default", async (t)
     directory: cwd,
     config: {
       files: [{ plugin: "uninstalled-default-selector" }],
-      checks: [{ plugin: "uninstalled-default-check" }],
-      profiles: { inherited: { checks: [{ plugin: "uninstalled-profile" }] } },
+      checks: ["uninstalled-default-check"],
+      profiles: { inherited: { checks: ["uninstalled-profile"] } },
     },
   };
   const shipped = await loadConfig({ cwd, defaults });
   assert.equal(shipped.source.kind, "defaults");
   assert.equal(shipped.files[0].plugin, "uninstalled-default-selector");
+  assert.deepEqual(shipped.checks, [
+    { plugin: "uninstalled-default-check", options: {} },
+  ]);
 
-  await writeFile(configFile, '{"checks":[{"plugin":"custom-check"}]}');
+  await writeFile(configFile, '{"checks":["custom-check"]}');
   const custom = await loadConfig({ cwd, defaults, configFile });
   assert.deepEqual(custom.files, []);
   assert.deepEqual(custom.checks, [{ plugin: "custom-check", options: {} }]);
@@ -45,9 +48,9 @@ test("custom and empty configurations replace every supplied default", async (t)
 test("profiles replace the complete base plan, including intentionally empty profiles", () => {
   const config = {
     files: [{ plugin: "base-selector" }],
-    checks: [{ plugin: "base-check" }],
+    checks: ["base-check"],
     profiles: {
-      independent: { checks: [{ plugin: "profile-check" }] },
+      independent: { checks: ["profile-check"] },
       empty: {},
     },
   };
@@ -66,6 +69,34 @@ test("profiles replace the complete base plan, including intentionally empty pro
       code: "INVALID_CONFIG",
     });
   }
+});
+
+test("checks accepts mixed module strings and configured objects in base and profile plans", () => {
+  const checks = [
+    "@svet/check-file-lf",
+    "unscoped-check",
+    "./tools/check.mjs",
+    new URL("../fixtures/file-check.mjs", import.meta.url).href,
+    {
+      plugin: "@svet/check-git-index-lf",
+      options: { example: true },
+      severity: "warning",
+    },
+    { plugin: "./explicit.mjs" },
+  ];
+  const expected = checks.map((entry) =>
+    typeof entry === "string"
+      ? { plugin: entry, options: {} }
+      : { ...entry, options: { ...entry.options } },
+  );
+  const document = { checks, profiles: { mixed: { checks } } };
+  assert.deepEqual(resolveConfig(document).checks, expected);
+  assert.deepEqual(
+    resolveConfig(document, { profile: "mixed" }).checks,
+    expected,
+  );
+  assert.deepEqual(resolveConfig({ checks: expected }).checks, expected);
+  assert.equal(document.checks[0], "@svet/check-file-lf");
 });
 
 test("files accepts scoped plugin and glob shortcuts, single objects, and ordered mixed pipelines", () => {
@@ -110,7 +141,7 @@ test("discovery finds the nearest config without consulting Git and resolves mod
   assert.equal(config.source.path, join(root, "svet.config.mjs"));
 
   const nearer = join(root, "nested", "svet.config.json");
-  await writeFile(nearer, '{"checks":[{"plugin":"./check.mjs"}]}');
+  await writeFile(nearer, '{"checks":["./check.mjs"]}');
   const local = await loadConfig({ cwd: nested });
   assert.equal(local.root, join(root, "nested"));
   assert.equal(local.source.path, nearer);
@@ -186,7 +217,13 @@ test("strict configuration shapes reject accidental inheritance and malformed en
     { files: [42] },
     { files: [["*.js"]] },
     { files: { glob: "*.js" } },
-    { checks: ["a-package"] },
+    { checks: "a-package" },
+    { checks: [""] },
+    { checks: ["   "] },
+    { checks: [null] },
+    { checks: [42] },
+    { checks: [["a-package"]] },
+    { profiles: { invalid: { checks: [" "] } } },
     { checks: [{ plugin: "" }] },
     { checks: [{ plugin: "check", options: [] }] },
     { checks: [{ plugin: "check", severity: "off" }] },

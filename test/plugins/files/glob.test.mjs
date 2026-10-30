@@ -32,10 +32,7 @@ async function configured(root, files, extra = {}) {
     JSON.stringify({
       files,
       checks: [
-        {
-          plugin: new URL("../../../fixtures/file-check.mjs", import.meta.url)
-            .href,
-        },
+        new URL("../../../fixtures/file-check.mjs", import.meta.url).href,
       ],
       ...extra,
     }),

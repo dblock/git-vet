@@ -1,6 +1,6 @@
 {
   "files": "*.txt",
-  "checks": [{ "plugin": "svet-fixture-timestamps/check" }],
+  "checks": ["svet-fixture-timestamps/check"],
   "profiles": {
     "unused": {
       "files": { "plugin": "./inactive.mjs" }

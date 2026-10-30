@@ -1,8 +1,8 @@
 # Running Svet
 
-The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the indexed LF check. User configurations completely replace that plan and can select Git-independent local or installed plugins. Packages remain private and unpublished; see the [README usage example](../README.md#usage) for the intended 0.1.0 installation flow.
+The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the file LF check on captured working-tree contents. User configurations completely replace that plan and can select Git-independent local or installed plugins. Packages remain private and unpublished; see the [README usage example](../README.md#usage) for the intended 0.1.0 installation flow.
 
-The default checking package is `@svet/check-git-index-lf`, with unchanged diagnostic id `git/index-lf`. The opt-in [`@svet/check-file-lf`](../plugins/checks/file-lf/README.md) checks provider-captured contents and can run without Git when used with filesystem globs.
+The default checking package is [`@svet/check-file-lf`](../plugins/checks/file-lf/README.md), with diagnostic id `file/lf`. It can run without Git when used with filesystem globs. The opt-in [`@svet/check-git-index-lf`](../plugins/checks/git-index-lf/README.md) checks captured indexed bytes, with diagnostic id `git/index-lf`.
 
 ## CLI
 

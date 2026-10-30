@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#24](https://github.com/dblock/svet/pull/24): Support check module-name shorthand throughout configuration and use captured file contents for the default LF check - [@dblock](https://github.com/dblock).
 - [#23](https://github.com/dblock/svet/pull/23): Add opt-in `@svet/check-file-lf` for provider-captured file contents and rename the default indexed check to `@svet/check-git-index-lf` - [@dblock](https://github.com/dblock).
 - [#22](https://github.com/dblock/svet/pull/22): Run an inspectable shipped default plan without user configuration, selecting Git-tracked text and checking indexed LF line endings while preserving complete custom replacement - [@dblock](https://github.com/dblock).
 - [#20](https://github.com/dblock/svet/pull/20): Add an experimental `svet` / `git svet` CLI with configuration overrides, terminal and JSON reports, and explicit findings/error exit codes - [@dblock](https://github.com/dblock).

@@ -608,12 +608,10 @@ test("scoped Git shorthand composes with glob shortcuts while retaining full inv
       config: {
         files: ["@svet/files-git", "*.txt"],
         checks: [
-          {
-            plugin: new URL(
-              "../../../fixtures/timestamp-package/inventory.mjs",
-              import.meta.url,
-            ).href,
-          },
+          new URL(
+            "../../../fixtures/timestamp-package/inventory.mjs",
+            import.meta.url,
+          ).href,
         ],
       },
     },

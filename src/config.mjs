@@ -27,7 +27,9 @@ function entries(value, kind) {
     return [];
   }
   assert(Array.isArray(value), `${kind} must be an array.`);
-  return value.map((entry) => {
+  return value.map((reference) => {
+    const entry =
+      typeof reference === "string" ? { plugin: reference } : reference;
     keys(
       entry,
       kind === "checks"

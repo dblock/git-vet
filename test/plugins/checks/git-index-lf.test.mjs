@@ -53,7 +53,7 @@ async function inspect(root, options = {}) {
         directory: moduleRoot,
         config: {
           files: [{ plugin: "@svet/files-git", options }],
-          checks: [{ plugin: "@svet/check-git-index-lf" }],
+          checks: ["@svet/check-git-index-lf"],
         },
       },
     }),
@@ -217,7 +217,7 @@ test("missing and revision-only index capabilities are unavailable rather than f
       root,
       defaults: {
         directory: moduleRoot,
-        config: { checks: [{ plugin: "@svet/check-git-index-lf" }] },
+        config: { checks: ["@svet/check-git-index-lf"] },
       },
     }),
   );

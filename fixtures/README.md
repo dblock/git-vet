@@ -28,6 +28,8 @@ Expected files are reviewed fixtures, not generated from the implementation. Emp
 
 Cases cover shipped defaults with findings and clean native `git svet` execution, the exported default document, missing Git, empty configuration replacing defaults, staged versus working-tree content, non-Git installed plugins, replacement profiles, explicit config/root/profile flags, empty JSON output, configuration errors in both formats, unavailable capabilities, help/version without configuration, and argument errors. Existing component tests retain detailed provider and contract edge-case coverage.
 
+Check module-name shorthand is exercised in JSON and ESM configuration, exported defaults, installed unscoped packages, and a replacement profile mixing strings with severity-configured objects. The `defaults` case retains clean indexed content beneath CRLF working-tree bytes, proving that the default file check inspects the working tree rather than the index.
+
 The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies.
 
 The `file-lf` case checks filesystem text without Git, including CRLF/lone-CR findings and binary skips. `lf-snapshots` runs both LF checks against differing indexed and working-tree bytes. `file-lf-staged` proves the file check follows a staged snapshot rather than reading a clean working-tree replacement; `file-lf-missing-capability` reports unavailable content capabilities.

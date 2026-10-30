@@ -1,6 +1,6 @@
 Configuration: configuration/check.json
 Profile: words
 Files: files/glob (selected)
-Checks: fixture/word (completed)
+Checks: file/lf (completed), fixture/word (completed)
 bad.txt: warning [fixture/word/forbidden-word]: Forbidden word.
 Selected 2; checked 2; findings 1; skipped 0; failed 0; unavailable 0.

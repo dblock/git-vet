@@ -1,4 +1,4 @@
-Configuration: svet.config.json
+Configuration: svet.config.mjs
 Profile: (base)
 Files: files/glob (selected)
 Checks: file/lf (completed)

@@ -8,8 +8,8 @@ import { loadConfig, run } from "../src/index.mjs";
 const fixture = (name) =>
   new URL(`../fixtures/${name}.mjs`, import.meta.url).href;
 const source = { plugin: fixture("memory-selector") };
-const file = { plugin: fixture("file-check") };
-const project = { plugin: fixture("project-check") };
+const file = fixture("file-check");
+const project = fixture("project-check");
 
 async function workspace(t) {
   const root = await mkdtemp(join(tmpdir(), "svet runner \u03bb "));
@@ -35,7 +35,7 @@ test("async checks retain findings and independent results after a snapshot read
   await writeFile(join(root, "a.txt"), "working tree must not be read");
   const config = await configure(root, {
     files: [{ ...source, options: { unreadable: ["a.txt"] } }],
-    checks: [{ ...file, severity: "error" }, project],
+    checks: [{ plugin: file, severity: "error" }, project],
   });
   const result = await run(config);
   assert.equal(result.status, "error");
@@ -79,10 +79,10 @@ test("inactive/default/installed plugins are not imported, including empty profi
   const config = await configure(
     root,
     {
-      checks: [{ plugin: "installed-trap" }],
+      checks: ["installed-trap"],
       profiles: {
         active: { files: [source], checks: [project] },
-        unused: { checks: [{ plugin: "./inactive.mjs" }] },
+        unused: { checks: ["./inactive.mjs"] },
         empty: {},
       },
     },
@@ -96,7 +96,7 @@ test("inactive/default/installed plugins are not imported, including empty profi
       root,
       {
         files: [{ plugin: "./inactive.mjs" }],
-        checks: [{ plugin: "installed-trap" }],
+        checks: ["installed-trap"],
         profiles: { empty: {} },
       },
       "empty",
@@ -127,10 +127,10 @@ test("missing and incompatible plugins and invalid async options fail without lo
   const config = await configure(root, {
     files: [source],
     checks: [
-      { plugin: "not-installed-svet-check" },
-      { plugin: incompatible },
-      { ...file, options: { invalid: true } },
-      { plugin: invalidValidator },
+      "not-installed-svet-check",
+      incompatible,
+      { plugin: file, options: { invalid: true } },
+      invalidValidator,
       project,
     ],
   });
@@ -169,7 +169,7 @@ test("missing capabilities never invoke a check or implicitly supply Git", async
   const result = await run(
     await configure(root, {
       files: [source],
-      checks: [{ plugin }, project],
+      checks: [plugin, project],
     }),
   );
   assert.equal(result.exitCode, 2);
@@ -213,10 +213,7 @@ test("ordered filters retain snapshots, full inventory, and earlier provenance",
         },
         { plugin: fixture("recent-filter"), options: { since: 50 } },
       ],
-      checks: [
-        { plugin: inventoryCheck },
-        { ...file, options: { clean: true } },
-      ],
+      checks: [inventoryCheck, { plugin: file, options: { clean: true } }],
     }),
   );
   assert.equal(result.exitCode, 1);
@@ -296,7 +293,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
   );
   const noSelection = await run(
     await configure(root, {
-      checks: [{ plugin: noRequirements }],
+      checks: [noRequirements],
     }),
   );
   assert.equal(noSelection.emptyReason, "no-selection");
@@ -314,7 +311,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
   const skipped = await run(
     await configure(root, {
       files: [source],
-      checks: [{ ...file, options: { skip: true } }],
+      checks: [{ plugin: file, options: { skip: true } }],
     }),
   );
   assert.equal(skipped.emptyReason, "all-skipped");
@@ -323,7 +320,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
 
   const projectOnly = await run(
     await configure(root, {
-      checks: [{ ...project, options: { finding: true } }],
+      checks: [{ plugin: project, options: { finding: true } }],
     }),
   );
   assert.equal(projectOnly.exitCode, 1);
@@ -331,7 +328,7 @@ test("empty runs, empty selections, skipped checks, and root-only checks stay di
   assert.equal(Object.hasOwn(projectOnly.findings[0], "path"), false);
   const projectSkipped = await run(
     await configure(root, {
-      checks: [{ ...project, options: { skip: true } }],
+      checks: [{ plugin: project, options: { skip: true } }],
     }),
   );
   assert.equal(projectSkipped.emptyReason, "all-skipped");
@@ -342,7 +339,7 @@ test("invalid results fail per invocation, and duplicate ids from distinct modul
   const invalid = await run(
     await configure(root, {
       files: [source],
-      checks: [{ ...file, options: { invalidResult: true } }, project],
+      checks: [{ plugin: file, options: { invalidResult: true } }, project],
     }),
   );
   assert.equal(invalid.summary.failedInvocations, 2);
@@ -357,7 +354,7 @@ test("invalid results fail per invocation, and duplicate ids from distinct modul
   );
   const result = await run(
     await configure(root, {
-      checks: [project, { plugin: duplicate }],
+      checks: [project, duplicate],
     }),
   );
   assert.equal(result.errors[0].code, "DUPLICATE_PLUGIN_ID");
