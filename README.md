@@ -57,10 +57,11 @@ Exit codes are `0` for a completed or intentionally empty run, `1` for findings,
 | --- | --- | --- |
 | [`@svet/check-git-index-eol`](plugins/checks/git-index-eol/README.md) | Configurable line endings in captured Git index blobs, regardless of unstaged edits. | No |
 | [`@svet/check-file-eol`](plugins/checks/file-eol/README.md) | Configurable line endings in the selected content snapshot; filesystem and Git working-tree sources capture actual file contents. | Yes |
+| [`@svet/check-file-trailing-whitespace`](plugins/checks/file-trailing-whitespace/README.md) | Trailing spaces/tabs or configured single Unicode characters in captured file contents. | No |
 
 Both EOL checks default to LF. To require CRLF instead, configure `{ plugin: "@svet/check-file-eol", options: { eol: "crlf" } }`; `"cr"` and the `"cr-lf"` spelling are also supported.
 
-Packages remain private and unpublished; the usage example assumes the planned 0.1.0 release. See [configuration](docs/configuration.md), [CLI and API usage](docs/running.md), [plugin contracts](docs/plugin-api.md), and the [changelog](CHANGELOG.md).
+See [configuration](docs/configuration.md), [CLI and API usage](docs/running.md), [plugin contracts](docs/plugin-api.md), and the [changelog](CHANGELOG.md).
 
 ## Design
 

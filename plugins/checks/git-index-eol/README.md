@@ -2,7 +2,7 @@
 
 `@svet/check-git-index-eol` is an independently packageable version-1 checking plugin with id `git/index-eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
 
-The package is private and unpublished. It is opt-in, not part of Svet's default plan. Restore dependencies separately with `npm ci` in this repository; for custom configurations, install this package beside your configuration. Merely installing a plugin does not activate it.
+The package is opt-in, not part of Svet's default plan. Restore dependencies separately with `npm ci` in this repository; for custom configurations, install this package beside your configuration. Merely installing a plugin does not activate it.
 
 ```js
 export default {
@@ -13,7 +13,7 @@ export default {
 
 The selector owns selection scope and exclusion patterns; there is no extension allowlist or duplicate pattern configuration in this check. Omit the checking plugin from your configuration to disable it; user configurations replace defaults rather than inheriting checks.
 
-The package was renamed from `@svet/check-git-index-lf` (previously `@svet/check-index-lf`); update explicit dependency and configuration references to `@svet/check-git-index-eol`. Diagnostics now use `git/index-eol` and rule `eol` instead of `git/index-lf` and rule `lf`. For provider snapshot contents, including ordinary working-tree files without a Git index requirement, use the default [`@svet/check-file-eol`](../file-eol/README.md).
+For provider snapshot contents, including ordinary working-tree files without a Git index requirement, use the default [`@svet/check-file-eol`](../file-eol/README.md).
 
 ## Configuration
 

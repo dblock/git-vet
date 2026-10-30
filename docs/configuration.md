@@ -41,7 +41,7 @@ export default {
 
 The file check reads the selected provider snapshot, not live disk after selection. Filesystem and Git working-tree sources capture actual file contents; staged/index and revision providers retain their indexed or committed snapshots. The opt-in `@svet/check-git-index-eol` instead reads captured Git index blobs even when selection uses working-tree content.
 
-`files` replaces the former `selectors` field; the old name is an error, not an alias. It accepts a single scoped plugin name, a glob string, a `{ plugin, options? }` object, or an ordered array of these:
+`files` accepts a single scoped plugin name, a glob string, a `{ plugin, options? }` object, or an ordered array of these:
 
 ```js
 export default {
@@ -88,6 +88,19 @@ export default {
 ```
 
 Each check requires every encountered ending to match that style. A CRLF pair is one ending, not a CR followed by an LF. Empty files and files without a final ending are allowed; trailing whitespace is not checked. Options are case-sensitive and invalid values are explicit plugin-option errors.
+
+### Trailing Whitespace
+
+The opt-in [`@svet/check-file-trailing-whitespace`](../plugins/checks/file-trailing-whitespace/README.md) rejects trailing spaces and tabs by default. Keep the EOL default explicitly when adding it to a custom plan:
+
+```js
+export default {
+  files: "**/*.txt",
+  checks: ["@svet/check-file-eol", "@svet/check-file-trailing-whitespace"],
+};
+```
+
+To customize the character set, use `{ plugin: "@svet/check-file-trailing-whitespace", options: { whitespace: ["space", "tab", "x", "\u00a0"] } }`. The nonempty list replaces the defaults and accepts named spaces/tabs or any single Unicode code point except CR/LF. Literal characters match their exact UTF-8 bytes; no normalization occurs. Only configured terminal characters are rejected, including on whitespace-only or nonterminated lines. This check is read-only and follows the selected snapshot, including staged or revision contents.
 
 ## Profiles and Overrides
 
