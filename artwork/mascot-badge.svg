@@ -1,0 +1,172 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="512"
+  height="512"
+  viewBox="0 0 512 512"
+  role="img"
+  aria-labelledby="title"
+>
+  <title id="title">GitVet full-standing crocodile in a green circle</title>
+  <defs>
+    <g
+      id="croc-head"
+      stroke="#173D32"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M-78-90L-104-103L-93-68L-112-58L-87-33" fill="#27824B" />
+      <path
+        d="M-82-81Q-96-126-65-143Q-39-166-16-142Q12-172 40-148Q60-134 59-99L119-83Q160-79 162-48Q166-10 124 1L-14 16Q-77 9-82-43Z"
+        fill="#57BF72"
+      />
+      <path
+        d="M-78-35Q-20-10 48-13Q110-10 157-35L151-15Q126 11 77 13L-14 16Q-67 10-78-35Z"
+        fill="#D9EFAC"
+        stroke="none"
+      />
+      <ellipse cx="-45" cy="-112" rx="26" ry="32" fill="#FCFFF2" />
+      <ellipse cx="22" cy="-115" rx="26" ry="32" fill="#FCFFF2" />
+      <ellipse
+        cx="-38"
+        cy="-108"
+        rx="10"
+        ry="16"
+        fill="#173D32"
+        stroke="none"
+      />
+      <ellipse cx="29" cy="-111" rx="10" ry="16" fill="#173D32" stroke="none" />
+      <circle cx="-34" cy="-114" r="4" fill="#FFF" stroke="none" />
+      <circle cx="33" cy="-117" r="4" fill="#FFF" stroke="none" />
+      <path
+        d="M-64-153Q-45-161-28-153M4-157Q23-166 41-155"
+        fill="none"
+        stroke-width="5"
+      />
+      <ellipse
+        cx="104"
+        cy="-57"
+        rx="5"
+        ry="8"
+        fill="#27824B"
+        stroke="none"
+        transform="rotate(-15 104 -57)"
+      />
+      <ellipse
+        cx="132"
+        cy="-52"
+        rx="5"
+        ry="8"
+        fill="#27824B"
+        stroke="none"
+        transform="rotate(-15 132 -52)"
+      />
+      <path d="M-59-43Q22-6 145-32" fill="none" stroke-width="5" />
+      <path
+        d="M-14-23L-6-9L2-20M58-21L66-8L74-22M111-26L118-14L126-29"
+        fill="#FCFFF2"
+        stroke-width="3"
+      />
+      <path d="M-66-52Q-78-45-72-33" fill="none" stroke-width="4" />
+      <ellipse cx="-52" cy="-59" rx="14" ry="8" fill="#96DB7D" stroke="none" />
+      <path
+        d="M64-79L74-77M83-75L89-73"
+        fill="none"
+        stroke="#3B9E58"
+        stroke-width="5"
+      />
+    </g>
+    <g
+      id="crocodile"
+      stroke="#173D32"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path
+        d="M47 164C123 209 215 204 226 141C234 108 208 80 185 82C205 105 190 139 163 143L87 130Z"
+        fill="#57BF72"
+      />
+      <path
+        d="M107 183L115 156L135 173L151 147L169 162L181 137L198 145L204 121L224 126"
+        fill="#27824B"
+        stroke-width="4"
+      />
+      <path
+        d="M-69 27L-92 41L-77 59L-98 77L-79 96L-96 117L-75 135"
+        fill="#27824B"
+      />
+      <path
+        d="M-57-2Q-85 28-83 99Q-84 166-47 203L-44 236H-8L0 205L10 236H49L53 201Q88 169 87 101Q88 25 58 7Q10-20-57-2Z"
+        fill="#57BF72"
+      />
+      <path
+        d="M-28 15Q4-1 35 21Q59 70 48 137Q43 187 3 197Q-39 186-44 139Q-55 71-28 15Z"
+        fill="#D9EFAC"
+        stroke-width="5"
+      />
+      <path
+        d="M-29 54H37M-37 84H45M-39 115H46M-34 146H38M-22 174H25"
+        fill="none"
+        stroke="#ACD382"
+        stroke-width="4"
+      />
+      <path
+        d="M-46 228Q-78 231-80 246Q-80 258-48 257H-9V239M49 228Q81 231 83 246Q83 258 51 257H10V239"
+        fill="#57BF72"
+      />
+      <path
+        d="M-61 248V255M-43 248V256M42 248V256M60 248V255"
+        fill="none"
+        stroke="#D9EFAC"
+        stroke-width="4"
+      />
+      <path
+        d="M-62 7Q0 41 63 13L58 34Q7 64-61 28Z"
+        fill="#27824B"
+        stroke-width="5"
+      />
+      <path d="M15 39L39 66L30 35Z" fill="#27824B" stroke-width="5" />
+      <rect x="-136" y="78" width="86" height="109" rx="10" fill="#F6FFE9" />
+      <rect
+        x="-112"
+        y="69"
+        width="39"
+        height="17"
+        rx="5"
+        fill="#27824B"
+        stroke-width="5"
+      />
+      <path
+        d="M-118 107H-68M-118 125H-83M-116 152L-105 163L-78 140"
+        fill="none"
+        stroke="#27824B"
+        stroke-width="5"
+      />
+      <path d="M-67 58Q-105 69-100 116Q-88 132-71 116L-49 90" fill="#57BF72" />
+      <path d="M74 58Q117 66 117 106L92 123L61 91" fill="#57BF72" />
+      <path
+        d="M140 123L172 156"
+        fill="none"
+        stroke="#27824B"
+        stroke-width="16"
+      />
+      <circle cx="118" cy="99" r="37" fill="#D6F8DC" fill-opacity=".92" />
+      <path
+        d="M101 99L112 110L137 84"
+        fill="none"
+        stroke="#27824B"
+        stroke-width="7"
+      />
+      <path
+        d="M101 76Q113 68 125 73"
+        fill="none"
+        stroke="#FFF"
+        stroke-width="5"
+      />
+      <use href="#croc-head" />
+    </g>
+  </defs>
+  <circle cx="256" cy="256" r="248" fill="#C5E6AE" />
+  <use href="#crocodile" transform="translate(211 210)" />
+</svg>
