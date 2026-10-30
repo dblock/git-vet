@@ -1,8 +1,8 @@
 # Plugin API (Experimental Version 1)
 
-The public library exports `loadConfig`, `resolveConfig`, `GitVetError`, `PLUGIN_API_VERSION`, and contract validators from `git-vet`. Plugins are ordinary ESM modules default-exporting an object; they do not need to import the driver or any private modules. A package name and a plugin's stable `id` are independent, so moving a plugin does not change diagnostic identities.
+The public library exports `loadConfig`, `resolveConfig`, `run`, `Error`, `PLUGIN_API_VERSION`, and contract validators from `git-vet`. The exported `Error(code, message, options?)` extends `globalThis.Error`, adding a diagnostic `code` while preserving native cause support. Plugins are ordinary ESM modules default-exporting an object; they do not need to import the driver or any private modules. A package name and a plugin's stable `id` are independent, so moving a plugin does not change diagnostic identities.
 
-This is a foundation, not a released CLI. The runner, shipped Git/text defaults, concrete checks, and distribution entry point are separate implementation steps. The package remains private.
+This is a foundation, not a released CLI. The [programmatic runner](running.md) supports explicit configurations; shipped Git/text defaults, concrete checks, and the distribution entry point remain separate implementation steps. The package remains private.
 
 ## Metadata and Compatibility
 
@@ -24,7 +24,7 @@ export default {
 };
 ```
 
-`root` is the project/configuration root, not an implicitly discovered Git root. `input` is `null` for a source or a prior selection for a filter. This reusable contract leaves selection open to explicit composition; it does not imply union or intersection of independently discovered sources.
+`root` is the project/configuration root, not an implicitly discovered Git root. `input` is `null` for a source or a prior selection for a filter. Configured selectors form an ordered narrowing pipeline: filters reuse input candidate records and retain input capabilities, preserving snapshots and full inventories. They return only their new decisions; core accumulates prior provenance. This does not imply union or intersection of independently discovered sources.
 
 A candidate has a nonempty stable `id` and `path`. Paths are provider-defined display paths, normally project-relative with `/` separators. They may contain spaces, Unicode, and newlines. Optional `metadata` is an object. Optional `snapshot: { kind, id }` identifies the content version; optional `async read()` returns a `Uint8Array` of that snapshot's bytes. Providers own snapshot correctness and must not substitute live working-tree bytes for a promised index/revision snapshot. Metadata-only or unavailable candidates do not invent content access.
 

@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { loadConfig, resolveConfig } from "../src/index.mjs";
+import { Error, loadConfig, resolveConfig } from "../src/index.mjs";
 
 async function workspace(t) {
   const root = await mkdtemp(join(tmpdir(), "git-vet config \u03bb "));
@@ -111,7 +111,13 @@ test("missing, malformed, ambiguous, and invalid configurations fail explicitly"
     { code: "CONFIG_LOAD_FAILED" },
   );
   await writeFile(json, "{");
-  await assert.rejects(loadConfig({ cwd }), { code: "CONFIG_LOAD_FAILED" });
+  await assert.rejects(loadConfig({ cwd }), (error) => {
+    assert.ok(error instanceof Error);
+    assert.equal(error.code, "CONFIG_LOAD_FAILED");
+    assert.ok(error.cause instanceof globalThis.Error);
+    assert.equal(error.cause instanceof Error, false);
+    return true;
+  });
   await writeFile(mjs, "export default {};");
   await assert.rejects(loadConfig({ cwd }), { code: "AMBIGUOUS_CONFIG" });
   await rm(json);

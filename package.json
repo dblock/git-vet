@@ -31,6 +31,9 @@
     "format": "prettier --write .",
     "test": "node --test"
   },
+  "dependencies": {
+    "import-meta-resolve": "4.2.0"
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "eslint": "10.13.0",
