@@ -1,17 +1,19 @@
-# Indexed LF Check
+# Git Index LF Check
 
-`@svet/check-index-lf` is an independently packageable version-1 checking plugin with stable id `git/index-lf` and rule `lf`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
+`@svet/check-git-index-lf` is an independently packageable version-1 checking plugin with stable id `git/index-lf` and rule `lf`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
 
 The package is private and unpublished. Svet declares it as a runtime dependency and selects it in the ordinary shipped default configuration. Restore dependencies separately with `npm ci` in this repository; for custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
 
 ```js
 export default {
   files: "@svet/files-git",
-  checks: [{ plugin: "@svet/check-index-lf" }],
+  checks: [{ plugin: "@svet/check-git-index-lf" }],
 };
 ```
 
 The selector owns selection scope and exclusion patterns; there is no extension allowlist or duplicate pattern configuration in this check. All check options are rejected. Omit the checking plugin from your configuration to disable it; user configurations replace defaults rather than inheriting checks.
+
+The package was renamed from `@svet/check-index-lf`; update explicit dependency and configuration references to `@svet/check-git-index-lf`. The diagnostic identity remains `git/index-lf`. For provider snapshot contents, including ordinary working-tree files without a Git index requirement, use the opt-in [`@svet/check-file-lf`](../file-lf/README.md).
 
 ## What Is Checked
 
@@ -35,7 +37,7 @@ export default {
       options: { snapshot: "index", exclude: ["vendor/**"] },
     },
   ],
-  checks: [{ plugin: "@svet/check-index-lf" }],
+  checks: [{ plugin: "@svet/check-git-index-lf" }],
 };
 ```
 

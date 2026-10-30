@@ -30,4 +30,6 @@ Cases cover shipped defaults with findings and clean native `git svet` execution
 
 The harness isolates Git from the caller's environment and global/system configuration. Every invocation compares the complete project tree before and after execution, including Git metadata, bytes, permissions, and modification times. Runtime code must not modify fixtures or download dependencies.
 
+The `file-lf` case checks filesystem text without Git, including CRLF/lone-CR findings and binary skips. `lf-snapshots` runs both LF checks against differing indexed and working-tree bytes. `file-lf-staged` proves the file check follows a staged snapshot rather than reading a clean working-tree replacement; `file-lf-missing-capability` reports unavailable content capabilities.
+
 Run these projects with `npm test -- test/integration.test.mjs`. Add a new fixture directory to add a user workflow; do not generate its source files or expected diagnostics in test code. Intentional CRLF bytes are preserved by `.gitattributes`. Integration projects are excluded from ESLint, Prettier, and the repository's own Svet check.

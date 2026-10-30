@@ -1,6 +1,6 @@
 {
   "files": "@svet/files-git",
-  "checks": [{ "plugin": "@svet/check-index-lf" }],
+  "checks": [{ "plugin": "@svet/check-git-index-lf" }],
   "profiles": {
     "words": {
       "files": "*.txt",
