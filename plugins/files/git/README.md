@@ -1,12 +1,12 @@
 # Git Selection Plugin
 
-`git-vet-selector-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
+`@git-vet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
 
 The package is currently private and unpublished. It is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependency. It is not automatically selected by core or a shipped default configuration.
 
 ```js
 export default {
-  selectors: [{ plugin: "git-vet-selector-git", options: { mode: "staged" } }],
+  files: [{ plugin: "@git-vet/files-git", options: { mode: "staged" } }],
   checks: [
     // Explicitly select checking plugins here; this provider does not run checks.
   ],

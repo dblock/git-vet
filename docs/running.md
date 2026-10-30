@@ -1,6 +1,6 @@
 # Programmatic Runner (Foundation)
 
-The experimental library can run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/git/README.md). It does not yet ship a CLI, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
+The experimental library can run explicitly configured local or installed plugins, including the separately packaged [Git selection provider](../plugins/files/git/README.md). It does not yet ship a CLI, default checks, or an out-of-the-box default configuration. Do not interpret these foundations as completion of the planned distribution.
 
 ```js
 import { loadConfig, run } from "git-vet";

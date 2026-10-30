@@ -15,7 +15,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-test("packed driver runs independent timestamp and Git plugins offline without source-checkout imports", async (t) => {
+test("packed driver runs independent timestamp, glob, and Git plugins offline without source-checkout imports", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "git-vet packaged \u03bb "));
   t.after(() => rm(root, { recursive: true, force: true }));
   const packed = join(root, "packed");
@@ -69,7 +69,10 @@ test("packed driver runs independent timestamp and Git plugins offline without s
     fileURLToPath(new URL(".", import.meta.resolve("import-meta-resolve"))),
   );
   const gitArchive = pack(
-    fileURLToPath(new URL("../plugins/git/", import.meta.url)),
+    fileURLToPath(new URL("../plugins/files/git/", import.meta.url)),
+  );
+  const globArchive = pack(
+    fileURLToPath(new URL("../plugins/files/glob/", import.meta.url)),
   );
   const picomatchArchive = pack(
     fileURLToPath(new URL(".", import.meta.resolve("picomatch"))),
@@ -89,9 +92,22 @@ test("packed driver runs independent timestamp and Git plugins offline without s
       pluginArchive,
       resolverArchive,
       gitArchive,
+      globArchive,
       picomatchArchive,
     ],
     consumer,
+  );
+  const globModule = join(
+    consumer,
+    "node_modules",
+    "@git-vet",
+    "files-glob",
+    "index.mjs",
+  );
+  const globSource = await readFile(globModule);
+  await writeFile(
+    globModule,
+    'throw new Error("An unselected glob plugin was imported.");',
   );
 
   const old = join(project, "old.txt");
@@ -105,7 +121,7 @@ test("packed driver runs independent timestamp and Git plugins offline without s
   await writeFile(
     configFile,
     JSON.stringify({
-      selectors: [
+      files: [
         {
           plugin: "git-vet-fixture-timestamps",
           options: { since: Date.parse("2010-01-01") },
@@ -165,6 +181,39 @@ test("packed driver runs independent timestamp and Git plugins offline without s
     before.map((entry) => entry.mtimeMs),
   );
 
+  await writeFile(globModule, globSource);
+  for (const files of [
+    "*.txt",
+    { plugin: "@git-vet/files-glob", options: { pattern: "*.txt" } },
+  ]) {
+    await writeFile(
+      configFile,
+      JSON.stringify({
+        files,
+        checks: [{ plugin: "git-vet-fixture-timestamps/check" }],
+      }),
+    );
+    const globReport = JSON.parse(
+      execFileSync(process.execPath, [runner], {
+        cwd: consumer,
+        encoding: "utf8",
+        env: { ...process.env, PATH: "", Path: "" },
+        stdio: ["ignore", "pipe", "pipe"],
+      }),
+    );
+    assert.equal(globReport.exitCode, 1, JSON.stringify(globReport.errors));
+    assert.equal(globReport.selection.stages[0].pluginId, "files/glob");
+    assert.deepEqual(
+      globReport.findings.map((item) => item.path),
+      ["old.txt", "recent \u03bb.txt"],
+    );
+    assert.ok(
+      globReport.selection.candidates.every(
+        (item) => item.snapshot.kind === "filesystem",
+      ),
+    );
+  }
+
   const gitProject = join(consumer, "Git files \u03bb");
   await mkdir(gitProject);
   const git = (...args) =>
@@ -182,8 +231,9 @@ test("packed driver runs independent timestamp and Git plugins offline without s
   await writeFile(
     configFile,
     JSON.stringify({
-      selectors: [
-        { plugin: "git-vet-selector-git", options: { mode: "staged" } },
+      files: [
+        { plugin: "@git-vet/files-git", options: { mode: "staged" } },
+        "*.txt",
       ],
       checks: [
         { plugin: "git-vet-fixture-timestamps/check" },

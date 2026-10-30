@@ -13,10 +13,10 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
-import selector from "git-vet-selector-git";
-import { loadConfig, run, validateSelection } from "../src/index.mjs";
+import selector from "@git-vet/files-git";
+import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
 
 const execute = promisify(execFile);
 async function git(root, ...args) {
@@ -475,8 +475,13 @@ test("missing Git, invalid options, incompatible input, and outside-repository i
   await writeFile(
     configFile,
     JSON.stringify({
-      selectors: [
-        { plugin: new URL("../plugins/git/index.mjs", import.meta.url).href },
+      files: [
+        {
+          plugin: new URL(
+            "../../../plugins/files/git/index.mjs",
+            import.meta.url,
+          ).href,
+        },
       ],
     }),
   );
@@ -488,7 +493,7 @@ test("missing Git, invalid options, incompatible input, and outside-repository i
       "--input-type=module",
       "-e",
       `
-    import selector from ${JSON.stringify(new URL("../plugins/git/index.mjs", import.meta.url).href)};
+    import selector from ${JSON.stringify(new URL("../../../plugins/files/git/index.mjs", import.meta.url).href)};
     try {await selector.select({root:${JSON.stringify(root)},options:{},input:null});}
     catch(error) {process.stdout.write(JSON.stringify({code:error.code}));}
   `,
@@ -525,4 +530,47 @@ test("selection does not invoke configured fsmonitor or content-filter processes
   );
   await assert.rejects(readFile(marker), { code: "ENOENT" });
   assert.deepEqual(await readFile(join(root, ".git", "index")), index);
+});
+
+test("scoped Git shorthand composes with glob shortcuts while retaining full inventory and Git snapshots", async (t) => {
+  const root = await repository(t);
+  await write(root, "selected.txt", "selected\n");
+  await write(root, "counterpart.js", "counterpart\n");
+  await git(root, "add", "--all");
+  const config = await loadConfig({
+    cwd: root,
+    root,
+    defaults: {
+      directory: fileURLToPath(new URL("../../../", import.meta.url)),
+      config: {
+        files: ["@git-vet/files-git", "*.txt"],
+        checks: [
+          {
+            plugin: new URL(
+              "../../../fixtures/timestamp-package/inventory.mjs",
+              import.meta.url,
+            ).href,
+          },
+        ],
+      },
+    },
+  });
+  const report = await run(config);
+  assert.equal(report.exitCode, 0, JSON.stringify(report.errors));
+  assert.equal(report.checks[0].status, "completed");
+  assert.deepEqual(
+    report.selection.stages.map((stage) => stage.pluginId),
+    ["git/tracked-text", "files/glob"],
+  );
+  assert.deepEqual(
+    report.selection.candidates.map((candidate) => candidate.path),
+    ["selected.txt"],
+  );
+  assert.deepEqual(
+    report.selection.candidates[0].snapshot,
+    report.selection.stages[0].candidates.find(
+      (candidate) => candidate.path === "selected.txt",
+    ).snapshot,
+  );
+  assert.ok(report.selection.capabilities.includes("git.index"));
 });

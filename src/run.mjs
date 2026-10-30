@@ -94,7 +94,7 @@ function configuration(config) {
       isAbsolute(config.root) &&
       typeof config.moduleRoot === "string" &&
       isAbsolute(config.moduleRoot) &&
-      Array.isArray(config.selectors) &&
+      Array.isArray(config.files) &&
       Array.isArray(config.checks) &&
       (config.profile === null ||
         (typeof config.profile === "string" && config.profile.length > 0)) &&
@@ -107,7 +107,7 @@ function configuration(config) {
     "run() requires a resolved configuration from loadConfig().",
   );
   return {
-    ...resolveConfig({ selectors: config.selectors, checks: config.checks }),
+    ...resolveConfig({ files: config.files, checks: config.checks }),
     root: config.root,
     moduleRoot: config.moduleRoot,
     profile: config.profile,
@@ -131,7 +131,7 @@ export async function run(resolvedConfig) {
   function failure(error, phase, entry, index, plugin, candidate) {
     const detail = {
       phase,
-      reference: entry.plugin,
+      reference: typeof entry === "string" ? entry : entry.plugin,
       index,
       ...(plugin === undefined ? {} : { pluginId: plugin.id }),
       ...(candidate === undefined
@@ -164,8 +164,11 @@ export async function run(resolvedConfig) {
     return loaded.plugin;
   }
 
-  for (const [index, entry] of config.selectors.entries()) {
-    const stage = { index, reference: entry.plugin };
+  for (const [index, entry] of config.files.entries()) {
+    const stage = {
+      index,
+      reference: typeof entry === "string" ? entry : entry.plugin,
+    };
     stages.push(stage);
     if (selectionFailed) {
       Object.assign(stage, {
@@ -177,13 +180,20 @@ export async function run(resolvedConfig) {
     let plugin;
     let phase = "load";
     try {
-      plugin = await prepare(entry, "selector");
+      const configured =
+        typeof entry === "string"
+          ? {
+              plugin: import.meta.resolve("@git-vet/files-glob"),
+              options: { pattern: entry },
+            }
+          : entry;
+      plugin = await prepare(configured, "selector");
       stage.pluginId = plugin.id;
       phase = "selection";
       const output = validateSelection(
         await plugin.select({
           root: config.root,
-          options: entry.options,
+          options: configured.options,
           input: selection,
         }),
       );

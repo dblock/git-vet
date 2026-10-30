@@ -24,7 +24,7 @@ export default {
 };
 ```
 
-`root` is the project/configuration root, not an implicitly discovered Git root. `input` is `null` for a source or a prior selection for a filter. Configured selectors form an ordered narrowing pipeline: filters reuse input candidate records and retain input capabilities, preserving snapshots and full inventories. They return only their new decisions; core accumulates prior provenance. This does not imply union or intersection of independently discovered sources.
+`root` is the project/configuration root, not an implicitly discovered Git root. `input` is `null` for a source or a prior selection for a filter. Configured `files` stages form an ordered narrowing pipeline: filters reuse input candidate records and retain input capabilities, preserving snapshots and full inventories. They return only their new decisions; core accumulates prior provenance. This does not imply union or intersection of independently discovered sources.
 
 A candidate has a nonempty stable `id` and `path`. Paths are provider-defined display paths, normally project-relative with `/` separators. They may contain spaces, Unicode, and newlines. Optional `metadata` is an object. Optional `snapshot: { kind, id }` identifies the content version; optional `async read()` returns a `Uint8Array` of that snapshot's bytes. Providers own snapshot correctness and must not substitute live working-tree bytes for a promised index/revision snapshot. Metadata-only or unavailable candidates do not invent content access.
 
