@@ -76,17 +76,45 @@ export default {
   async select({ root, options, input, fix = false }) {
     const matches = matcher(options);
     if (input !== null) {
+      const negated = picomatch.scan(options.pattern).negated;
+      const targets = input.targets?.filter((target) =>
+        target.oldPath === undefined
+          ? matches(target.path)
+          : negated
+            ? matches(target.path) && matches(target.oldPath)
+            : matches(target.path) || matches(target.oldPath),
+      );
+      const targetPaths =
+        targets === undefined
+          ? undefined
+          : new Set(targets.map((target) => target.path));
+      const targetSet = new Set(targets);
+      const candidatePaths = new Set(
+        input.candidates.map((candidate) => candidate.path),
+      );
+      const selected =
+        targets === undefined
+          ? (candidate) => matches(candidate.path)
+          : (candidate) => targetPaths.has(candidate.path);
       return {
         ...input,
-        candidates: input.candidates.filter((candidate) =>
-          matches(candidate.path),
-        ),
-        decisions: input.candidates.map((candidate) => ({
-          candidateId: candidate.id,
-          path: candidate.path,
-          state: matches(candidate.path) ? "selected" : "filtered",
-          reason: `Glob ${JSON.stringify(options.pattern)} ${matches(candidate.path) ? "matched" : "did not match"}.`,
-        })),
+        ...(targets === undefined ? {} : { targets }),
+        candidates: input.candidates.filter(selected),
+        decisions: [
+          ...input.candidates.map((candidate) => ({
+            candidateId: candidate.id,
+            path: candidate.path,
+            state: selected(candidate) ? "selected" : "filtered",
+            reason: `Glob ${JSON.stringify(options.pattern)} ${selected(candidate) ? "matched" : "did not match"}.`,
+          })),
+          ...(input.targets ?? [])
+            .filter((target) => !candidatePaths.has(target.path))
+            .map((target) => ({
+              path: target.path,
+              state: targetSet.has(target) ? "selected" : "filtered",
+              reason: `Glob ${JSON.stringify(options.pattern)} ${targetSet.has(target) ? "matched" : "did not match"}.`,
+            })),
+        ],
       };
     }
     if (picomatch.scan(options.pattern).negated) {

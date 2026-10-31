@@ -1,0 +1,10 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: ./must-not-load.mjs (not-run)
+Precommit: read-only selection.
+target added svet.config.json
+selected svet.config.json
+Dry run: checks were not executed.
+Selected 1; checked 0; findings 0; skipped 0; failed 0; unavailable 0.
+Selected targets 1.

@@ -1,0 +1,10 @@
+Configuration: (defaults)
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: file/eol (completed)
+Precommit: read-only selection.
+target added .githooks/pre-commit
+target added hello.txt
+target added package.json
+Selected 3; checked 3; findings 0; skipped 0; failed 0; unavailable 0.
+Selected targets 3.

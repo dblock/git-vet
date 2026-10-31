@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- [#29](https://github.com/dblock/svet/pull/29): Add `--precommit` for read-only staged snapshots and selected change targets, with Git selection configured through `scope` - [@dblock](https://github.com/dblock).
 - [#28](https://github.com/dblock/svet/pull/28): Add opt-in `@svet/check-path-case` with shared casing defaults, file/directory specializations, and path exceptions - [@dblock](https://github.com/dblock).
 - [#28](https://github.com/dblock/svet/pull/28): Add opt-in `@svet/check-path-case-collision` for NFC/Unicode-case-folded file and directory collisions across full provider inventories - [@dblock](https://github.com/dblock).
 - [#27](https://github.com/dblock/svet/pull/27): Add explicit working-tree autofix for file EOL/trailing whitespace and a global `--dry-run` preview for checking and fixing - [@dblock](https://github.com/dblock).

@@ -163,7 +163,7 @@ export { default } from "svet/defaults";
 
 Copy [defaults.mjs](../defaults.mjs) when you want to edit the plan. Custom plugin references still resolve beside your configuration; declare the selected plugin packages directly when needed rather than relying on package-manager hoisting.
 
-Use explicit plugin objects for options, severity overrides, or local file-selection modules. For example, `files: { plugin: "@svet/files-git", options: { mode: "staged" } }` selects staged Git content. Local checking modules support string shorthand.
+Use explicit plugin objects for options, severity overrides, or local file-selection modules. For example, `files: { plugin: "@svet/files-git", options: { scope: "staged" } }` selects staged Git content. Local checking modules support string shorthand.
 
 This expanded example combines local file selection, check options, a severity override, and replacement profiles:
 

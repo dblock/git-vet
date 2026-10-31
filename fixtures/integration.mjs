@@ -182,16 +182,9 @@ export async function createConsumer(t) {
           "core.hooksPath": hooks,
         }))
           git("config", key, value);
-        const index = (await readdir(fixture)).includes("index");
-        if (index)
-          await cp(join(fixture, "index"), project, { recursive: true });
-        git("add", "--all");
-        if (index) await cp(source, project, { recursive: true });
-        if ((await readdir(fixture)).includes("index-entries.json")) {
-          git("config", "core.ignorecase", "false");
-          git("config", "core.precomposeunicode", "false");
+        async function register(entriesFile) {
           const entries = JSON.parse(
-            await readFile(join(fixture, "index-entries.json"), "utf8"),
+            await readFile(join(fixture, entriesFile), "utf8"),
           );
           assert.ok(Array.isArray(entries));
           for (const entry of entries) {
@@ -215,6 +208,31 @@ export async function createConsumer(t) {
               entry.path,
             );
           }
+        }
+        if ((await readdir(fixture)).includes("baseline-entries.json")) {
+          await register("baseline-entries.json");
+          const tree = git("write-tree").trim();
+          const baseline = git(
+            "-c",
+            "user.name=Svet Fixture",
+            "-c",
+            "user.email=svet@example.invalid",
+            "commit-tree",
+            tree,
+            "-m",
+            "Fixture baseline",
+          ).trim();
+          git("update-ref", "HEAD", baseline);
+        }
+        const index = (await readdir(fixture)).includes("index");
+        if (index)
+          await cp(join(fixture, "index"), project, { recursive: true });
+        git("add", "--all");
+        if (index) await cp(source, project, { recursive: true });
+        if ((await readdir(fixture)).includes("index-entries.json")) {
+          git("config", "core.ignorecase", "false");
+          git("config", "core.precomposeunicode", "false");
+          await register("index-entries.json");
         }
       }
       const env = {
@@ -245,9 +263,27 @@ export async function createConsumer(t) {
           (command[0] === "git" && command[1] === "svet"),
         "Fixtures must invoke svet or git svet.",
       );
+      if (definition.npmScript !== undefined) {
+        assert.ok(
+          typeof definition.npmScript === "string" &&
+            definition.npmScript.length,
+        );
+        const manifest = JSON.parse(
+          await readFile(join(project, "package.json"), "utf8"),
+        );
+        assert.equal(
+          manifest.scripts?.[definition.npmScript],
+          command.join(" "),
+          "An npm-script fixture must invoke its declared installed CLI command.",
+        );
+      }
       const before = await snapshot(directory);
-      const [program, args] =
-        command[0] === "git"
+      const [program, args] = definition.npmScript
+        ? [
+            process.execPath,
+            [process.env.npm_execpath, "run", "--silent", definition.npmScript],
+          ]
+        : command[0] === "git"
           ? [command[0], command.slice(1)]
           : process.platform === "win32"
             ? [process.execPath, [entry, ...command.slice(1)]]

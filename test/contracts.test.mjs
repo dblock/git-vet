@@ -18,6 +18,46 @@ const check = {
   },
 };
 
+test("change targets are metadata-only with validated statuses, rename origins, and aligned candidates", () => {
+  const target = { id: "change/old", path: "old.txt", status: "deleted" };
+  validateSelection({ candidates: [], targets: [target], capabilities: {} });
+  for (const targets of [
+    null,
+    [target, target],
+    [{ ...target, status: "unknown" }],
+    [{ ...target, status: "renamed" }],
+    [{ ...target, oldPath: "origin.txt" }],
+    [{ ...target, id: "" }],
+  ])
+    assert.throws(
+      () => validateSelection({ candidates: [], targets, capabilities: {} }),
+      { code: "INVALID_CONTRACT" },
+    );
+  assert.throws(
+    () =>
+      validateSelection({
+        candidates: [{ id: "file/old", path: "old.txt" }],
+        targets: [target],
+        capabilities: {},
+      }),
+    { code: "INVALID_CONTRACT" },
+  );
+  assert.throws(
+    () =>
+      validatePlugin(
+        {
+          apiVersion: 1,
+          kind: "selector",
+          id: "example/source",
+          precommit: "yes",
+          select() {},
+        },
+        "selector",
+      ),
+    { code: "INVALID_CONTRACT" },
+  );
+});
+
 test("fixes require file-check opt-in and path-free byte edits attached to findings", () => {
   const finding = { ruleId: "spelling", message: "Fix this." };
   const edit = { start: 0, end: 1, replacement: new Uint8Array([10]) };

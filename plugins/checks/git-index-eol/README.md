@@ -54,7 +54,7 @@ export default {
 };
 ```
 
-Use `mode: "staged"` instead of `snapshot: "index"` to select only staged additions/modifications/renames.
+Use `scope: "staged"` instead of `snapshot: "index"` to select only staged additions/modifications/renames.
 
 ## Incompatibility and Failures
 

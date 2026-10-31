@@ -15,8 +15,9 @@ Options:
   --format <text|json>  Output format (default: text)
   --fix                 Apply supported working-tree fixes and recheck
   --dry-run             Preview checking or fixing without applying fixes
-  -h, --help           Show this help
-  -v, --version        Show the version
+  --precommit           Check staged snapshots with a supported file source
+  -h, --help            Show this help
+  -v, --version         Show the version
 
 Exit codes: 0 completed, intentionally empty, or checking preview; 1 findings; 2 errors.
 Defaults: Git-tracked text files checked for LF line endings in the working tree.
@@ -44,6 +45,14 @@ function terminal(report) {
     `Files: ${selection.stages.map((stage) => `${text(stage.pluginId ?? stage.reference)} (${stage.status})`).join(" -> ") || "(none)"}`,
     `Checks: ${checks.map((check) => `${text(check.pluginId ?? check.reference)} (${check.status})`).join(", ") || "(none)"}`,
   ];
+  if (report.precommit) {
+    stdout.push("Precommit: read-only selection.");
+    for (const target of selection.targets ?? []) {
+      stdout.push(
+        `target ${target.status} ${text(target.path)}${target.oldPath === undefined ? "" : ` (from ${text(target.oldPath)})`}`,
+      );
+    }
+  }
   for (const stage of selection.stages) {
     for (const decision of stage.decisions ?? []) {
       if (decision.state !== "selected") {
@@ -96,10 +105,12 @@ function terminal(report) {
   stdout.push(
     `Selected ${summary.selected}; checked ${summary.checkedFiles}; findings ${summary.findings}; skipped ${summary.skippedInvocations}; failed ${summary.failedInvocations}; unavailable ${summary.unavailableChecks}.`,
   );
+  if (report.precommit)
+    stdout.push(`Selected targets ${summary.selectedTargets}.`);
   const stderr = report.errors
     .map(
       (error) =>
-        `error [${text(error.code)}${error.pluginCode ? `/${text(error.pluginCode)}` : ""}] ${text(error.phase)} ${text(error.path ?? error.pluginId ?? error.reference)}: ${text(error.message)}\n`,
+        `error [${text(error.code)}${error.pluginCode ? `/${text(error.pluginCode)}` : ""}] ${text(error.phase)} ${text(error.path ?? error.pluginId ?? error.reference ?? "(project)")}: ${text(error.message)}\n`,
     )
     .join("");
   return { stdout: `${stdout.join("\n")}\n`, stderr };
@@ -117,6 +128,7 @@ try {
       format: { type: "string", default: "text" },
       fix: { type: "boolean" },
       "dry-run": { type: "boolean" },
+      precommit: { type: "boolean" },
       help: { type: "boolean", short: "h" },
       version: { type: "boolean", short: "v" },
     },
@@ -124,6 +136,12 @@ try {
   format = values.format;
   if (!["text", "json"].includes(format)) {
     throw new SvetError("INVALID_ARGUMENT", "--format must be text or json.");
+  }
+  if (values.precommit && values.fix) {
+    throw new SvetError(
+      "INVALID_ARGUMENT",
+      "--precommit cannot be combined with --fix.",
+    );
   }
   if (values.help) {
     process.stdout.write(help);
@@ -143,6 +161,7 @@ try {
     const report = await run(config, {
       fix: values.fix,
       dryRun: values["dry-run"],
+      precommit: values.precommit,
     });
     if (format === "json") {
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);

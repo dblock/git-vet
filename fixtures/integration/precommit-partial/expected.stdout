@@ -1,0 +1,13 @@
+Configuration: svet.config.json
+Profile: (base)
+Files: git/tracked-text (selected)
+Checks: file/eol (completed)
+Precommit: read-only selection.
+target added binary.bin
+target added file.txt
+target added good.txt
+target added svet.config.json
+filtered binary.bin: Binary content: NUL byte in the first 8000 bytes.
+file.txt:1: error [file/eol/eol]: Selected text contains CRLF line endings; expected LF. Convert the intended source to LF and run the check again.
+Selected 3; checked 3; findings 1; skipped 0; failed 0; unavailable 0.
+Selected targets 4.

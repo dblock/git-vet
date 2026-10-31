@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "status": "error",
+  "exitCode": 2,
+  "errors": [
+    {
+      "phase": "cli",
+      "code": "INVALID_ARGUMENT",
+      "message": "--precommit cannot be combined with --fix."
+    }
+  ]
+}

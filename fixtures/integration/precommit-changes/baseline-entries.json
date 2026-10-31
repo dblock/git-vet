@@ -1,0 +1,5 @@
+[
+  { "path": "gone.txt", "source": "gone.txt" },
+  { "path": "old.txt", "source": "project/new.txt" },
+  { "path": "stable.txt", "source": "project/stable.txt" }
+]

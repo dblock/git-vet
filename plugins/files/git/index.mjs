@@ -18,7 +18,7 @@ import {
 
 function options(value) {
   const allowed = [
-    "mode",
+    "scope",
     "snapshot",
     "base",
     "target",
@@ -31,26 +31,26 @@ function options(value) {
     if (!allowed.includes(key))
       throw new Error(`Unknown Git selector option: ${key}.`);
   }
-  const mode = value.mode === undefined ? "tracked" : value.mode;
+  const scope = value.scope === undefined ? "tracked" : value.scope;
   const snapshot =
     value.snapshot === undefined
-      ? mode === "staged"
+      ? scope === "staged"
         ? "index"
-        : mode === "revision"
+        : scope === "revision"
           ? "revision"
           : "worktree"
       : value.snapshot;
-  if (!["tracked", "changed", "staged", "revision"].includes(mode)) {
-    throw new Error("mode must be tracked, changed, staged, or revision.");
+  if (!["tracked", "changed", "staged", "revision"].includes(scope)) {
+    throw new Error("scope must be tracked, changed, staged, or revision.");
   }
   if (
     !["worktree", "index", "revision"].includes(snapshot) ||
-    (mode === "staged" && snapshot !== "index") ||
-    (mode === "revision" && snapshot !== "revision") ||
-    (!["staged", "revision"].includes(mode) && snapshot === "revision")
+    (scope === "staged" && snapshot !== "index") ||
+    (scope === "revision" && snapshot !== "revision") ||
+    (!["staged", "revision"].includes(scope) && snapshot === "revision")
   ) {
     throw new Error(
-      "The requested snapshot is incompatible with the selection mode.",
+      "The requested snapshot is incompatible with the selection scope.",
     );
   }
   for (const key of ["includeUntracked", "includeIgnored", "mergeBase"]) {
@@ -58,20 +58,22 @@ function options(value) {
       throw new Error(`${key} must be a boolean.`);
     }
   }
-  if (mode === "revision") {
+  if (scope === "revision") {
     if (
       ![value.base, value.target].every(
         (ref) => typeof ref === "string" && ref.length,
       )
     ) {
       throw new Error(
-        "revision mode requires explicit base and target references.",
+        "revision scope requires explicit base and target references.",
       );
     }
   } else if (
     ["base", "target", "mergeBase"].some((key) => value[key] !== undefined)
   ) {
-    throw new Error("base, target, and mergeBase apply only to revision mode.");
+    throw new Error(
+      "base, target, and mergeBase apply only to revision scope.",
+    );
   }
   if (
     (value.includeUntracked || value.includeIgnored) &&
@@ -93,7 +95,7 @@ function options(value) {
   }
   return {
     ...value,
-    mode,
+    scope,
     snapshot,
     excluded: value.exclude?.length
       ? picomatch(value.exclude, {
@@ -241,14 +243,41 @@ async function revisions(root, settings) {
   };
 }
 
-async function select({ root, options: supplied, input, fix = false }) {
+async function select({
+  root,
+  options: supplied,
+  input,
+  fix = false,
+  precommit = false,
+}) {
   if (input !== null) {
     throw error(
       "GIT_SOURCE_ONLY",
       "The Git selector discovers candidates; use a separate filter to narrow its output.",
     );
   }
-  const settings = options(supplied);
+  let settings = options(supplied);
+  if (precommit) {
+    if (settings.scope === "revision") {
+      throw error(
+        "GIT_PRECOMMIT_UNSUPPORTED",
+        "Precommit selection cannot use a revision scope.",
+      );
+    }
+    if (fix) {
+      throw error(
+        "GIT_PRECOMMIT_READ_ONLY",
+        "Precommit selection cannot apply fixes.",
+      );
+    }
+    settings = options({
+      ...supplied,
+      scope: "staged",
+      snapshot: "index",
+      includeUntracked: false,
+      includeIgnored: false,
+    });
+  }
   let repositoryRoot;
   try {
     const output = text(
@@ -268,7 +297,7 @@ async function select({ root, options: supplied, input, fix = false }) {
     );
   }
   const state =
-    settings.mode === "revision"
+    settings.scope === "revision"
       ? await revisions(repositoryRoot, settings)
       : await local(repositoryRoot);
   const entries = new Map(state.entries.map((entry) => [entry.path, entry]));
@@ -355,11 +384,11 @@ async function select({ root, options: supplied, input, fix = false }) {
       continue;
     }
     const changed =
-      settings.mode === "staged"
+      settings.scope === "staged"
         ? change &&
           ["added", "modified", "renamed"].includes(change.indexStatus)
         : change && change.status !== "unchanged";
-    if (settings.mode !== "tracked" && !entry.untracked && !changed) {
+    if (settings.scope !== "tracked" && !entry.untracked && !changed) {
       decision("filtered", "Outside the configured change scope.");
       continue;
     }
@@ -433,6 +462,7 @@ async function select({ root, options: supplied, input, fix = false }) {
   }
   for (const change of state.changes.values()) {
     if (!entries.has(change.path)) {
+      if (precommit && change.indexStatus === "deleted") continue;
       decisions.push({
         state: "unavailable",
         path: change.path,
@@ -450,7 +480,7 @@ async function select({ root, options: supplied, input, fix = false }) {
       entries: [...state.changes.values()].sort(order),
     },
   };
-  if (settings.mode !== "revision") {
+  if (settings.scope !== "revision") {
     const captured = new Map(state.entries.map((entry) => [entry.path, entry]));
     capabilities["git.index"] = {
       entries: state.entries.map((entry) => ({ ...entry })),
@@ -470,12 +500,32 @@ async function select({ root, options: supplied, input, fix = false }) {
   }
   return {
     candidates,
+    ...(precommit
+      ? {
+          targets: [...state.changes.values()]
+            .filter(
+              (change) =>
+                ["added", "modified", "deleted", "renamed"].includes(
+                  change.indexStatus,
+                ) && !settings.excluded(change.path),
+            )
+            .sort(order)
+            .map((change) => ({
+              id: `git:target:${change.path}`,
+              path: change.path,
+              status: change.indexStatus,
+              ...(change.indexStatus === "renamed"
+                ? { oldPath: change.oldPath }
+                : {}),
+            })),
+        }
+      : {}),
     ...(fixer ? { fixer: fixer.writer } : {}),
     capabilities,
     decisions,
     context: {
       repositoryRoot,
-      mode: settings.mode,
+      scope: settings.scope,
       snapshot: settings.snapshot,
       baseline: state.baseline,
       ...(state.target
@@ -489,6 +539,7 @@ export default {
   apiVersion: 1,
   id: "git/tracked-text",
   kind: "selector",
+  precommit: true,
   validateOptions(value) {
     options(value);
   },

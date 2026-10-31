@@ -1,0 +1,4 @@
+{
+  "files": "@svet/files-git",
+  "checks": ["@svet/check-file-eol"]
+}
