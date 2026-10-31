@@ -1,7 +1,6 @@
 {
   "name": "@svet/check-file-eol",
   "version": "0.1.0",
-  "private": true,
   "description": "Read-only configurable line-ending validation of selected content snapshots for Svet.",
   "type": "module",
   "exports": "./index.mjs",

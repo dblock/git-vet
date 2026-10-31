@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 (2026-10-31)
 
 - [#29](https://github.com/dblock/svet/pull/29): Add `--precommit` for read-only staged snapshots and selected change targets, with Git selection configured through `scope` - [@dblock](https://github.com/dblock).
 - [#28](https://github.com/dblock/svet/pull/28): Add opt-in `@svet/check-path-case` with shared casing defaults, file/directory specializations, and path exceptions - [@dblock](https://github.com/dblock).

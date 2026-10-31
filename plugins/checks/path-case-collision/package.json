@@ -1,7 +1,6 @@
 {
   "name": "@svet/check-path-case-collision",
   "version": "0.1.0",
-  "private": true,
   "description": "Deterministic Unicode case-insensitive file and directory collision checks for Svet.",
   "type": "module",
   "exports": "./index.mjs",
