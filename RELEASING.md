@@ -4,7 +4,7 @@ Publishing packages, pushing tags, and creating GitHub releases require explicit
 
 ## Packages
 
-The driver `svet` and each plugin are separate npm packages. The seven plugins are npm workspaces under `plugins/files/` and `plugins/checks/`; publishing the root does not publish them. Installing `svet` installs its declared default-plugin dependencies, while users install optional checks separately. All eight packages start at version `0.1.0`.
+The driver `svet-cli` and each plugin are separate npm packages. The commands remain `svet` and `git svet`. The seven plugins are npm workspaces under `plugins/files/` and `plugins/checks/`; publishing the root does not publish them. Installing `svet-cli` installs its declared default-plugin dependencies, while users install optional checks separately. All eight packages start at version `0.1.0`.
 
 The plugin packages use unscoped `svet-files-*` and `svet-check-*` npm names; no npm organization is required. Confirm the intended publisher with `npm whoami`. Configuration uses an `@` marker for unscoped package references, such as `"@svet-files-git"`; the published and installed package name is `svet-files-git`, without that marker.
 
@@ -39,7 +39,7 @@ Publication is not atomic across packages. If a later publication fails, record 
 
 ## Verify and Tag
 
-Install `svet@VERSION` and all released optional checks into an owned temporary project using only registry packages, not workspace links or local tarballs. Verify both `svet` and `git svet`, default operation, filesystem selection, optional checks, JSON reporting, findings/error exit codes, and an explicit working-tree fix. Runtime execution must remain offline after dependencies are installed and must not modify source during ordinary checking or change the Git index during fixes.
+Install `svet-cli@VERSION` and all released optional checks into an owned temporary project using only registry packages, not workspace links or local tarballs. Verify both `svet` and `git svet`, default operation, filesystem selection, optional checks, JSON reporting, findings/error exit codes, and an explicit working-tree fix. Runtime execution must remain offline after dependencies are installed and must not modify source during ordinary checking or change the Git index during fixes.
 
 After all packages are verified, create an annotated `vVERSION` tag at the merged release commit, push it, and create the GitHub release with the matching changelog entries:
 

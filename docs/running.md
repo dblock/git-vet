@@ -41,7 +41,7 @@ The repository's [configuration](../svet.config.mjs) enables the indexed EOL che
 ## Programmatic API
 
 ```js
-import { loadConfig, run } from "svet";
+import { loadConfig, run } from "svet-cli";
 
 const config = await loadConfig();
 const report = await run(config);

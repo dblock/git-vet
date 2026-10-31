@@ -136,7 +136,7 @@ export async function createConsumer(t) {
   );
   const executable = join(consumer, "node_modules", ".bin", "svet");
   await access(executable);
-  const packageRoot = join(consumer, "node_modules", "svet");
+  const packageRoot = join(consumer, "node_modules", "svet-cli");
   const manifest = JSON.parse(
     await readFile(join(packageRoot, "package.json"), "utf8"),
   );
