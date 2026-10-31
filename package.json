@@ -1,7 +1,6 @@
 {
   "name": "svet",
   "version": "0.1.0",
-  "private": true,
   "workspaces": [
     "plugins/files/*",
     "plugins/checks/*"
@@ -33,6 +32,7 @@
     "CONTRIBUTING.md",
     "DESIGN.md",
     "README.md",
+    "RELEASING.md",
     "LICENSE"
   ],
   "license": "MIT",
