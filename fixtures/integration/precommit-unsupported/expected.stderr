@@ -1,0 +1,1 @@
+error [PRECOMMIT_UNSUPPORTED] selection files/glob: Source files/glob does not support precommit selection.

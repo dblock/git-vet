@@ -31,9 +31,12 @@ svet                  # Run checks.
 svet --fix            # Check, apply supported fixes, and recheck.
 svet --dry-run        # Select files and list checks without importing or running checks.
 svet --fix --dry-run  # Run checks and prepare/validate fixes without writing.
+svet --precommit     # Check staged/index snapshots without fixing.
 ```
 
 File EOL and trailing-whitespace checks support fixes with filesystem globs and Git working-tree snapshots. Indexed and committed snapshots remain read-only. See [autofix safety and reporting](docs/running.md#autofix-and-dry-run).
+
+To check what a commit will contain, use `svet --precommit`, or `svet --precommit --dry-run` to preview staged targets without running checks. See the [precommit-hook setup](docs/running.md#precommit-hooks) for a checked-in hook using your project's npm script.
 
 Example output with CRLF line endings in `bad.txt`:
 

@@ -1,0 +1,7 @@
+{
+  "files": {
+    "plugin": "@svet/files-git",
+    "options": { "scope": "revision", "base": "HEAD", "target": "HEAD" }
+  },
+  "checks": ["@svet/check-file-eol"]
+}

@@ -1,0 +1,5 @@
+{
+  "command": ["svet", "--precommit"],
+  "npmScript": "check:precommit",
+  "git": true
+}

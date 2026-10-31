@@ -24,6 +24,7 @@ The package declares `svet` and `git-svet` executables pointing to the same entr
 | `--format <text\|json>` | Output format; defaults to `text`. |
 | `--fix` | Apply supported working-tree fixes and recheck fresh snapshots. |
 | `--dry-run` | Preview checking without running checks, or preview fixing without applying changes. |
+| `--precommit` | Select staged change targets and captured index contents with a supported source, without fixing. |
 | `-h`, `--help` | Show help without loading configuration. |
 | `-v`, `--version` | Show the package version without loading configuration. |
 
@@ -48,9 +49,54 @@ console.log(JSON.stringify(report, null, 2));
 process.exitCode = report.exitCode;
 ```
 
-`run(config, { fix: true, dryRun: true })` prepares and validates fixes without applying them. `run(config, { dryRun: true })` only previews checking. Both options are optional booleans; unknown runner options are errors.
+`run(config, { fix: true, dryRun: true })` prepares and validates fixes without applying them. `run(config, { dryRun: true })` only previews checking. `run(config, { precommit: true })` checks staged snapshots; add `dryRun: true` to preview selection without importing checks. All three options are optional booleans; unknown runner options and combining `fix` with `precommit` are errors.
 
 See [configuration](configuration.md) and [plugin contracts](plugin-api.md). Configuration errors reject before execution. Selected plugin load/option/contract/selection/check errors become structured run errors, retaining independent results. Missing modules are errors, never installed on demand.
+
+## Precommit Hooks
+
+`svet --precommit` retains your configured checks, profile, exclusions, and narrowing filters while asking the source to select precommit inputs. The Git provider uses `scope: "staged"` and `snapshot: "index"` regardless of an ordinary local scope/snapshot, and excludes untracked or ignored files. Revision scopes, unsupported sources, and configurations without a source fail explicitly, including during dry-run. Use `svet --precommit --dry-run` to inspect targets and candidates without importing or executing checks.
+
+After [installing Svet](../README.md#usage) in your project, add a script:
+
+```sh
+npm pkg set 'scripts.check:precommit=svet --precommit'
+```
+
+Create `.githooks/pre-commit` with:
+
+```sh
+#!/bin/sh
+exec npm run --silent check:precommit
+```
+
+Enable the checked-in hook for this clone, running these commands from the repository root:
+
+```sh
+chmod +x .githooks/pre-commit
+git config --local core.hooksPath .githooks
+git add package.json .githooks/pre-commit
+```
+
+Commit the script and hook so collaborators can opt in with the same `git config` command after restoring dependencies. Git runs the hook from the repository root in a working-tree repository. For a monorepo, put the npm script in that root package or adjust the hook's invocation to the package that owns the configuration. Node.js, npm, Git, Svet, and configured plugins must already be installed; the hook does not install or download anything.
+
+If you already use Husky or another hook manager, add `npm run --silent check:precommit` to its existing precommit hook instead. Likewise, preserve an existing `.git/hooks/pre-commit` or configured `core.hooksPath`: changing the hooks path replaces where Git looks for all hooks, not just this one. Combine checks without masking their exit statuses; `exec` is appropriate when Svet is the final command.
+
+Run the same command manually before committing:
+
+```sh
+npm run check:precommit
+npm run check:precommit -- --dry-run
+git commit -m "Describe your change"
+```
+
+Exit `0` permits the commit, `1` blocks it for findings, and `2` blocks it for errors. The hook is read-only: `--precommit --fix` and `--precommit --fix --dry-run` are rejected. Fix the intended working-tree contents separately, stage them, and retry.
+
+Partial staging is respected: if disk contains a fix that was not staged, the hook still checks the old indexed bytes and can fail; if the staged bytes are clean but disk contains unrelated unstaged violations, file-content checks inspect only the clean staged snapshot. Svet never stages, stashes, or overwrites either version.
+
+Staged deletions are selected change targets, not readable content candidates. Renames carry the old and new paths; positive glob filters match either path, and negated filters exclude a rename if either path is excluded. Git-provider exclusion globs apply to the current/destination path. Binary files, symlinks, and submodules can likewise remain selected targets without being sent to text-content checks. Text output and JSON report selected targets separately from checked files.
+
+Precommit selection is not a new-findings policy: project checks still receive full inventory and change context. In particular, path casing and collision checks inspect the whole indexed inventory, including unchanged or excluded counterparts. Configure their exceptions or leave them out if that policy is not suitable for your hook.
 
 ## Autofix and Dry-Run
 
@@ -101,9 +147,10 @@ The returned object is JSON-safe data and contains:
 | `errors` | Explicit phase/reference/index, optional plugin/candidate identity, code, optional external `pluginCode`, and message. No automatic stacks or cause dumps. |
 | `summary` | Selected candidates, distinct files checked by at least one check, checked/skipped/failed invocation counts, unavailable checks, and finding count. |
 | `dryRun` | `true` for checking previews; omitted otherwise. |
+| `precommit` | `true` when precommit selection was requested; omitted otherwise. |
 | `fix` | Present only with fixing requested: dry-run flag, per-file outcomes and summary counts. |
 
-File outcomes identify `candidateId` and `path`; project outcomes do not invent a path. Selected candidates do not imply checked files. The distinct checked-file count is not a claim that every configured check inspected each file: consult per-check outcomes for skips/failures. Selection decisions describe provider-reported inclusion, filtering, exclusions, or unavailability without implying unvisited directories were exhaustively scanned.
+File outcomes identify `candidateId` and `path`; project outcomes do not invent a path. Selected candidates do not imply checked files. Precommit reports additionally include `selection.targets` and each stage's `targets`, with `{ id, path, status, oldPath? }` summaries, and `summary.selectedTargets` counts final selected events separately from content candidates. Deleted targets never become content candidates. The distinct checked-file count is not a claim that every configured check inspected each file: consult per-check outcomes for skips/failures. Selection decisions describe provider-reported inclusion, filtering, exclusions, or unavailability without implying unvisited directories were exhaustively scanned.
 
 Only id/path/snapshot summaries, capability names, whitelisted finding/error fields, and explicitly reportable selector context/decisions enter reports. Readers, capability values (including full inventories), arbitrary candidate metadata, plugin options, environment, and source bytes are not automatically serialized. Plugins are trusted and remain responsible for keeping their messages/context free of sensitive data and terminal control sequences.
 

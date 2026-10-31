@@ -16,6 +16,7 @@ import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import selector from "@svet/files-git";
+import globSelector from "@svet/files-glob";
 import collisionCheck from "@svet/check-path-case-collision";
 import caseCheck from "@svet/check-path-case";
 import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
@@ -71,6 +72,137 @@ function paths(selection) {
 
 const decode = (bytes) => new TextDecoder().decode(bytes);
 
+test("precommit checks indexed bytes, preserves deletions and rename targets, and keeps full context read-only", async (t) => {
+  const root = await repository(t);
+  for (const [path, bytes] of [
+    ["partial.txt", "original\n"],
+    ["bad.txt", "original\n"],
+    ["gone.txt", "deleted\n"],
+    ["old/name.txt", "renamed\n"],
+    ["stable.txt", "unchanged\n"],
+  ])
+    await write(root, path, bytes);
+  await commit(root);
+  await write(root, "partial.txt", "staged clean\n");
+  await write(root, "bad.txt", "staged bad\r\n");
+  await git(root, "add", "--", "partial.txt", "bad.txt");
+  await write(root, "partial.txt", "unstaged bad\r\n");
+  await write(root, "bad.txt", "unstaged fix\n");
+  await git(root, "rm", "--", "gone.txt");
+  await mkdir(join(root, "new"));
+  await git(root, "mv", "--", "old/name.txt", "new/name.txt");
+  await write(root, "binary.bin", Buffer.from([0, 255]));
+  await git(root, "add", "--", "binary.bin");
+  await write(root, "untracked.txt", "not staged\r\n");
+  await write(
+    root,
+    "svet.config.json",
+    JSON.stringify({
+      files: {
+        plugin: import.meta.resolve("@svet/files-git"),
+        options: { scope: "changed", includeUntracked: true },
+      },
+      checks: [import.meta.resolve("@svet/check-file-eol")],
+    }),
+  );
+  const index = await readFile(join(root, ".git", "index"));
+  const selection = validateSelection(
+    await selector.select({
+      root,
+      options: { scope: "changed", includeUntracked: true },
+      input: null,
+      precommit: true,
+    }),
+  );
+  assert.deepEqual(paths(selection), [
+    "bad.txt",
+    "new/name.txt",
+    "partial.txt",
+  ]);
+  assert.deepEqual(
+    selection.targets.map(({ path, status, oldPath }) => ({
+      path,
+      status,
+      ...(oldPath ? { oldPath } : {}),
+    })),
+    [
+      { path: "bad.txt", status: "modified" },
+      { path: "binary.bin", status: "added" },
+      { path: "gone.txt", status: "deleted" },
+      { path: "new/name.txt", status: "renamed", oldPath: "old/name.txt" },
+      { path: "partial.txt", status: "modified" },
+    ],
+  );
+  assert.ok(
+    selection.capabilities["fs.inventory"].some(
+      (record) => record.path === "stable.txt",
+    ),
+  );
+  assert.equal(selection.context.scope, "staged");
+  assert.equal(selection.context.snapshot, "index");
+  const filtered = validateSelection(
+    await globSelector.select({
+      root,
+      options: { pattern: "old/**" },
+      input: selection,
+    }),
+  );
+  assert.deepEqual(paths(filtered), ["new/name.txt"]);
+  assert.equal(filtered.targets[0], selection.targets[3]);
+  assert.equal(
+    filtered.capabilities["fs.inventory"],
+    selection.capabilities["fs.inventory"],
+  );
+  const excluded = validateSelection(
+    await globSelector.select({
+      root,
+      options: { pattern: "!old/**" },
+      input: selection,
+    }),
+  );
+  assert.ok(!excluded.targets.some((target) => target.status === "renamed"));
+  const deleted = validateSelection(
+    await globSelector.select({
+      root,
+      options: { pattern: "gone.txt" },
+      input: selection,
+    }),
+  );
+  assert.deepEqual(paths(deleted), []);
+  assert.deepEqual(
+    deleted.targets.map((target) => target.path),
+    ["gone.txt"],
+  );
+  const report = await run(await loadConfig({ cwd: root }), {
+    precommit: true,
+  });
+  assert.equal(report.exitCode, 1);
+  assert.deepEqual(
+    report.findings.map((finding) => finding.path),
+    ["bad.txt"],
+  );
+  assert.equal(report.summary.selectedTargets, 5);
+  assert.equal(report.summary.checkedFiles, 3);
+  assert.deepEqual(await readFile(join(root, ".git", "index")), index);
+  assert.equal(await readFile(join(root, "bad.txt"), "utf8"), "unstaged fix\n");
+  assert.equal(
+    await readFile(join(root, "partial.txt"), "utf8"),
+    "unstaged bad\r\n",
+  );
+  for (const [options, fix, code] of [
+    [
+      { scope: "revision", base: "HEAD", target: "HEAD" },
+      false,
+      "GIT_PRECOMMIT_UNSUPPORTED",
+    ],
+    [{}, true, "GIT_PRECOMMIT_READ_ONLY"],
+  ])
+    await assert.rejects(
+      selector.select({ root, options, input: null, precommit: true, fix }),
+      { code },
+    );
+});
+
 test("path checks compare staged additions with unchanged indexed names and allow a resulting case-only rename", async (t) => {
   const root = await repository(t);
   await git(root, "config", "core.ignorecase", "false");
@@ -96,7 +228,7 @@ test("path checks compare staged additions with unchanged indexed names and allo
     "foo.txt",
   );
   const index = await readFile(join(root, ".git", "index"));
-  const selection = await select(root, { mode: "staged" });
+  const selection = await select(root, { scope: "staged" });
   assert.deepEqual(paths(selection), ["foo.txt"]);
   assert.deepEqual(
     (await collisionCheck.check({ selection })).findings[0].paths,
@@ -110,7 +242,7 @@ test("path checks compare staged additions with unchanged indexed names and allo
   );
   assert.deepEqual(await readFile(join(root, ".git", "index")), index);
   await git(root, "update-index", "--force-remove", "--", "Foo.txt");
-  const renamed = await select(root, { mode: "staged" });
+  const renamed = await select(root, { scope: "staged" });
   assert.deepEqual(
     (await collisionCheck.check({ selection: renamed })).findings,
     [],
@@ -132,7 +264,7 @@ test("path checks retain binary-only collisions even when no content candidates 
       oid,
       path,
     );
-  const selection = await select(root, { mode: "staged" });
+  const selection = await select(root, { scope: "staged" });
   assert.deepEqual(paths(selection), []);
   assert.deepEqual(
     (await collisionCheck.check({ selection })).findings[0].paths,
@@ -282,7 +414,7 @@ test("staged selection reads captured raw index blobs, not normalized or partial
   await git(root, "update-index", "--cacheinfo", "100644", oid, "file.txt");
   await write(root, "file.txt", "unstaged and normalized\n");
   const index = await readFile(join(root, ".git", "index"));
-  const staged = await select(root, { mode: "staged" });
+  const staged = await select(root, { scope: "staged" });
   assert.deepEqual(paths(staged), ["file.txt"]);
   assert.equal(decode(await staged.candidates[0].read()), "indexed\r\n");
   assert.deepEqual(staged.candidates[0].snapshot, {
@@ -346,7 +478,7 @@ test("staged selection preserves trusted Git environment settings and an alterna
       "-e",
       `
     import selector from ${JSON.stringify(new URL("../../../plugins/files/git/index.mjs", import.meta.url).href)};
-    const selection = await selector.select({root:${JSON.stringify(root)},options:{mode:"staged"},input:null});
+    const selection = await selector.select({root:${JSON.stringify(root)},options:{scope:"staged"},input:null});
     process.stdout.write(JSON.stringify({
       paths:selection.candidates.map(file=>file.path),
       content:new TextDecoder().decode(await selection.capabilities["git.index"].read("file.txt"))
@@ -375,7 +507,7 @@ test("Git command failures without stderr are not mistaken for success", async (
   assert.equal(result.stderr.length, 0);
 });
 
-test("changed/staged modes distinguish renames, deleted paths, unstaged changes, and unchanged counterparts", async (t) => {
+test("changed/staged scopes distinguish renames, deleted paths, unstaged changes, and unchanged counterparts", async (t) => {
   const root = await repository(t);
   for (const path of [
     "old name.txt",
@@ -389,7 +521,7 @@ test("changed/staged modes distinguish renames, deleted paths, unstaged changes,
   await git(root, "mv", "--", "old name.txt", "new \u03bb.txt");
   await git(root, "rm", "--", "remove.txt");
   await write(root, "modified.txt", "unstaged\n");
-  const changed = await select(root, { mode: "changed" });
+  const changed = await select(root, { scope: "changed" });
   assert.deepEqual(paths(changed), ["modified.txt", "new \u03bb.txt"]);
   assert.equal(changed.context.baseline, baseline);
   const renamed = changed.candidates.find(
@@ -397,7 +529,7 @@ test("changed/staged modes distinguish renames, deleted paths, unstaged changes,
   );
   assert.equal(renamed.metadata.git.status, "renamed");
   assert.equal(renamed.metadata.git.oldPath, "old name.txt");
-  const staged = await select(root, { mode: "staged" });
+  const staged = await select(root, { scope: "staged" });
   assert.deepEqual(paths(staged), ["new \u03bb.txt"]);
   assert.ok(
     staged.capabilities["fs.inventory"].some(
@@ -433,7 +565,7 @@ test("revision comparisons use target blobs/full inventory despite dirty working
   await write(root, "changed.txt", "new index\n");
   await git(root, "add", "--", "changed.txt");
   await write(root, "changed.txt", "new worktree\n");
-  const selection = await select(root, { mode: "revision", base, target });
+  const selection = await select(root, { scope: "revision", base, target });
   assert.deepEqual(paths(selection), ["changed.txt", "renamed.txt"]);
   assert.equal(decode(await selection.candidates[0].read()), "target\n");
   assert.equal(selection.context.target, target);
@@ -450,7 +582,7 @@ test("revision comparisons use target blobs/full inventory despite dirty working
     "unavailable",
   );
   await assert.rejects(
-    select(root, { mode: "revision", base: "missing-reference", target }),
+    select(root, { scope: "revision", base: "missing-reference", target }),
     {
       code: "GIT_INVALID_REFERENCE",
     },
@@ -467,7 +599,7 @@ test("merge-base comparisons are explicit and use only locally available history
   await write(root, "other.txt", "other\n");
   await commit(root);
   const selection = await select(root, {
-    mode: "revision",
+    scope: "revision",
     base: "other",
     target,
     mergeBase: true,
@@ -480,7 +612,7 @@ test("merge-base comparisons are explicit and use only locally available history
   await commit(root);
   await assert.rejects(
     select(root, {
-      mode: "revision",
+      scope: "revision",
       base: "unrelated",
       target,
       mergeBase: true,
@@ -495,7 +627,7 @@ test("unborn repositories, linked worktrees, subdirectories, and shallow history
   const root = await repository(t);
   await write(root, "nested/new.txt", "new\n");
   await git(root, "add", "--all");
-  const unborn = await select(root, { mode: "staged" });
+  const unborn = await select(root, { scope: "staged" });
   assert.equal(unborn.context.baseline, null);
   assert.deepEqual(paths(unborn), ["nested/new.txt"]);
   await commit(root);
@@ -519,7 +651,7 @@ test("unborn repositories, linked worktrees, subdirectories, and shallow history
   );
   assert.ok(paths(await select(shallow)).includes("second.txt"));
   await assert.rejects(
-    select(shallow, { mode: "revision", base: "HEAD~1", target: "HEAD" }),
+    select(shallow, { scope: "revision", base: "HEAD~1", target: "HEAD" }),
     {
       code: "GIT_INVALID_REFERENCE",
     },
@@ -537,7 +669,7 @@ test("case-only renames and unusual representable names retain exact paths", asy
   for (const name of names) await write(root, name, "text\n");
   await commit(root);
   await git(root, "mv", "--force", "--", "Mixed.txt", "mixed.txt");
-  const staged = await select(root, { mode: "staged" });
+  const staged = await select(root, { scope: "staged" });
   assert.deepEqual(paths(staged), ["mixed.txt"]);
   assert.equal(staged.candidates[0].metadata.git.oldPath, "Mixed.txt");
   assert.equal(
@@ -590,11 +722,11 @@ test("missing worktree files, symlinks, and unmerged index entries never masquer
 test("missing Git, invalid options, incompatible input, and outside-repository invocation are explicit", async (t) => {
   const root = await repository(t);
   for (const options of [
-    { mode: "unknown" },
-    { mode: null },
+    { scope: "unknown" },
+    { scope: null },
     { snapshot: null },
-    { mode: "staged", snapshot: "worktree" },
-    { mode: "revision", base: "HEAD" },
+    { scope: "staged", snapshot: "worktree" },
+    { scope: "revision", base: "HEAD" },
     { base: "main" },
     { includeIgnored: true },
     { includeUntracked: "yes" },
@@ -666,7 +798,7 @@ test("selection does not invoke configured fsmonitor or content-filter processes
   );
   const index = await readFile(join(root, ".git", "index"));
   assert.ok(
-    paths(await select(root, { mode: "changed" })).includes("file.txt"),
+    paths(await select(root, { scope: "changed" })).includes("file.txt"),
   );
   await assert.rejects(readFile(marker), { code: "ENOENT" });
   assert.deepEqual(await readFile(join(root, ".git", "index")), index);

@@ -1,0 +1,4 @@
+{
+  "files": "*.txt",
+  "checks": ["@svet/check-file-eol"]
+}

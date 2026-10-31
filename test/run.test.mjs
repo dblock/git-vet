@@ -30,6 +30,69 @@ async function module(root, name, body) {
   return path;
 }
 
+test("precommit is a source-neutral opt-in, rejects unsupported sources and fixes, and previews without importing checks", async (t) => {
+  const root = await workspace(t);
+  for (const files of [undefined, "*.txt", source]) {
+    const result = await run(
+      await configure(root, { files, checks: ["./must-not-load.mjs"] }),
+      { precommit: true, dryRun: true },
+    );
+    assert.equal(result.exitCode, 2);
+    assert.equal(result.errors[0].code, "PRECOMMIT_UNSUPPORTED");
+    assert.equal(result.checks[0].status, "not-run");
+  }
+  const provider = await module(
+    root,
+    "precommit.mjs",
+    `
+    export default {apiVersion:1,id:"example/precommit",kind:"selector",precommit:true,async select({precommit,fix}) {
+      if (!precommit || fix) throw new Error("Wrong selection request.");
+      return {candidates:[],targets:[{id:"change/gone",path:"gone.txt",status:"deleted",secret:"not reportable"}],capabilities:{"example/full":[]} };
+    }};
+  `,
+  );
+  const config = await configure(root, {
+    files: { plugin: provider },
+    checks: ["./must-not-load.mjs"],
+  });
+  const result = await run(config, { precommit: true, dryRun: true });
+  assert.equal(result.status, "planned");
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.summary.selectedTargets, 1);
+  assert.equal(result.summary.checkedFiles, 0);
+  assert.deepEqual(result.selection.targets, [
+    { id: "change/gone", path: "gone.txt", status: "deleted" },
+  ]);
+  await assert.rejects(run(config, { precommit: true, fix: true }), {
+    code: "INVALID_CONFIG",
+  });
+  await assert.rejects(run(config, { precommit: "yes" }), {
+    code: "INVALID_CONFIG",
+  });
+  for (const [index, output] of [
+    "{...input,targets:undefined}",
+    "{...input,targets:input.targets.map(target=>({...target}))}",
+    "{...input,targets:[{id:'new',path:'new.txt',status:'added'}]}",
+  ].entries()) {
+    const filter = await module(
+      root,
+      `bad-filter-${index}.mjs`,
+      `
+      export default {apiVersion:1,id:"example/filter",kind:"selector",select({input}) {return ${output};}};
+    `,
+    );
+    const filtered = await run(
+      await configure(root, {
+        files: [{ plugin: provider }, { plugin: filter }],
+        checks: [],
+      }),
+      { precommit: true, dryRun: true },
+    );
+    assert.equal(filtered.exitCode, 2);
+    assert.equal(filtered.errors[0].code, "INCOMPATIBLE_SELECTION");
+  }
+});
+
 test("path checks require inventory, inspect metadata-only selections, and report unavailable fixes without mutation", async (t) => {
   const root = await workspace(t);
   const casing = import.meta.resolve("@svet/check-path-case");

@@ -143,7 +143,7 @@ test("indexed snapshots and indexed checks never redirect fixes to working files
   const index = await readFile(join(root, ".git", "index"));
   await writeFile(join(root, "a.txt"), "working\r\n");
   for (const [checks, source] of [
-    [[eol], { plugin: gitPlugin, options: { mode: "staged" } }],
+    [[eol], { plugin: gitPlugin, options: { scope: "staged" } }],
     [[import.meta.resolve("@svet/check-git-index-eol")], { plugin: gitPlugin }],
   ]) {
     const result = await run(await configure(root, checks, [source, "*.txt"]), {

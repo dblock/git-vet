@@ -32,6 +32,14 @@ A selection contains `candidates` with unique ids and a `capabilities` object, e
 
 Optional `decisions` contains `{ state, reason, path?, candidateId? }` records. States are `selected`, `filtered`, `excluded`, and `unavailable`. Reasons identify why a selector included or omitted a path; absence from the candidate list alone does not establish that it was scanned or excluded. Optional `context` is an explicitly reportable JSON-safe object for scope/baseline descriptions, not a dump of internal metadata or secrets.
 
+### Precommit Requests and Change Targets
+
+A selector may declare optional boolean `precommit: true` to opt into source-level precommit selection. The runner passes a boolean `precommit` argument to `select()`, without interpreting the provider's options or querying Git. A precommit request requires a supported first source and an explicit `targets` view; missing/unsupported sources fail, including during dry-run. Filters receive the same request and prior selection but do not need source opt-in. Precommit and fixing cannot be combined.
+
+Optional `targets` contains metadata-only `{ id, path, status, oldPath? }` records with unique nonempty ids and paths. Supported statuses are `added`, `modified`, `deleted`, and `renamed`; renames require a nonempty `oldPath`, and other statuses omit it. Whenever the view is present, every content candidate must correspond by path to a surviving target. Deleted or binary events need no content candidate or reader. Selection completeness and the meaning of a precommit snapshot belong to the provider.
+
+Filters must retain the target view, narrow it by reusing input target objects, and keep candidates aligned with surviving selected targets. They may not introduce targets, replace the full inventory, or discard it when the target list becomes empty. The glob filter matches positive patterns against either rename path; negated patterns retain a rename only when both paths are allowed. Core reports whitelisted target summaries and counts separately from content coverage; it does not imply any project check is limited to those targets.
+
 ### Path Inventory Capability
 
 The shipped path checks require `"fs.inventory"` as an array of records with a nonempty, well-formed Unicode `path` and `metadata.kind`: `file`, `directory`, `symlink`, `submodule`, `untracked`, or `special`. Paths are provider-relative POSIX strings without leading/trailing slashes, empty components, `.` components, or `..` traversal; a directory record for the root `.` is allowed and ignored. Backslashes are literal name characters, not separators.

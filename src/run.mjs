@@ -32,6 +32,15 @@ function candidateSummary(candidate) {
   };
 }
 
+function targetSummary(target) {
+  return {
+    id: target.id,
+    path: target.path,
+    status: target.status,
+    ...(target.oldPath === undefined ? {} : { oldPath: target.oldPath }),
+  };
+}
+
 function decisionSummary(decision) {
   return {
     state: decision.state,
@@ -48,6 +57,21 @@ function refinement(input, output) {
     return;
   }
   const candidates = new Set(input.candidates);
+  if (input.targets !== undefined) {
+    const targets = new Set(input.targets);
+    invariant(
+      Array.isArray(output.targets) &&
+        output.targets.every((target) => targets.has(target)),
+      "INCOMPATIBLE_SELECTION",
+      "A filter must narrow targets by identity without discarding the target view.",
+    );
+  } else {
+    invariant(
+      output.targets === undefined,
+      "INCOMPATIBLE_SELECTION",
+      "Only a source may introduce selection targets.",
+    );
+  }
   invariant(
     output.candidates.every((candidate) => candidates.has(candidate)),
     "INCOMPATIBLE_SELECTION",
@@ -119,7 +143,10 @@ function configuration(config) {
   };
 }
 
-async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
+async function inspect(
+  resolvedConfig,
+  { fix = false, dryRun = false, precommit = false } = {},
+) {
   const config = configuration(resolvedConfig);
   const errors = [];
   const findings = [];
@@ -194,12 +221,18 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
       plugin = await prepare(configured, "selector");
       stage.pluginId = plugin.id;
       phase = "selection";
+      invariant(
+        !precommit || index !== 0 || plugin.precommit === true,
+        "PRECOMMIT_UNSUPPORTED",
+        `Source ${plugin.id} does not support precommit selection.`,
+      );
       const output = validateSelection(
         await plugin.select({
           root: config.root,
           options: configured.options,
           input: selection,
           fix,
+          precommit,
         }),
       );
       if (output.fixer !== undefined) {
@@ -211,9 +244,17 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
         fixer = output.fixer;
       }
       refinement(selection, output);
+      invariant(
+        !precommit || output.targets !== undefined,
+        "INVALID_CONTRACT",
+        "Precommit selection must retain explicit change targets.",
+      );
       selection = {
         ...output,
         candidates: ordered(output.candidates, (candidate) => candidate.id),
+        ...(output.targets === undefined
+          ? {}
+          : { targets: ordered(output.targets, (target) => target.id) }),
         decisions: [
           ...(selection?.decisions ?? []),
           ...(output.decisions ?? []),
@@ -221,8 +262,14 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
       };
       delete selection.fixer;
       Object.assign(stage, {
-        status: selection.candidates.length ? "selected" : "empty",
+        status:
+          selection.candidates.length || selection.targets?.length
+            ? "selected"
+            : "empty",
         candidates: selection.candidates.map(candidateSummary),
+        ...(selection.targets === undefined
+          ? {}
+          : { targets: selection.targets.map(targetSummary) }),
         capabilities: Object.keys(selection.capabilities).sort(compare),
         decisions: ordered(
           (output.decisions ?? []).map(decisionSummary),
@@ -238,6 +285,16 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
       selectionFailed = true;
       selection = null;
     }
+  }
+
+  if (precommit && !config.files.length) {
+    errors.push({
+      phase: "selection",
+      code: "PRECOMMIT_UNSUPPORTED",
+      message:
+        "Precommit execution requires an explicitly configured supported source or the shipped defaults.",
+    });
+    selectionFailed = true;
   }
 
   for (const [index, entry] of config.checks.entries()) {
@@ -380,6 +437,7 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
     status,
     exitCode: errors.length ? 2 : findings.length ? 1 : 0,
     ...(dryRun && !fix ? { dryRun: true } : {}),
+    ...(precommit ? { precommit: true } : {}),
     ...(status !== "empty"
       ? {}
       : {
@@ -401,10 +459,13 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
         ? "failed"
         : selection === null
           ? "not-configured"
-          : selection.candidates.length
+          : selection.candidates.length || selection.targets?.length
             ? "selected"
             : "empty",
       candidates: (selection?.candidates ?? []).map(candidateSummary),
+      ...(selection?.targets === undefined
+        ? {}
+        : { targets: selection.targets.map(targetSummary) }),
       capabilities: Object.keys(selection?.capabilities ?? {}).sort(compare),
       stages,
     },
@@ -413,6 +474,9 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
     errors,
     summary: {
       selected: selection?.candidates.length ?? 0,
+      ...(precommit
+        ? { selectedTargets: selection?.targets?.length ?? 0 }
+        : {}),
       checkedFiles: new Set(
         checked
           .filter((outcome) => outcome.candidateId !== undefined)
@@ -437,13 +501,20 @@ async function inspect(resolvedConfig, { fix = false, dryRun = false } = {}) {
 export async function run(resolvedConfig, options = {}) {
   invariant(
     isRecord(options) &&
-      Object.keys(options).every((key) => ["fix", "dryRun"].includes(key)) &&
-      ["fix", "dryRun"].every(
+      Object.keys(options).every((key) =>
+        ["fix", "dryRun", "precommit"].includes(key),
+      ) &&
+      ["fix", "dryRun", "precommit"].every(
         (key) =>
           options[key] === undefined || typeof options[key] === "boolean",
       ),
     "INVALID_CONFIG",
-    "Runner options must contain only boolean fix and dryRun fields.",
+    "Runner options must contain only boolean fix, dryRun, and precommit fields.",
+  );
+  invariant(
+    !(options.fix && options.precommit),
+    "INVALID_CONFIG",
+    "Precommit execution cannot apply fixes.",
   );
   const initial = await inspect(resolvedConfig, options);
   return options.fix

@@ -73,6 +73,10 @@ export function validatePlugin(plugin, kind) {
   );
   if (kind === "selector") {
     assert(
+      plugin.precommit === undefined || typeof plugin.precommit === "boolean",
+      "Selector precommit support must be a boolean.",
+    );
+    assert(
       typeof plugin.select === "function",
       `Selector ${plugin.id} must implement select().`,
     );
@@ -117,6 +121,30 @@ export function validateSelection(selection) {
     "A selection must contain a candidates array.",
   );
   const ids = new Set();
+  let targetPaths;
+  if (selection.targets !== undefined) {
+    assert(
+      Array.isArray(selection.targets),
+      "Selection targets must be an array.",
+    );
+    const targets = new Set();
+    targetPaths = new Set();
+    for (const target of selection.targets) {
+      assert(
+        isRecord(target) &&
+          text(target.id) &&
+          text(target.path) &&
+          ["added", "modified", "deleted", "renamed"].includes(target.status) &&
+          (target.status === "renamed"
+            ? text(target.oldPath)
+            : target.oldPath === undefined) &&
+          !targets.has(target.id),
+        "Selection targets require unique ids, paths, change statuses, and oldPath for renames.",
+      );
+      targets.add(target.id);
+      if (target.status !== "deleted") targetPaths.add(target.path);
+    }
+  }
   for (const candidate of selection.candidates) {
     assert(
       isRecord(candidate) && text(candidate.id) && text(candidate.path),
@@ -141,6 +169,13 @@ export function validateSelection(selection) {
       );
     }
   }
+  assert(
+    targetPaths === undefined ||
+      selection.candidates.every((candidate) =>
+        targetPaths.has(candidate.path),
+      ),
+    "Content candidates must correspond to surviving selection targets.",
+  );
   assert(
     isRecord(selection.capabilities),
     "A selection must declare its capabilities object, even when empty.",

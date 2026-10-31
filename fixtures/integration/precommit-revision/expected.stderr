@@ -1,0 +1,1 @@
+error [PLUGIN_EXECUTION_FAILED/GIT_PRECOMMIT_UNSUPPORTED] selection git/tracked-text: Precommit selection cannot use a revision scope.

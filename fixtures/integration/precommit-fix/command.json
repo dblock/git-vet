@@ -1,0 +1,3 @@
+{
+  "command": ["svet", "--precommit", "--fix", "--dry-run", "--format", "json"]
+}

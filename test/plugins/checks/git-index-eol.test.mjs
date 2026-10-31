@@ -149,7 +149,7 @@ test("staged scope and provider exclusions narrow indexed EOL checks without an 
   await git(root, "add", "--all");
   await writeFile(join(root, "unstaged.txt"), "not staged\r\n");
   const staged = await inspect(root, {
-    mode: "staged",
+    scope: "staged",
     exclude: ["vendor/**"],
   });
   assert.deepEqual(
@@ -203,7 +203,7 @@ test("missing and revision-only index capabilities are unavailable rather than f
   await git(root, "add", "--all");
   await git(root, "commit", "--quiet", "-m", "Fixture");
   const revision = await inspect(root, {
-    mode: "revision",
+    scope: "revision",
     base: "HEAD",
     target: "HEAD",
   });
