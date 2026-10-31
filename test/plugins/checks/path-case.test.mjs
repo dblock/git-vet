@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import check from "@svet/check-path-case";
+import check from "svet-check-path-case";
 
 function selection(paths) {
   return {

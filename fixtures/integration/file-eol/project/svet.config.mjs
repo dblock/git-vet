@@ -1,4 +1,4 @@
 export default {
   files: "*",
-  checks: ["@svet/check-file-eol"],
+  checks: ["@svet-check-file-eol"],
 };

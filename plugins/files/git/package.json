@@ -1,5 +1,5 @@
 {
-  "name": "@svet/files-git",
+  "name": "svet-files-git",
   "version": "0.1.0",
   "description": "Git-tracked text selection and content snapshots for Svet.",
   "type": "module",
@@ -19,7 +19,7 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
-    "@svet/files-glob": "0.1.0",
+    "svet-files-glob": "0.1.0",
     "@simple-git/argv-parser": "2.0.1",
     "picomatch": "4.0.7",
     "simple-git": "4.0.2"

@@ -73,12 +73,12 @@ test("profiles replace the complete base plan, including intentionally empty pro
 
 test("checks accepts mixed module strings and configured objects in base and profile plans", () => {
   const checks = [
-    "@svet/check-file-eol",
+    "@svet-check-file-eol",
     "unscoped-check",
     "./tools/check.mjs",
     new URL("../fixtures/file-check.mjs", import.meta.url).href,
     {
-      plugin: "@svet/check-git-index-eol",
+      plugin: "@svet-check-git-index-eol",
       options: { example: true },
       severity: "warning",
     },
@@ -96,17 +96,25 @@ test("checks accepts mixed module strings and configured objects in base and pro
     expected,
   );
   assert.deepEqual(resolveConfig({ checks: expected }).checks, expected);
-  assert.equal(document.checks[0], "@svet/check-file-eol");
+  assert.equal(document.checks[0], "@svet-check-file-eol");
 });
 
-test("files accepts scoped plugin and glob shortcuts, single objects, and ordered mixed pipelines", () => {
-  const git = { plugin: "@svet/files-git", options: {} };
-  assert.deepEqual(resolveConfig({ files: "@svet/files-git" }).files, [git]);
+test("files accepts marked package and glob shortcuts, single objects, and ordered mixed pipelines", () => {
+  const git = { plugin: "@svet-files-git", options: {} };
+  assert.deepEqual(resolveConfig({ files: "@svet-files-git" }).files, [git]);
+  for (const plugin of ["@example/selector", "@example/selector/subpath"]) {
+    assert.deepEqual(resolveConfig({ files: plugin }).files, [
+      { plugin, options: {} },
+    ]);
+  }
+  for (const pattern of ["svet-files-git", "README.md", "@example/*.txt"]) {
+    assert.deepEqual(resolveConfig({ files: pattern }).files, [pattern]);
+  }
   assert.deepEqual(resolveConfig({ files: "**/*.js" }).files, ["**/*.js"]);
   const object = { plugin: "./source.mjs", options: { recent: true } };
   assert.deepEqual(resolveConfig({ files: object }).files, [object]);
   const plan = resolveConfig({
-    files: ["@svet/files-git", "**/*.{js,ts}", "!vendor/**", object],
+    files: ["@svet-files-git", "**/*.{js,ts}", "!vendor/**", object],
     profiles: { js: { files: "**/*.js" }, empty: {} },
   });
   assert.deepEqual(plan.files, [git, "**/*.{js,ts}", "!vendor/**", object]);
@@ -116,14 +124,14 @@ test("files accepts scoped plugin and glob shortcuts, single objects, and ordere
   );
   assert.deepEqual(
     resolveConfig(
-      { files: "@svet/files-git", profiles: { js: { files: "*.js" } } },
+      { files: "@svet-files-git", profiles: { js: { files: "*.js" } } },
       { profile: "js" },
     ).files,
     ["*.js"],
   );
   assert.deepEqual(
     resolveConfig(
-      { files: "@svet/files-git", profiles: { empty: {} } },
+      { files: "@svet-files-git", profiles: { empty: {} } },
       { profile: "empty" },
     ).files,
     [],

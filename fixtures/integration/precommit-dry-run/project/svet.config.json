@@ -1,4 +1,4 @@
 {
-  "files": "@svet/files-git",
+  "files": "@svet-files-git",
   "checks": ["./must-not-load.mjs"]
 }

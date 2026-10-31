@@ -6,7 +6,7 @@ Publishing packages, pushing tags, and creating GitHub releases require explicit
 
 The driver `svet` and each plugin are separate npm packages. The seven plugins are npm workspaces under `plugins/files/` and `plugins/checks/`; publishing the root does not publish them. Installing `svet` installs its declared default-plugin dependencies, while users install optional checks separately. All eight packages start at version `0.1.0`.
 
-Publishing scoped packages requires permission in the npm `svet` organization. Confirm access with `npm whoami` and `npm org ls svet`. Public scoped packages require `--access public` on first publication.
+The plugin packages use unscoped `svet-files-*` and `svet-check-*` npm names; no npm organization is required. Confirm the intended publisher with `npm whoami`. Configuration uses an `@` marker for unscoped package references, such as `"@svet-files-git"`; the published and installed package name is `svet-files-git`, without that marker.
 
 ## Prepare
 
@@ -23,13 +23,13 @@ Check registry versions before publishing. An `E404` for a new package/version i
 Publish dependencies before their dependents. For the initial release, use this order from the repository root:
 
 ```sh
-npm publish --workspace @svet/files-glob --access public
-npm publish --workspace @svet/files-git --access public
-npm publish --workspace @svet/check-file-eol --access public
-npm publish --workspace @svet/check-file-trailing-whitespace --access public
-npm publish --workspace @svet/check-git-index-eol --access public
-npm publish --workspace @svet/check-path-case --access public
-npm publish --workspace @svet/check-path-case-collision --access public
+npm publish --workspace svet-files-glob --access public
+npm publish --workspace svet-files-git --access public
+npm publish --workspace svet-check-file-eol --access public
+npm publish --workspace svet-check-file-trailing-whitespace --access public
+npm publish --workspace svet-check-git-index-eol --access public
+npm publish --workspace svet-check-path-case --access public
+npm publish --workspace svet-check-path-case-collision --access public
 npm publish --workspaces=false --access public
 ```
 

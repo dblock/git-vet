@@ -1,5 +1,5 @@
 {
-  "name": "@svet/files-glob",
+  "name": "svet-files-glob",
   "version": "0.1.0",
   "description": "Filesystem glob sources and snapshot-preserving glob filters for Svet.",
   "type": "module",

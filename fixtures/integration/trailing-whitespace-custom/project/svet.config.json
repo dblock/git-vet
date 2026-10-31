@@ -2,7 +2,7 @@
   "files": "*.txt",
   "checks": [
     {
-      "plugin": "@svet/check-file-trailing-whitespace",
+      "plugin": "@svet-check-file-trailing-whitespace",
       "options": { "whitespace": ["x", "\ud83d\ude00"] }
     }
   ]

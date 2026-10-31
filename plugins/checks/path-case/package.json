@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-path-case",
+  "name": "svet-check-path-case",
   "version": "0.1.0",
   "description": "Configurable file and directory casing policies for Svet inventories.",
   "type": "module",
@@ -19,7 +19,7 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
-    "@svet/files-glob": "0.1.0",
+    "svet-files-glob": "0.1.0",
     "picomatch": "4.0.7"
   }
 }

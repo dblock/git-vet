@@ -1,7 +1,7 @@
 {
   "files": {
-    "plugin": "@svet/files-git",
+    "plugin": "@svet-files-git",
     "options": { "scope": "staged" }
   },
-  "checks": ["@svet/check-file-eol"]
+  "checks": ["@svet-check-file-eol"]
 }

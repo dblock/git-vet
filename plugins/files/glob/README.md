@@ -1,6 +1,6 @@
 # Glob File Selector
 
-`@svet/files-glob` is an independently packageable version-1 selector with stable plugin id `files/glob`. It uses Node.js 22.18+ and the declared JavaScript dependency `picomatch`; it has no private driver imports, Git requirement, subprocesses, downloads, or runtime networking.
+`svet-files-glob` is an independently packageable version-1 selector with stable plugin id `files/glob`. It uses Node.js 22.18+ and the declared JavaScript dependency `picomatch`; it has no private driver imports, Git requirement, subprocesses, downloads, or runtime networking.
 
 The package is a dependency of the driver so glob shorthand works after ordinary dependency restoration. Neither installing it nor mentioning it in an inactive profile activates it.
 
@@ -19,7 +19,7 @@ With an earlier provider, it performs **no filesystem discovery or content reads
 
 ```js
 export default {
-  files: ["@svet/files-git", "**/*.js", "!vendor/**"],
+  files: ["@svet-files-git", "**/*.js", "!vendor/**"],
   checks: ["./tools/check.mjs"],
 };
 ```
@@ -30,7 +30,7 @@ Patterns use case-sensitive POSIX `/` paths, with braces, wildcards, and explici
 
 ## Explicit Fixes
 
-Ordinary selection and all check invocations are read-only. When the runner requests `fix: true`, a filesystem source registers selected snapshots and returns a private writer for the separate fix phase. Narrowing filters preserve the source's registered candidates without owning writes. See [autofix safety](../../../docs/running.md#autofix-and-dry-run) for identity/content validation, atomic replacement, permission restrictions, and concurrent-editor limitations. The public `@svet/files-glob/fixes` export provides the same `createFixer(root)` helper to other filesystem-backed providers.
+Ordinary selection and all check invocations are read-only. When the runner requests `fix: true`, a filesystem source registers selected snapshots and returns a private writer for the separate fix phase. Narrowing filters preserve the source's registered candidates without owning writes. See [autofix safety](../../../docs/running.md#autofix-and-dry-run) for identity/content validation, atomic replacement, permission restrictions, and concurrent-editor limitations. The public `svet-files-glob/fixes` export provides the same `createFixer(root)` helper to other filesystem-backed providers.
 
 ## Capabilities
 
@@ -38,7 +38,7 @@ A filesystem source provides `content.snapshot: true`, `content.text: { isText(b
 
 Records have stable `glob:<path>` identities, root-relative POSIX paths, and `metadata.kind`. Captured files additionally have `metadata.text`, a SHA-256 `snapshot` with kind `filesystem`, and a reader. Reportable context identifies root, pattern, and snapshot kind. It does not expose a fabricated `git.index`; index-specific checks are explicitly incompatible with a filesystem-only source.
 
-`@svet/files-glob/inventory` exports the pure `pathInventory(selection)` helper for provider-independent inventory checks. It validates paths/kinds, infers parent directories, deduplicates and sorts names, and never invokes the selector or reads content. The [path case](../../checks/path-case/README.md) and [collision](../../checks/path-case-collision/README.md) checks share this public contract. They inspect the source inventory even when later filters leave no selected content candidates.
+`svet-files-glob/inventory` exports the pure `pathInventory(selection)` helper for provider-independent inventory checks. It validates paths/kinds, infers parent directories, deduplicates and sorts names, and never invokes the selector or reads content. The [path case](../../checks/path-case/README.md) and [collision](../../checks/path-case-collision/README.md) checks share this public contract. They inspect the source inventory even when later filters leave no selected content candidates.
 
 ## Advanced Configuration
 
@@ -47,7 +47,7 @@ The glob shorthand selects this ordinary plugin with `options: { pattern: "**/*.
 ```js
 export default {
   files: {
-    plugin: "@svet/files-glob",
+    plugin: "@svet-files-glob",
     options: { pattern: "**/*.js" },
   },
   checks: ["./tools/check.mjs"],

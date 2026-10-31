@@ -15,10 +15,10 @@ import { dirname, join, resolve } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
-import selector from "@svet/files-git";
-import globSelector from "@svet/files-glob";
-import collisionCheck from "@svet/check-path-case-collision";
-import caseCheck from "@svet/check-path-case";
+import selector from "svet-files-git";
+import globSelector from "svet-files-glob";
+import collisionCheck from "svet-check-path-case-collision";
+import caseCheck from "svet-check-path-case";
 import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
 
 const execute = promisify(execFile);
@@ -99,10 +99,10 @@ test("precommit checks indexed bytes, preserves deletions and rename targets, an
     "svet.config.json",
     JSON.stringify({
       files: {
-        plugin: import.meta.resolve("@svet/files-git"),
+        plugin: import.meta.resolve("svet-files-git"),
         options: { scope: "changed", includeUntracked: true },
       },
-      checks: [import.meta.resolve("@svet/check-file-eol")],
+      checks: [import.meta.resolve("svet-check-file-eol")],
     }),
   );
   const index = await readFile(join(root, ".git", "index"));
@@ -815,7 +815,7 @@ test("scoped Git shorthand composes with glob shortcuts while retaining full inv
     defaults: {
       directory: fileURLToPath(new URL("../../../", import.meta.url)),
       config: {
-        files: ["@svet/files-git", "*.txt"],
+        files: ["@svet-files-git", "*.txt"],
         checks: [
           new URL(
             "../../../fixtures/timestamp-package/inventory.mjs",

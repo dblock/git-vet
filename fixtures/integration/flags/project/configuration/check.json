@@ -1,11 +1,11 @@
 {
-  "files": "@svet/files-git",
-  "checks": ["@svet/check-git-index-eol"],
+  "files": "@svet-files-git",
+  "checks": ["@svet-check-git-index-eol"],
   "profiles": {
     "words": {
       "files": "*.txt",
       "checks": [
-        "@svet/check-file-eol",
+        "@svet-check-file-eol",
         {
           "plugin": "svet-fixture-timestamps/check",
           "severity": "warning"

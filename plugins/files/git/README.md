@@ -1,13 +1,13 @@
 # Git Selection Plugin
 
-`@svet/files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
+`svet-files-git` is an independently packageable version-1 selector with stable plugin id `git/tracked-text`. It uses Node.js 22.18+ and an installed Git 2.31+ executable. It has no private driver imports, runtime installation, native checker downloads, or network access.
 
 The package is an npm workspace in this repository; `npm ci` restores its declared JavaScript dependencies, including `simple-git` for Git process execution, its public `@simple-git/argv-parser` environment parser, and `picomatch` for exclusions. `simple-git` wraps the installed Git executable; it does not replace Git or download it. Svet declares this provider as a runtime dependency and selects it through the ordinary shipped configuration, not special core behavior.
 
 ```js
 export default {
-  files: "@svet/files-git",
-  checks: ["@svet/check-file-eol"],
+  files: "@svet-files-git",
+  checks: ["@svet-check-file-eol"],
 };
 ```
 
@@ -36,7 +36,7 @@ Precommit selections additionally expose `targets: [{ id, path, status, oldPath?
 
 ## Explicit Fixes
 
-Only working-tree snapshots can supply a writer when the runner requests fixes. The provider reuses the public `@svet/files-glob/fixes` helper through its declared dependency; checks still receive no write interface. Staged/index/revision sources never write to disk or the index. Supported fixes replace selected working files, preserve ordinary file permission bits, and leave staging to you. See [autofix safety and dry-run](../../../docs/running.md#autofix-and-dry-run).
+Only working-tree snapshots can supply a writer when the runner requests fixes. The provider reuses the public `svet-files-glob/fixes` helper through its declared dependency; checks still receive no write interface. Staged/index/revision sources never write to disk or the index. Supported fixes replace selected working files, preserve ordinary file permission bits, and leave staging to you. See [autofix safety and dry-run](../../../docs/running.md#autofix-and-dry-run).
 
 ## Advanced Configuration
 
@@ -44,8 +44,8 @@ Use an explicit plugin object when selecting a scope or other options:
 
 ```js
 export default {
-  files: [{ plugin: "@svet/files-git", options: { scope: "staged" } }],
-  checks: ["@svet/check-git-index-eol"],
+  files: [{ plugin: "@svet-files-git", options: { scope: "staged" } }],
+  checks: ["@svet-check-git-index-eol"],
 };
 ```
 

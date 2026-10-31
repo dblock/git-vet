@@ -2,7 +2,7 @@
 
 The experimental CLI and library use [shipped defaults](../defaults.mjs) when no user configuration exists: Git-tracked text selection and the file EOL check on captured working-tree contents, requiring LF by default. User configurations completely replace that plan and can select Git-independent local or installed plugins. See the [README usage example](../README.md#usage) for installation.
 
-The default checking package is [`@svet/check-file-eol`](../plugins/checks/file-eol/README.md), with diagnostic id `file/eol`. It can run without Git when used with filesystem globs. The opt-in [`@svet/check-git-index-eol`](../plugins/checks/git-index-eol/README.md) checks captured indexed bytes, with diagnostic id `git/index-eol`.
+The default checking package is [`svet-check-file-eol`](../plugins/checks/file-eol/README.md), with diagnostic id `file/eol`. It can run without Git when used with filesystem globs. The opt-in [`svet-check-git-index-eol`](../plugins/checks/git-index-eol/README.md) checks captured indexed bytes, with diagnostic id `git/index-eol`.
 
 ## CLI
 
@@ -100,7 +100,7 @@ Precommit selection is not a new-findings policy: project checks still receive f
 
 ## Autofix and Dry-Run
 
-`svet --fix` runs checks, merges proposed byte edits per candidate, applies each file once through the selected source's writer, then selects and checks fresh snapshots once. There is no repeated fix loop. `@svet/check-file-eol` converts all mismatched endings to its configured style without adding a final newline. `@svet/check-file-trailing-whitespace` removes all terminal runs of its configured characters, preserving interior bytes and line boundaries.
+`svet --fix` runs checks, merges proposed byte edits per candidate, applies each file once through the selected source's writer, then selects and checks fresh snapshots once. There is no repeated fix loop. `svet-check-file-eol` converts all mismatched endings to its configured style without adding a final newline. `svet-check-file-trailing-whitespace` removes all terminal runs of its configured characters, preserving interior bytes and line boundaries.
 
 Filesystem glob sources and Git working-tree snapshots supply writers. Staged/index/revision sources do not: fixes are explicitly unavailable, and findings remain. The indexed EOL check never proposes working-tree fixes. Svet never stages changes, writes Git blobs/indexes, or redirects read-only snapshots to disk.
 

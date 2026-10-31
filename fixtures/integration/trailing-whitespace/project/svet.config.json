@@ -1,4 +1,4 @@
 {
   "files": "*",
-  "checks": ["@svet/check-file-trailing-whitespace"]
+  "checks": ["@svet-check-file-trailing-whitespace"]
 }

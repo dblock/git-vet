@@ -3,9 +3,9 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import check from "@svet/check-file-eol";
-import indexedCheck from "@svet/check-git-index-eol";
-import selector from "@svet/files-glob";
+import check from "svet-check-file-eol";
+import indexedCheck from "svet-check-git-index-eol";
+import selector from "svet-files-glob";
 
 test("file EOL checks captured bytes after working files change, reporting the first offending line", async (t) => {
   const root = await mkdtemp(join(tmpdir(), "svet file EOL "));

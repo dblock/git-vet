@@ -1,7 +1,7 @@
 Configuration: svet.config.json
 Profile: (base)
 Files: files/glob (failed)
-Checks: @svet/check-file-eol (not-run)
+Checks: @svet-check-file-eol (not-run)
 Precommit: read-only selection.
 Dry run: checks were not executed.
 Selected 0; checked 0; findings 0; skipped 0; failed 0; unavailable 0.

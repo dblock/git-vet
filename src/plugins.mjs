@@ -5,9 +5,10 @@ import { validatePlugin } from "./contracts.mjs";
 import { Error, invariant } from "./errors.mjs";
 
 export async function loadPlugin(entry, kind, moduleRoot) {
-  const specifier = isAbsolute(entry.plugin)
-    ? pathToFileURL(entry.plugin).href
+  const module = /^@[a-z0-9._-]+$/.test(entry.plugin)
+    ? entry.plugin.slice(1)
     : entry.plugin;
+  const specifier = isAbsolute(module) ? pathToFileURL(module).href : module;
   const url = resolve(
     specifier,
     pathToFileURL(join(moduleRoot, "__svet_resolver__.mjs")).href,

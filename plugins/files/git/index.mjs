@@ -3,7 +3,7 @@ import { constants } from "node:fs";
 import { lstat, open } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import picomatch from "picomatch";
-import { createFixer } from "@svet/files-glob/fixes";
+import { createFixer } from "svet-files-glob/fixes";
 import {
   commit,
   error,

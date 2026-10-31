@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-file-eol",
+  "name": "svet-check-file-eol",
   "version": "0.1.0",
   "description": "Read-only configurable line-ending validation of selected content snapshots for Svet.",
   "type": "module",

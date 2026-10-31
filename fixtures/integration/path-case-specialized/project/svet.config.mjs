@@ -2,7 +2,7 @@ export default {
   files: "**/*",
   checks: [
     {
-      plugin: "@svet/check-path-case",
+      plugin: "@svet-check-path-case",
       options: {
         case: "lower",
         files: {

@@ -1,17 +1,17 @@
 # Path Case Check
 
-`@svet/check-path-case` is an opt-in version-1 checking plugin with id `path/case` and rule `case`. It requires Node.js 22.18+ and the provider's `fs.inventory` capability. It checks names, not content, and has no Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
+`svet-check-path-case` is an opt-in version-1 checking plugin with id `path/case` and rule `case`. It requires Node.js 22.18+ and the provider's `fs.inventory` capability. It checks names, not content, and has no Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
 
 Install it beside your configuration:
 
 ```sh
-npm install --save-dev @svet/check-path-case@0.1.0
+npm install --save-dev svet-check-path-case@0.1.0
 ```
 
 ```js
 export default {
-  files: "@svet/files-git",
-  checks: ["@svet/check-file-eol", "@svet/check-path-case"],
+  files: "@svet-files-git",
+  checks: ["@svet-check-file-eol", "@svet-check-path-case"],
 };
 ```
 
@@ -24,7 +24,7 @@ export default {
   files: "**/*",
   checks: [
     {
-      plugin: "@svet/check-path-case",
+      plugin: "@svet-check-path-case",
       options: {
         case: "lower",
         exceptions: ["LICENSE"],
@@ -64,6 +64,6 @@ One finding identifies each offending entry, with original spelling and the requ
 
 ## Safety and Failures
 
-Names come exclusively from `fs.inventory`; readers and live filesystem/Git queries are never used. Missing capabilities are unavailable errors, and malformed inventory is an explicit execution error. Ordinary checks and `--fix` never rename paths, update references, or modify the index. Findings under `--fix` report fixes unavailable. Use [`@svet/check-path-case-collision`](../path-case-collision/README.md) independently to detect conflicting spellings.
+Names come exclusively from `fs.inventory`; readers and live filesystem/Git queries are never used. Missing capabilities are unavailable errors, and malformed inventory is an explicit execution error. Ordinary checks and `--fix` never rename paths, update references, or modify the index. Findings under `--fix` report fixes unavailable. Use [`svet-check-path-case-collision`](../path-case-collision/README.md) independently to detect conflicting spellings.
 
-The package declares `picomatch` and the public `@svet/files-glob/inventory` helper as dependencies. Importing that helper does not activate the glob selector or discover files.
+The package declares `picomatch` and the public `svet-files-glob/inventory` helper as dependencies. Importing that helper does not activate the glob selector or discover files.
