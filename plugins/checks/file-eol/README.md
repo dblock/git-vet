@@ -1,19 +1,19 @@
 # File EOL Check
 
-`@svet/check-file-eol` is an independently packageable version-1 checking plugin with id `file/eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing `content.snapshot: true`, captured `candidate.read()` readers, and `content.text.isText(bytes)`. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
+`svet-check-file-eol` is an independently packageable version-1 checking plugin with id `file/eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing `content.snapshot: true`, captured `candidate.read()` readers, and `content.text.isText(bytes)`. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
 
 Svet declares this package as a runtime dependency and selects it in the ordinary shipped default plan. For custom configurations, restore referenced plugin packages where they resolve beside your configuration. Merely installing a plugin does not activate it.
 
 Install it beside your configuration:
 
 ```sh
-npm install --save-dev @svet/check-file-eol@0.1.0
+npm install --save-dev svet-check-file-eol@0.1.0
 ```
 
 ```js
 export default {
   files: "**/*.txt",
-  checks: ["@svet/check-file-eol"],
+  checks: ["@svet-check-file-eol"],
 };
 ```
 
@@ -26,7 +26,7 @@ String shorthand requires LF endings. To require a different ending, use `option
 ```js
 export default {
   files: "**/*.txt",
-  checks: [{ plugin: "@svet/check-file-eol", options: { eol: "crlf" } }],
+  checks: [{ plugin: "@svet-check-file-eol", options: { eol: "crlf" } }],
 };
 ```
 
@@ -54,8 +54,8 @@ With `svet --fix`, this check proposes byte edits for every mismatched ending, p
 
 | Plugin | Reads | Git required |
 | --- | --- | --- |
-| `@svet/check-file-eol` | The selected provider snapshot via `candidate.read()`. | Only if the selected provider requires it. |
-| [`@svet/check-git-index-eol`](../git-index-eol/README.md) | Captured Git index blobs, regardless of selected working-tree content. | Yes, with the Git provider. |
+| `svet-check-file-eol` | The selected provider snapshot via `candidate.read()`. | Only if the selected provider requires it. |
+| [`svet-check-git-index-eol`](../git-index-eol/README.md) | Captured Git index blobs, regardless of selected working-tree content. | Yes, with the Git provider. |
 
 Use the indexed check for staged-byte validation. Use the file check with filesystem or working-tree selection for current file contents. A custom configuration completely replaces the default plan, so selecting the file check does not also enable the indexed check.
 

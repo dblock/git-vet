@@ -1,6 +1,6 @@
 import { isAbsolute } from "node:path";
 import picomatch from "picomatch";
-import { pathInventory } from "@svet/files-glob/inventory";
+import { pathInventory } from "svet-files-glob/inventory";
 
 function record(value) {
   return (

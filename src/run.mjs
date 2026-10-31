@@ -214,7 +214,7 @@ async function inspect(
       const configured =
         typeof entry === "string"
           ? {
-              plugin: import.meta.resolve("@svet/files-glob"),
+              plugin: import.meta.resolve("svet-files-glob"),
               options: { pattern: entry },
             }
           : entry;

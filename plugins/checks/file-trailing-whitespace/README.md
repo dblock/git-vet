@@ -1,17 +1,17 @@
 # File Trailing Whitespace Check
 
-`@svet/check-file-trailing-whitespace` is an independently packageable version-1 checking plugin with id `file/trailing-whitespace` and rule `trailing-whitespace`. It reads only captured `candidate.read()` snapshots through `content.snapshot` and `content.text` capabilities. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
+`svet-check-file-trailing-whitespace` is an independently packageable version-1 checking plugin with id `file/trailing-whitespace` and rule `trailing-whitespace`. It reads only captured `candidate.read()` snapshots through `content.snapshot` and `content.text` capabilities. It has no dependencies, Git requirement, private driver imports, filesystem reads, subprocesses, or runtime networking.
 
 The package requires Node.js 22.18+. It is opt-in, not part of Svet's shipped default plan. Install it beside your configuration:
 
 ```sh
-npm install --save-dev @svet/check-file-trailing-whitespace@0.1.0
+npm install --save-dev svet-check-file-trailing-whitespace@0.1.0
 ```
 
 ```js
 export default {
   files: "**/*.txt",
-  checks: ["@svet/check-file-trailing-whitespace"],
+  checks: ["@svet-check-file-trailing-whitespace"],
 };
 ```
 
@@ -26,7 +26,7 @@ export default {
   files: "**/*.txt",
   checks: [
     {
-      plugin: "@svet/check-file-trailing-whitespace",
+      plugin: "@svet-check-file-trailing-whitespace",
       options: { whitespace: ["space", "tab", "x", "\u00a0"] },
     },
   ],
@@ -41,7 +41,7 @@ Entries are case-sensitive. Empty or multi-code-point strings, unpaired surrogat
 
 ## Snapshots and Line Boundaries
 
-LF, CRLF, and lone CR delimit lines; CRLF counts as one boundary. The last line is checked even without a final newline, and whitespace-only lines are checked. Empty files and clean empty lines pass. One finding is reported per file at the first offending line. Line-ending style and final-newline policy are independent; combine this plugin with [`@svet/check-file-eol`](../file-eol/README.md) to enforce a style.
+LF, CRLF, and lone CR delimit lines; CRLF counts as one boundary. The last line is checked even without a final newline, and whitespace-only lines are checked. Empty files and clean empty lines pass. One finding is reported per file at the first offending line. Line-ending style and final-newline policy are independent; combine this plugin with [`svet-check-file-eol`](../file-eol/README.md) to enforce a style.
 
 Characters match exact UTF-8 byte sequences without decoding or normalizing the rest of the snapshot. Space and tab checks therefore work with arbitrary non-NUL text bytes too; a non-UTF-8 byte such as `0xa0` does not match the UTF-8 encoding of `"\u00a0"`. Binary snapshots are explicitly skipped using the selected provider's text classifier.
 

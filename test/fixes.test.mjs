@@ -16,12 +16,12 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { createFixer } from "@svet/files-glob/fixes";
+import { createFixer } from "svet-files-glob/fixes";
 import { loadConfig, run } from "../src/index.mjs";
 
-const eol = import.meta.resolve("@svet/check-file-eol");
-const trailing = import.meta.resolve("@svet/check-file-trailing-whitespace");
-const gitPlugin = import.meta.resolve("@svet/files-git");
+const eol = import.meta.resolve("svet-check-file-eol");
+const trailing = import.meta.resolve("svet-check-file-trailing-whitespace");
+const gitPlugin = import.meta.resolve("svet-files-git");
 
 async function workspace(t) {
   const root = await mkdtemp(join(tmpdir(), "svet fixes "));
@@ -144,7 +144,7 @@ test("indexed snapshots and indexed checks never redirect fixes to working files
   await writeFile(join(root, "a.txt"), "working\r\n");
   for (const [checks, source] of [
     [[eol], { plugin: gitPlugin, options: { scope: "staged" } }],
-    [[import.meta.resolve("@svet/check-git-index-eol")], { plugin: gitPlugin }],
+    [[import.meta.resolve("svet-check-git-index-eol")], { plugin: gitPlugin }],
   ]) {
     const result = await run(await configure(root, checks, [source, "*.txt"]), {
       fix: true,

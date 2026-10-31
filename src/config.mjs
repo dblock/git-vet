@@ -66,7 +66,9 @@ function files(value) {
       return entries([entry], "files")[0];
     }
     assert(entry.trim().length > 0, "Files entries must not be empty.");
-    return /^@[a-z0-9._-]+\/[a-z0-9._-]+(?:\/[a-zA-Z0-9._/-]+)?$/.test(entry)
+    return /^@[a-z0-9._-]+(?:\/[a-z0-9._-]+(?:\/[a-zA-Z0-9._/-]+)?)?$/.test(
+      entry,
+    )
       ? { plugin: entry, options: {} }
       : entry;
   });

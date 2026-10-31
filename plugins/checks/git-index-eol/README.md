@@ -1,19 +1,19 @@
 # Git Index EOL Check
 
-`@svet/check-git-index-eol` is an independently packageable version-1 checking plugin with id `git/index-eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
+`svet-check-git-index-eol` is an independently packageable version-1 checking plugin with id `git/index-eol` and rule `eol`. It requires Node.js 22.18+ and a provider exposing the public `git.index` and `content.text` capabilities. With the [Git selector](../../files/git/README.md), Git 2.31+ must be installed. The plugin has no dependencies, private driver imports, subprocesses, runtime downloads, or network access.
 
 The package is opt-in, not part of Svet's default plan. Restore dependencies separately with `npm ci` in this repository; for custom configurations, install this package beside your configuration. Merely installing a plugin does not activate it.
 
 ```js
 export default {
-  files: "@svet/files-git",
-  checks: ["@svet/check-git-index-eol"],
+  files: "@svet-files-git",
+  checks: ["@svet-check-git-index-eol"],
 };
 ```
 
 The selector owns selection scope and exclusion patterns; there is no extension allowlist or duplicate pattern configuration in this check. Omit the checking plugin from your configuration to disable it; user configurations replace defaults rather than inheriting checks.
 
-For provider snapshot contents, including ordinary working-tree files without a Git index requirement, use the default [`@svet/check-file-eol`](../file-eol/README.md).
+For provider snapshot contents, including ordinary working-tree files without a Git index requirement, use the default [`svet-check-file-eol`](../file-eol/README.md).
 
 ## Configuration
 
@@ -21,8 +21,8 @@ String shorthand requires LF endings. Set `options.eol` to `"lf"` (default), `"c
 
 ```js
 export default {
-  files: "@svet/files-git",
-  checks: [{ plugin: "@svet/check-git-index-eol", options: { eol: "cr" } }],
+  files: "@svet-files-git",
+  checks: [{ plugin: "@svet-check-git-index-eol", options: { eol: "cr" } }],
 };
 ```
 
@@ -46,11 +46,11 @@ Use the expanded selector form to classify indexed text during selection and exc
 export default {
   files: [
     {
-      plugin: "@svet/files-git",
+      plugin: "@svet-files-git",
       options: { snapshot: "index", exclude: ["vendor/**"] },
     },
   ],
-  checks: ["@svet/check-git-index-eol"],
+  checks: ["@svet-check-git-index-eol"],
 };
 ```
 

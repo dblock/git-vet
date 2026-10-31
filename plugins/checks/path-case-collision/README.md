@@ -1,17 +1,17 @@
 # Path Case Collision Check
 
-`@svet/check-path-case-collision` is an opt-in version-1 checking plugin with id `path/case-collision` and rule `case-collision`. It requires Node.js 22.18+ and the provider's `fs.inventory` capability. It has no Git requirement, private driver imports, content reads, filesystem queries, subprocesses, or runtime networking.
+`svet-check-path-case-collision` is an opt-in version-1 checking plugin with id `path/case-collision` and rule `case-collision`. It requires Node.js 22.18+ and the provider's `fs.inventory` capability. It has no Git requirement, private driver imports, content reads, filesystem queries, subprocesses, or runtime networking.
 
 Install it beside your configuration:
 
 ```sh
-npm install --save-dev @svet/check-path-case-collision@0.1.0
+npm install --save-dev svet-check-path-case-collision@0.1.0
 ```
 
 ```js
 export default {
-  files: "@svet/files-git",
-  checks: ["@svet/check-file-eol", "@svet/check-path-case-collision"],
+  files: "@svet-files-git",
+  checks: ["@svet-check-file-eol", "@svet-check-path-case-collision"],
 };
 ```
 
@@ -43,8 +43,8 @@ Git-backed inventories can detect incompatible indexed or committed paths even o
 
 ## Independence and Safety
 
-Collision detection does not enforce lowercase or uppercase naming. Use [`@svet/check-path-case`](../path-case/README.md) for casing policies; its exceptions never suppress collision findings. Submodule entries are directory entries; symlinks and special files participate as named leaf entries without following targets.
+Collision detection does not enforce lowercase or uppercase naming. Use [`svet-check-path-case`](../path-case/README.md) for casing policies; its exceptions never suppress collision findings. Submodule entries are directory entries; symlinks and special files participate as named leaf entries without following targets.
 
 Missing `fs.inventory` is an unavailable error. Invalid entries or contradictory file/directory descriptions of exactly the same path are execution errors. The check never reads file contents, renames anything, updates references, stages changes, or modifies an index. Findings under `--fix` report fixes unavailable.
 
-The package declares the pinned folding dependency and the public `@svet/files-glob/inventory` helper. Importing the helper does not activate a filesystem selector or discover files.
+The package declares the pinned folding dependency and the public `svet-files-glob/inventory` helper. Importing the helper does not activate a filesystem selector or discover files.

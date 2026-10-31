@@ -10,7 +10,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import selector from "@svet/files-glob";
+import selector from "svet-files-glob";
 import { loadConfig, run, validateSelection } from "../../../src/index.mjs";
 
 async function workspace(t) {
@@ -139,7 +139,7 @@ test("glob shortcuts run through the same public selector as explicit plugin ent
   await writeFile(join(root, "b.ts"), "bad counterpart\n");
   const shortcut = await configured(root, "*.{js,ts}");
   const explicit = await configured(root, {
-    plugin: import.meta.resolve("@svet/files-glob"),
+    plugin: import.meta.resolve("svet-files-glob"),
     options: { pattern: "*.{js,ts}" },
   });
   assert.equal(shortcut.exitCode, 1, JSON.stringify(shortcut.errors));

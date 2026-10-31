@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-git-index-eol",
+  "name": "svet-check-git-index-eol",
   "version": "0.1.0",
   "description": "Read-only configurable line-ending validation of selected Git index text blobs for Svet.",
   "type": "module",

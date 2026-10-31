@@ -30,6 +30,39 @@ async function module(root, name, body) {
   return path;
 }
 
+test("marked unscoped and native scoped package references load selectors and checks", async (t) => {
+  const root = await workspace(t);
+  for (const [selector, check] of [
+    ["fixture-selector", "fixture-check"],
+    ["@example/selector", "@example/check"],
+  ]) {
+    for (const [name, target] of [
+      [selector, fixture("memory-selector")],
+      [check, project],
+    ]) {
+      await module(
+        root,
+        `node_modules/${name}/package.json`,
+        JSON.stringify({ name, type: "module", exports: "./index.mjs" }),
+      );
+      await module(
+        root,
+        `node_modules/${name}/index.mjs`,
+        `export {default} from ${JSON.stringify(target)};`,
+      );
+    }
+    const files = selector.startsWith("@") ? selector : `@${selector}`;
+    const checking = check.startsWith("@") ? check : `@${check}`;
+    const result = await run(
+      await configure(root, { files, checks: [checking] }),
+    );
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.selection.candidates.length, 2);
+    assert.equal(result.selection.stages[0].pluginId, "fixture/memory");
+    assert.equal(result.checks[0].status, "completed");
+  }
+});
+
 test("precommit is a source-neutral opt-in, rejects unsupported sources and fixes, and previews without importing checks", async (t) => {
   const root = await workspace(t);
   for (const files of [undefined, "*.txt", source]) {
@@ -95,8 +128,8 @@ test("precommit is a source-neutral opt-in, rejects unsupported sources and fixe
 
 test("path checks require inventory, inspect metadata-only selections, and report unavailable fixes without mutation", async (t) => {
   const root = await workspace(t);
-  const casing = import.meta.resolve("@svet/check-path-case");
-  const collision = import.meta.resolve("@svet/check-path-case-collision");
+  const casing = import.meta.resolve("svet-check-path-case");
+  const collision = import.meta.resolve("svet-check-path-case-collision");
   const missing = await run(
     await configure(root, { checks: [casing, collision] }),
   );

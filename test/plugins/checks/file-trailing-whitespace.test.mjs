@@ -3,8 +3,8 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import check from "@svet/check-file-trailing-whitespace";
-import selector from "@svet/files-glob";
+import check from "svet-check-file-trailing-whitespace";
+import selector from "svet-files-glob";
 
 async function inspect(content, options = {}) {
   const bytes =

@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-path-case-collision",
+  "name": "svet-check-path-case-collision",
   "version": "0.1.0",
   "description": "Deterministic Unicode case-insensitive file and directory collision checks for Svet.",
   "type": "module",
@@ -19,7 +19,7 @@
     "node": ">=22.18.0"
   },
   "dependencies": {
-    "@svet/files-glob": "0.1.0",
+    "svet-files-glob": "0.1.0",
     "unicode-case-folding": "1.1.2"
   }
 }

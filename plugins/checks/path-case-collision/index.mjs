@@ -1,5 +1,5 @@
 import { caseFold } from "unicode-case-folding";
-import { pathInventory } from "@svet/files-glob/inventory";
+import { pathInventory } from "svet-files-glob/inventory";
 
 function options(value) {
   if (

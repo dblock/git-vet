@@ -1,5 +1,5 @@
 {
-  "name": "@svet/check-file-trailing-whitespace",
+  "name": "svet-check-file-trailing-whitespace",
   "version": "0.1.0",
   "description": "Read-only configurable trailing-character validation of selected content snapshots for Svet.",
   "type": "module",
