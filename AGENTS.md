@@ -7,7 +7,7 @@
 - Make providers and checks independently packageable through public interfaces. Do not import private driver modules from plugins or give shipped plugins privileged interfaces.
 - Load only plugins selected by the effective configuration. Do not statically import concrete plugins, discover installed plugins, or initialize inactive profiles.
 - User configuration completely replaces shipped defaults. Empty and partial configurations must not restore omitted `files` stages, checks, profiles, options, or exclusions.
-- Keep shipped defaults as ordinary inspectable configuration in `defaults.mjs`, exported through `svet/defaults`. Declare its selected plugins as runtime dependencies, resolve them beside the installed driver, and never activate other installed plugins implicitly.
+- Keep shipped defaults as ordinary inspectable configuration in `defaults.mjs`, exported through `svet-cli/defaults`. Declare its selected plugins as runtime dependencies, resolve them beside the installed driver, and never activate other installed plugins implicitly.
 - Configure selection through `files`, not `selectors`. A glob is only shorthand for the public `svet-files-glob` selector; keep discovery and matching in that plugin, not core. Ordered stages narrow candidates and preserve their snapshots and capabilities.
 - Prefix unscoped package references in configuration with `@`; keep that marker out of npm names, dependencies, installation commands, and JavaScript imports. Scoped package names are used unchanged.
 - Place file selector packages under `plugins/files/<name>` and their tests under `test/plugins/files/<name>.test.mjs`.

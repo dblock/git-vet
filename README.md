@@ -2,7 +2,7 @@
 
 <img src="artwork/mascot-badge.svg" alt="Svet's crocodile switching a light on and off in a green circle" width="133">
 
-Git and filesystem linter.
+Git and filesystem linter. Install the `svet-cli` npm package; the commands are `svet` and `git svet`.
 
 ## Usage
 
@@ -13,7 +13,7 @@ mkdir my-project
 cd my-project
 git init
 npm init -y
-npm install --save-dev svet@0.1.0
+npm install --save-dev svet-cli@0.1.0
 npm pkg set scripts.check=svet
 ```
 

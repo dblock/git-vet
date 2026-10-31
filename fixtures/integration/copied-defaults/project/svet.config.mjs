@@ -1,1 +1,1 @@
-export { default } from "svet/defaults";
+export { default } from "svet-cli/defaults";

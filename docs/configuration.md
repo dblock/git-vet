@@ -155,10 +155,10 @@ All configuration is trusted executable JavaScript. Keep untrusted repository co
 
 ## Advanced Configuration
 
-The shipped document is also exported as `svet/defaults`. To deliberately reuse it in a custom `svet.config.mjs`:
+The shipped document is also exported as `svet-cli/defaults`. To deliberately reuse it in a custom `svet.config.mjs`:
 
 ```js
-export { default } from "svet/defaults";
+export { default } from "svet-cli/defaults";
 ```
 
 Copy [defaults.mjs](../defaults.mjs) when you want to edit the plan. Custom plugin references still resolve beside your configuration; declare the selected plugin packages directly when needed rather than relying on package-manager hoisting.
